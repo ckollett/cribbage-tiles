@@ -1,0 +1,333 @@
+:root {
+    --board-width:min(90vw,140vh);
+    --header-height:calc(var(--board-width)/16);
+    --tile-width:calc(var(--board-width)/7.2);
+    --tile-height:calc(var(--tile-width)*1.3);
+    --tile-left-margin:1vh;
+    --pegged-tile-shift:calc(var(--tile-width) + var(--tile-left-margin));
+    --tile-font-size:calc(var(--tile-height)/5);
+    --tile-font-stroke-width:calc(var(--tile-font-size)/10);
+    --label-width:calc(var(--tile-width)/4);
+    --label-font-size:calc(var(--label-width)*.75);
+}
+
+@font-face {
+  font-family: 'katahdin';
+  src: url('/static/fonts/katahdin-round.regular.otf');
+}
+
+html,body {
+    height:100%;
+    width:100%;
+}
+
+body {
+    font-family: katahdin, sans-serif;
+    margin:0;
+}
+
+div {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div#header{
+    display:block;
+    top:0;
+    left:0;
+    width:100%;
+    color:black;
+    text-align:center;
+    font-size:calc(var(--header-height)*.9);
+    padding-top:10px;
+}
+
+div#header img {
+    transform:translate(0,4px);
+    height:var(--header-height);
+}
+
+
+div#intro {
+    font-size:32px;
+    max-width: 500px;
+    margin: auto;    
+    margin-top:75px;
+}
+
+div#nameformlabel {
+    width:100%;
+    text-align:center;
+    display:block;
+    margin-right:5px;
+    height:40px;
+}
+
+div#nameinputs {
+    display:inline-block;
+    width:100%;
+    text-align:center;
+}
+
+input#nameinput {
+    display:inline-block;
+    height:40px;
+    width:195px;
+    font-size:32px;
+    border-top-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom:1px solid black;
+    margin-right:5px;
+    padding:3px;
+    
+}
+
+button#joinbutton {
+    background-color:black;
+    color:white;
+    text-align: center;
+    display: inline-block;
+    font-size: 32px;
+    font-family:katahdin,sans-serif;
+    border:0;
+    height:40px;
+    width:120px;
+    margin-top:0;
+    padding:3px;
+}
+
+div#game {
+    width:var(--board-width);
+    margin-left:auto;
+    margin-right:auto;
+}
+
+div.name {
+    font-size: var(--tile-font-size);
+    line-height:100%;
+}
+
+input {
+    font-family: katahdin, sans-serif;
+}
+
+div.row {
+    display:block;
+    width:100%;
+    margin-bottom:20px;
+}
+
+div.lastrow {
+    margin-bottom:0;
+}
+
+div.flexcontainer {
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+}
+
+div.traycontainer {
+    height:var(--tile-height);
+    display:block;
+    padding:0;
+    margin:0;
+    position:relative;
+}
+
+div.tray {
+    position:relative;
+    display:inline-block;
+    height: var(--tile-height);
+}
+
+div.label {
+    display:inline-block;
+    vertical-align:top;
+    width:var(--label-width);
+    height:var(--tile-height);
+    font-size:var(--label-font-size);
+    line-height:var(--label-width);
+    background-color:black;
+    color:white;
+}
+
+div.leftlabel {
+    height:var(--label-width);
+    width: var(--tile-height);
+    transform:
+      translate(0,var(--tile-height))
+      rotate(-90deg);
+    transform-origin:top left;
+    text-align:center;
+}
+
+div.rightlabel {
+    height:var(--label-width);
+    width: var(--tile-height);
+    transform:
+      translate(var(--label-width),0)
+      rotate(90deg);
+    transform-origin:top left;
+    text-align:center;
+}
+
+div.hand {
+    margin-right:50px;
+}
+
+div.content {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+div.tent {
+    background: url('/static/images/tent.svg');
+}
+div.mug {
+    background: url('/static/images/mug.svg');
+}
+div.campfire {
+    background: url('/static/images/campfire.svg');
+}
+div.sleepingbag {
+    background: url('/static/images/sleepingbag.svg');
+}
+
+div.tile {
+    position:relative;
+    border:0.5vh solid black;
+    border-radius:2vh;
+    width:var(--tile-width);
+    height:var(--tile-height);
+    background-repeat: no-repeat;
+    background-size:85%;
+    background-position: 50% 65%;
+    background-color:white;
+    display:inline-block;
+    box-sizing: border-box;
+}
+
+div.emptytileslot {
+    border:0;
+}
+
+div.tileborder {
+    display:block;
+    float:left;
+    margin-left:var(--tile-left-margin);
+}
+
+div.tileborder:nth-child(1) {
+    margin-left:0;
+}
+
+div.tileborder.pegged {
+    position:absolute;
+    right:0;
+}
+
+div.tileborder.pegged.player {
+    top:-15px;
+}
+
+div.tileborder.pegged.opponent {
+    top:15px;
+}
+
+
+div.value {
+    color: transparent;
+	font-size: var(--tile-font-size);
+	-webkit-text-stroke-width: var(--tile-font-stroke-width);
+    -webkit-text-stroke-color: black;
+    position:absolute;
+    right:4%;
+    top:2%;
+}
+
+div.go {
+    background-color:#666666;
+    margin-left:3px;
+    margin-right:3px;
+}
+
+div.selected div.tile {
+    background-color:#cccccc;
+}
+
+div.buttonrow {
+    height:calc(var(--label-width)*2);
+    line-height:calc(var(--label-width)*2);
+}
+
+button#thebutton {
+  background-color: white;
+  border: 0.5vmin solid black;
+  color: black;
+  padding: 5px 20px;
+  text-align: center;
+  display: inline-block;
+  font-size: calc(var(--tile-font-size)*.7);
+  font-family:katahdin,sans-serif;
+  border-radius:3px;
+  position:absolute;
+  left:0;
+  bottom:0;
+  right:0;
+  white-space:nowrap;
+  min-width:var(--tile-width);
+}
+
+button#thebutton:disabled {
+    color:#666666;
+    border-color:#666666;
+}
+
+button#thebutton:hover {
+    background-color:black;
+    color:white;
+}
+
+button#thebutton:disabled:hover {
+    background-color:white;
+    color:#666666;
+    border-color:#666666;
+}
+
+div#opponentName {
+    height:calc(var(--label-width)*2);
+    display: flex;
+    align-items: flex-end;
+}
+
+div.hidden {
+    display:none;
+}
+
+button#thebutton.hidden {
+    display:none;
+}
+
+div.activeTray {
+    background-color:#cccccc;
+    border-radius: 2vh;
+}
+
+.rejected {
+    animation:shake 1s;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+   30% { transform: rotate(-5deg); }
+   70% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}

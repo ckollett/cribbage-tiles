@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>Cribbage</title>
+  <head>
+    <link rel="icon" 
+      type="image/png" 
+      href="/static/images/mug.png">
+    <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/game.js"></script>
+    
+  </head>
+  <body>
+    <div style="height:100%;width:90%;padding-left:5%;padding-right:5%">
+      <div id="header">
+        <img src="static/images/sleepingbag.svg" />
+        <img src="static/images/tent.svg" />
+        Atomic Cribbage
+        <img src="static/images/campfire.svg" />
+        <img src="static/images/mug.svg" />
+      </div>
+      
+      <div id="game">
+        <div class="row">
+          <div class="flexcontainer">
+            <div></div>
+            <div class="name" id="playerName"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="flexcontainer">
+            <div class="traycontainer">
+              <div class="label">
+                <div class="leftlabel" id="playerHandLabel">Hand</div>
+              </div>
+              <div id="tiles" class="tray"></div>
+            </div>
+                
+            <div id="playerPegContainer" class="traycontainer sortable">
+              <div id="peg1" class="tray"></div>
+              <div class="label">
+                <div class="rightlabel">Peg</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ***** Turn and crib ***** -->
+        <div class="row">
+          <div class="flexcontainer">
+            <div id="turnContainer" class="traycontainer">
+              <div class="label">
+                <div class="leftlabel">Turn</div>
+              </div>
+              <div id="turn" class="tray"></div>
+            </div>
+            <div id="cribContainer" class="traycontainer sortable">
+              <div id="crib" class="tray"></div>
+              <div class="label">
+                <div class="rightlabel" id="criblabel">Crib</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ***** Opponent's tray ***** -->
+        <div class="row lastrow">
+          <div class="flexcontainer">
+            <div class="traycontainer">
+              <button id="thebutton" disabled="true" onclick="commitCrib()">Send to Crib</button>
+            </div>
+            <div id="opponentPegContainer" class="traycontainer sortable">
+              <div id="peg2" class="tray"></div>
+              <div class="label">
+                <div class="rightlabel">Peg</div>
+              </div>
+            </div>            
+          </div>
+        </div>        
+      </div>
+    </div>
+    <script type="text/javascript">
+      socket.emit('join', '');
+    </script>
+  </body>
+</html>
