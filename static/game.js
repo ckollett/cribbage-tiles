@@ -1,6 +1,7 @@
 var socket = io();
 
 var numSelections = 2;
+var maxZIndex = 1;
 
 /* ************************************************** */
 /* Handle messages from the server */
@@ -8,36 +9,14 @@ var numSelections = 2;
 socket.on("reset", doReset);
 socket.on("nogame", doReset);
 
-socket.on("hand", function(data) {
-    doReset();
-    numSelections = 2;
-    document.getElementById("thebutton").disabled = true;
-    data.sort(compareTiles);
-    for (var i = 0; i < data.length; i++) {
-        (function(idx) {
-            var tile = renderTile(data[idx]);
-            document.getElementById("tiles").appendChild(tile);
-        })(i);
-    }
-    eachTileInTray('tiles',enableCribSelection);
-});
 
-socket.on("fullcrib", function(turn) {
-    showTurn(turn);
-    enablePegging();
-});
 
-socket.on("opponentPegged", function(tile) {
-    document.getElementById("opponentPegContainer").classList.remove("hidden");
-    var tile = renderTile(tile);
-    addPeggedTileStyles(tile);
-    tile.classList.add("opponent");
-    moveTile(tile,'crib',false);
-});
 
 socket.on("go", handleGo);
 
-socket.on("clearPegging", clearPegging);
+socket.on("clearPegging", function() {
+    currentDeal.clearPegging();
+});
 
 socket.on("showCrib", function(crib) {
     revealCrib(crib);
@@ -47,16 +26,16 @@ socket.on("showCrib", function(crib) {
 /* Game events */
 
 function doReset() {
-    document.getElementById("playerHandLabel").innerHTML = "Hand";
-    var trays = document.getElementsByClassName("tray");
-    for (let tray of trays) {
-        tray.innerHTML = "";
-    }
-
-    //hideTrays(["playerPegContainer","opponentPegContainer"]);
-    document.getElementById("thebutton").innerHTML = "Send to Crib";
-    document.getElementById("thebutton").onclick=commitCrib;
-    disableSortingOnPegTrays();
+//    document.getElementById("playerHandLabel").innerHTML = "Hand";
+//    var trays = document.getElementsByClassName("tray");
+//    for (let tray of trays) {
+//        tray.innerHTML = "";
+//    }
+//
+//    //hideTrays(["playerPegContainer","opponentPegContainer"]);
+//    document.getElementById("thebutton").innerHTML = "Send to Crib";
+//    document.getElementById("thebutton").onclick=commitCrib;
+//    disableSortingOnPegTrays();
 }
 
 function quit() {
@@ -64,29 +43,8 @@ function quit() {
 }
 
 function commitCrib() {
-    eachTileInTray('tiles',disableSelection);
-
-    var crib = [];
-    var cribTiles = document.getElementsByClassName("crib");
-    while (cribTiles.length > 0) {
-        var cribTile = cribTiles.item(0);
-        cribTile.remove();
-        crib.push(cribTile.tile);
-    }
-    var actionButton = document.getElementById("thebutton");
-    actionButton.classList.add("hidden");
-    socket.emit("cribSelected",crib);
 }
 
-function rejectGo() {
-    var actionButton = document.getElementById("thebutton");
-    actionButton.innerHTML = "Nope";
-    actionButton.classList.add("rejected");
-    setTimeout(function() {
-        actionButton.innerHTML = "Go";
-        actionButton.classList.remove("rejected");
-    }, 1000);
-}
 
 function showTurn(turn) {
     const turnTile = renderTile(turn);
@@ -158,7 +116,7 @@ function handleGo() {
     actionButton.innerHTML = "Go";
     actionButton.onclick = function() {
         socket.emit("clearPegging");
-        clearPegging();
+        currentDeal.clearPegging();
     };
 }
 
@@ -344,44 +302,11 @@ function removeGoSeparators() {
 }
 
 /* Individual tiles */
-function renderTile(tile) {
-    var tileElt = document.createElement("div");
-    tileElt.classList.add("tile");
-    tileElt.classList.add(tile.suit);
-    
-    var value = document.createElement("div");
-    value.classList.add("value");
-    value.innerHTML = tile.num;
-    tileElt.appendChild(value);
-    
-    var outer = document.createElement("div");
-    outer.classList.add("tileborder");
-    outer.appendChild(tileElt);
-    outer.tile = tile;    
-    outer.num = tile.num;
-    outer.suit = tile.suit;
-    
-    return outer;
-}
 
-// The tiles can either be data from the server or a tile container element
-function compareTiles(tile1, tile2) {
-    var byNum = getTileSortValue(tile1)-getTileSortValue(tile2);
-    if (byNum === 0) {
-        return tile1.suit.localeCompare(tile2.suit);
-    } else {
-        return byNum;
-    }
-}
 
-function getTileSortValue(tile) {
-    switch (tile.num) {
-        case 'J' : return 11;
-        case 'Q' : return 12;
-        case 'K' : return 13;
-        default : return tile.num;
-    }
-}
+
+
+
 
 function createGoSeparator() {
     var container = document.createElement("div");
@@ -394,4 +319,67 @@ function createGoSeparator() {
 
     container.appendChild(elt);
     return container;
+}
+
+function moveTileNew(tile, row, column) {
+    for (var i = tile.classList.length-1; i >= 0; i--) {
+        var tileClass = tile.classList.item(i);
+        if (tileClass !== "tileborder") {
+            tile.classList.remove(tileClass);
+        }
+    }
+    tile.classList.add(row);
+    tile.classList.add(column);
+}
+
+function moveTileByNum(tile, row, side) {
+    const toClass = "row_" + row + "_side_" + side;
+    const topStr = (row*33).toString() + "%";
+    doTileMove(tile, toClass, topStr, side, 16, 16);
+}
+
+function pegTile(tile,player) {
+    const topStr = player ? "31%" : "35%";
+    doTileMove(tile, "row_peg_side_right", topStr, "right", 16, 8);
+}
+
+function TilePosition(rowNum, colNum, side, isPeg) {
+    this.rowNum = rowNum;
+    this.colNum = colNum;
+}
+
+function doTileMove(tile, toClass, topStr, side, fromWidth, toWidth) {
+    const fromClass = getPositionClass(tile);
+    if (fromClass === toClass) {
+        return;
+    }
+    tile.style.zIndex = ++maxZIndex;
+    tile.classList.remove(fromClass);
+
+    const posNum = document.getElementsByClassName(toClass).length;
+    tile.style.left = getLeftValue(posNum, toWidth, side);
+    tile.style.top = topStr;
+    tile.classList.add(toClass);
+    
+    const fromTiles = document.getElementsByClassName(fromClass);
+    for (var i = 0; i < fromTiles.length; i++) {
+        fromTiles.item(i).style.left = getLeftValue(i, fromWidth, "left");
+    }    
+}
+
+function getLeftValue(tileNum, width, side) {
+    var left = width * tileNum;
+    if (side === "right") {
+        left = 85-left;
+    }    
+    return left.toString() + "%";
+}
+
+function getPositionClass(tile) {
+    for (let tileClass of tile.classList) {
+        if (tileClass.startsWith("row_")) {
+            return tileClass;
+        }
+    }
+    return "row_1_side_left";
 }

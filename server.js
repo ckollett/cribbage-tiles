@@ -11,8 +11,8 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });// Starts the server.
 
-app.get('/cards.html', function(request, response) {
-  response.sendFile(path.join(__dirname, 'cards.html'));
+app.get('/test.html', function(request, response) {
+  response.sendFile(path.join(__dirname, 'test.html'));
 });
 
 server.listen(5000, function() {
@@ -27,12 +27,7 @@ var currentDeal = new deal();
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
     var notifyOtherPlayer = function(messageId, message) {
-      for (var i = 0; i < 2; i++) {
-        player = currentGame.players[i];
-        if (player.id !== socket.id) {
-            notifyPlayer(player, messageId, message);
-        }
-     }
+        notifyOtherPlayerById(socket.id, messageId, message);
     }
     
     socket.on("join", function(name) {
@@ -48,11 +43,11 @@ io.on('connection', function(socket) {
     });
     
     socket.on("cribSelected", function(cards) {
+        notifyOtherPlayer('opponentCrib');
         for (let card of cards) {
             getPlayer(socket.id).hand.removeCard(card);
         }
-        var cribFull = currentDeal.addToCrib(cards);
-        if (cribFull) {
+        if (currentDeal.addToCrib(socket.id, cards)) {
             var turn = currentDeal.getTopCard();
             notifyAll("fullcrib", turn);
         }
@@ -73,7 +68,9 @@ io.on('connection', function(socket) {
     })
     
     socket.on("cribRequested", function() {
-        notifyAll("showCrib", currentDeal.getCrib());
+        for (let crib of currentDeal.crib) {
+            notifyOtherPlayerById(crib.player, "showCrib", crib.cards);
+        }
     });
     
     socket.on("shuffle", function() {
@@ -88,9 +85,9 @@ function deal() {
     this.crib = [];
     this.pegRemaining = 31;
     
-    this.addToCrib = function(cards) {
-        Array.prototype.push.apply(this.crib, cards);
-        return this.crib.length === 4;
+    this.addToCrib = function(id,cards) {
+        this.crib.push({"player":id,"cards":cards});
+        return this.crib.length === 2;
     }
     
     this.getTopCard = function() {
@@ -167,6 +164,14 @@ function getPlayer(id) {
 
 function notifyPlayer(player, messageId, message) {
     io.to(player.id).emit(messageId, message);
+}
+
+function notifyOtherPlayerById(id, messageId, message) {
+    for (let player of currentGame.players) {
+        if (player.id !== id) {
+            notifyPlayer(player, messageId, message);
+        }
+    }
 }
 
 function notifyAll(messageId, message) {
