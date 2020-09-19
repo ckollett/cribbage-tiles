@@ -105,6 +105,8 @@ div.tilecontainer {
     box-sizing: border-box;
     border:0;
     transition: left 0.5s ease,top 0.5s ease;
+    top:33%;
+    left:0;
 }
 
 div.tilesides {

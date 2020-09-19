@@ -12,6 +12,7 @@ socket.on("hand", function(tiles) {
     const tileObjs = [];
     for (let tile of tiles) {
         const tileObj = new Tile(tile,'player');
+        flip(tileObj);
         tileObjs.push(tileObj);
     }
     
@@ -33,8 +34,10 @@ socket.on("hand", function(tiles) {
         addTile(tileObj.tileElt);
     }
     
-    updateTilePositions(currentDeal);
-    enableSelection(currentDeal);
+    setTimeout(function() {
+        updateTilePositions(currentDeal);
+        enableSelection(currentDeal);
+    }, 200);
 });
 
 socket.on("opponentCrib", function() {
@@ -168,5 +171,4 @@ function handleShowCrib(crib) {
 
 function shuffle() {
     clearTiles();
-    sendShuffle();
 }

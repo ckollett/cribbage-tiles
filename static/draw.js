@@ -72,28 +72,33 @@ function addTile(tileElt) {
 
 function updateTilePositions(deal) {
     const hand = deal.getTiles('player','hand');
-    positionTiles(hand, '0%', false);
+    positionTiles(hand, '0%', false, false);
     
     const selected = deal.getTiles('player','selected');
-    positionTiles(selected, '33%', true);
+    positionTiles(selected, '33%', true, false);
         
     const oppHand = deal.getTiles('opponent','hand');
-    positionTiles(oppHand, '66%', false);
+    positionTiles(oppHand, '66%', false, true);
     
     const played = deal.getTiles('player','played');
-    positionTiles(played, '0%', true);
+    positionTiles(played, '0%', true, false);
     
     const oppPlayed = deal.getTiles('opponent','played');
-    positionTiles(oppPlayed, '66%', true);
+    positionTiles(oppPlayed, '66%', true, false);
 }
 
-function positionTiles(tiles, top, rightSide) {
+function positionTiles(tiles, top, rightSide, flipped) {
     if (rightSide) {
         tiles.reverse();
     }
     for (let i = 0; i < tiles.length; i++) {
         tiles[i].tileElt.style.top = top;
         tiles[i].tileElt.style.left = getLeftValue(i, rightSide);
+        if (flipped) {
+            tiles[i].tileElt.classList.add('flip');
+        } else {
+            tiles[i].tileElt.classList.remove('flip');
+        }
     }
 }
 
@@ -169,5 +174,13 @@ function getLeftValue(column, rightSide) {
 }
 
 function clearTiles() {
-    document.getElementById('game').innerHTML = '';
+    for (let tile of currentDeal.tiles) {
+        tile.tileElt.classList.add('flip');
+        tile.tileElt.style.top = '';
+        tile.tileElt.style.left = '';
+    }
+    setTimeout(function() {
+        document.getElementById('game').innerHTML = '';
+        sendShuffle();
+    },300);
 }
