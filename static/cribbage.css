@@ -105,6 +105,8 @@ div.tilecontainer {
     box-sizing: border-box;
     border:0;
     transition: left 0.5s ease,top 0.5s ease;
+    top:33%;
+    left:0;
 }
 
 div.tilesides {
@@ -130,7 +132,7 @@ div.tileback {
     z-index:5;
     border-color:#999999;
     background: url('/static/images/mountains.svg');    
-    background-size:65%;
+    background-size:85%;
     background-position:50%;
 }
 
