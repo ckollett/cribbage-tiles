@@ -177,7 +177,7 @@ button#thebutton {
   display: inline-block;
   font-size: calc(var(--tile-font-size)*.7);
   font-family:katahdin,sans-serif;
-  border-radius:3px;
+  border-radius:1vh;
   white-space:nowrap;
   min-width:calc(var(--board-width)*.2);
 }
@@ -206,6 +206,36 @@ button#thebutton.hidden {
     display:none;
 }
 
+div#messagecontainer {
+    position:absolute;
+    left:25%;
+    right:25%;
+    top:22%;
+    bottom:22%;
+    z-index:20;
+    background-color:white;
+    display:none;    
+}
+
+div#message {
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+}
+
+div#message.ackbar {
+    background: url('/static/images/death-star.svg');    
+    background-size:50%;
+    background-position:50% 70%;
+    background-repeat: no-repeat;
+    text-align:center;
+    font-size:larger;
+    padding-top:2vh;
+    border: 0.75vh solid black;
+    border-radius: 2vh;
+}
 
 .rejected {
     animation:shake 1s;

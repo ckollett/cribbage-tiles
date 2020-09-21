@@ -119,6 +119,26 @@ function handlePeg(tileObj) {
     tileObj.state = 'pegged';
     movePeggedTile(tileObj, numPegged);
     updateTilePositions(currentDeal);
+    checkForMessage(currentDeal);
+}
+
+function checkForMessage(deal) {
+    var pegged = deal.getTilesByState('pegged');
+    if (pegged.length === 3) {
+        pegged.sort((obj1,obj2) => obj1.tileElt.style.zIndex - obj2.tileElt.style.zIndex);
+        if (pegged[1].getPegValue() === 10 && pegged[0].getPegValue() + pegged[2].getPegValue() === 5) {
+            const msgElt = document.getElementById('message');
+            msgElt.innerHTML = "It's a trap!";
+            msgElt.classList.add('ackbar');
+            msgElt.onclick = function() {
+                msgElt.innerHTML = "";
+                msgElt.classList.remove('ackbar');
+                document.getElementById('messagecontainer').style.display = 'none';
+                msgElt.onclick = null;
+            };
+            document.getElementById('messagecontainer').style.display = 'block';
+        }
+    }
 }
 
 // TODO: Where does this go?
