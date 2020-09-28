@@ -43,7 +43,7 @@ class Tray {
             }
         } else {
             for (let tile of this.getTiles()) {
-                this.tile.onclick = null;
+                this.elt.onclick = null;
             }
         }
     }
@@ -54,7 +54,7 @@ class Tray {
         }
         
         const fromTray = this;
-        tile.tileElt.onclick = function() {
+        tile.elt.onclick = function() {
             toTray.addTile(tile);
             fromTray.needsRedraw = true;
             toTray.needsRedraw = true;
@@ -127,11 +127,11 @@ class PlayOrderTray extends Tray {
     addTile(tile) {
         super.addTile(tile);
         this.tiles.push(tile);
-        tile.tileElt.style.zIndex = this.tiles.length + 1;
+        tile.elt.style.zIndex = this.tiles.length + 1;
     }
     
     clear() {
-        tiles = [];
+        this.tiles = [];
     }
 }
 

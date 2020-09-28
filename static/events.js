@@ -10,7 +10,7 @@ socket.on("nogame", doReset);
 socket.on("hand", function(tiles) {
     doReset();
     currentDeal = dealTiles(tiles);
-    draw();
+    draw(150);
 });
 
 socket.on("opponentCrib", function() {
@@ -19,13 +19,10 @@ socket.on("opponentCrib", function() {
     draw();
 });
 
-socket.on("fullcrib", function(turn) {
+socket.on("fullcrib", function(turnTile) {
     currentDeal.getTray('player_hand').setClickTo('peg');
-    const turnTile = new Tile(turn,'');
-    currentDeal.getTray('deck').addTile(turnTile);
-    window.setTimeout(function() {
-        turnTile.tileElt.classList.remove('flip');
-    }, 500);
+    turn(turnTile);
+    showGoButton();
 });
 
 socket.on("opponentPegged", function(tile) {
@@ -36,7 +33,7 @@ socket.on("opponentPegged", function(tile) {
 });
 
 socket.on("go", function() {
-    console.log('Go!');
+    document.getElementById('thebutton').onclick = acceptGo;
 });
 
 socket.on("clearPegging", clearPegging);
@@ -82,7 +79,7 @@ function tileMoved(tile, fromTray, toTray) {
     }
     
     if (toTray.name === 'peg') {
-        sendTilePegged(tile.tile);
+        sendTilePegged(tile.data);
     }
 }
 
@@ -92,13 +89,18 @@ function commitCrib() {
     draw();
     const button = document.getElementById('thebutton');
     button.classList.add('hidden');
-    sendCribSelected(crib);
+    
+    const cribData = [];
+    for (let tile of crib) {
+        cribData.push(tile.data);
+    }
+    sendCribSelected(cribData);
 }
 
 function checkForMessage(deal) {
     var pegged = deal.getTilesByState('pegged');
     if (pegged.length === 3) {
-        pegged.sort((obj1,obj2) => obj1.tileElt.style.zIndex - obj2.tileElt.style.zIndex);
+        pegged.sort((obj1,obj2) => obj1.elt.style.zIndex - obj2.elt.style.zIndex);
         if (pegged[1].getPegValue() === 10 && pegged[0].getPegValue() + pegged[2].getPegValue() === 5) {
             const msgElt = document.getElementById('message');
             msgElt.innerHTML = "It's a trap!";
@@ -122,35 +124,6 @@ function validatePeg(tileObj) {
         total += tile.getPegValue();
     }
     return total <= 31;
-}
-
-function opponentPegged(tile) {
-    const oppHand = currentDeal.getTiles('opponent','hand');
-    pegged = oppHand[oppHand.length-1];
-    pegged.tile = tile;
-    updateTileElt(pegged.tileElt, tile);
-    pegged.tileElt.classList.remove('flip');
-    handlePeg(pegged);
-}
-
-function handleGo() {
-    clearPegging();
-    sendClearPegging();
-}
-
-function clearPegging() {
-    currentDeal.sort();
-    const pegged = currentDeal.getPeggedTiles();
-    for (let tile of pegged) {
-        tile.state = 'played';
-    }
-    updateTilePositions(currentDeal);
-    
-    if (currentDeal.isPeggingComplete()) {
-        showCribButton();
-    } else {
-        showGoButton();
-    }
 }
 
 function requestCrib() {

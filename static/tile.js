@@ -1,7 +1,7 @@
 class Tile {
-    constructor(tile, owner) {
-        this.tile = tile;
-        this.tileElt = renderTile(tile);
+    constructor(data, owner) {
+        this.data = data;
+        this.elt = renderTile(data);
         this.owner = owner;
         this.trayName = '';
     }
@@ -14,14 +14,14 @@ class Tile {
         return this.trayName;
     }
     
-    update(tile) {
-        this.tile = tile;
+    update(data) {
+        this.data = data;
             
-        const front = this.tileElt.getElementsByClassName("tilefront").item(0);
-        front.classList.add(tile.suit);
+        const front = this.elt.getElementsByClassName("tilefront").item(0);
+        front.classList.add(data.suit);
     
         const value = front.getElementsByClassName("value").item(0);
-        value.innerHTML = tile.num;
+        value.innerHTML = data.num;
     }
     
     compareTo(otherTile) {
@@ -59,11 +59,11 @@ class Tile {
     }
     
     getNum() {
-        return this.tile.num;
+        return this.data.num;
     }
     
     getSuit() {
-        return this.tile.suit;
+        return this.data.suit;
     }
     
 }

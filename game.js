@@ -46,6 +46,11 @@ function player(name, id) {
 
 function hand(cards) {
     this.cards = cards;
+    var output = "";
+    for (let card of cards) {
+        output += card.pegValue + " ";
+    }
+    console.log(output);
 
     this.removeCard = function(card) {
         for (var i = 0; i < this.cards.length; i++) {
@@ -57,6 +62,12 @@ function hand(cards) {
     }
 
     this.isGo = function(remaining) {
+        var output = "";
+        for (let card of cards) {
+            output += card.pegValue + " ";
+        }
+        console.log(output);
+        
         for (let card of this.cards) {
             if (card.pegValue <= remaining) {
                 return false;
