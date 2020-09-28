@@ -9,50 +9,35 @@ socket.on("nogame", doReset);
 
 socket.on("hand", function(tiles) {
     doReset();
-    const tileObjs = [];
-    for (let tile of tiles) {
-        const tileObj = new Tile(tile,'player');
-        flip(tileObj);
-        tileObjs.push(tileObj);
-    }
-    
-    // Just draw blank tiles for the opponent for now.
-    for (let i = 0; i < 6; i++) {
-        const tileObj = new Tile({num:"",suit:""},'opponent');
-        tileObjs.push(tileObj);
-        flip(tileObj);
-    }
-    
-    showSendCribButton();
-    currentDeal = new Deal(tileObjs);
-    
-    // Wait until all of the tiles are dealt and sorted 
-    // before adding them to the DOM. That way they will
-    // be in the DOM in sort order and z-index issues
-    // become much easier!
-    for (let tileObj of currentDeal.tiles) {
-        addTile(tileObj.tileElt);
-    }
-    
-    setTimeout(function() {
-        updateTilePositions(currentDeal);
-        enableSelection(currentDeal);
-    }, 200);
+    currentDeal = dealTiles(tiles);
+    draw();
 });
 
 socket.on("opponentCrib", function() {
-    moveOpponentCrib(currentDeal);
+    const tiles = currentDeal.getTray('opponent_hand').getLastTiles(2);
+    currentDeal.getTray('crib').addTiles(tiles);
+    draw();
 });
 
 socket.on("fullcrib", function(turn) {
-    showTurn(turn);
-    updateTilePositions(currentDeal);
-    enablePegging(currentDeal);
+    currentDeal.getTray('player_hand').setClickTo('peg');
+    const turnTile = new Tile(turn,'');
+    currentDeal.getTray('deck').addTile(turnTile);
+    window.setTimeout(function() {
+        turnTile.tileElt.classList.remove('flip');
+    }, 500);
 });
 
-socket.on("opponentPegged", opponentPegged);
+socket.on("opponentPegged", function(tile) {
+    const tileObj = currentDeal.getTray('opponent_hand').getLastTile();
+    tileObj.update(tile);
+    currentDeal.getTray('peg').addTile(tileObj);
+    draw();
+});
 
-socket.on("go", () => allowGo());
+socket.on("go", function() {
+    console.log('Go!');
+});
 
 socket.on("clearPegging", clearPegging);
 
@@ -85,41 +70,29 @@ function doReset() {
     document.getElementById('game').innerHTML = '';
 }
 
-function toggleCribSelection(tileObj) {
-    tileObj.toggleSelection();
-    updateTilePositions(currentDeal);
-    setButtonEnabled(currentDeal.getNumSelected() === 2);
+function tileMoved(tile, fromTray, toTray) {
+    if (fromTray.name === 'crib_selection' || toTray.name === 'crib_selection') {
+        const button = document.getElementById('thebutton');
+        const selected = currentDeal.getTray('crib_selection').getTiles();
+        if (selected.length === 2) {
+            button.classList.remove('hidden');
+        } else {
+            button.classList.add('hidden');
+        }
+    }
+    
+    if (toTray.name === 'peg') {
+        sendTilePegged(tile.tile);
+    }
 }
 
 function commitCrib() {
-    const prevInCrib = currentDeal.getTilesByState('crib').length;
-    const crib = [];
-    const cribObjs = currentDeal.moveSelectedToCrib();
-    positionCribTiles(cribObjs,prevInCrib);
-    for (let cribObj of cribObjs) {
-        crib.push(cribObj.tile);
-    }
-    
-    disableSelection(currentDeal);
-    hideButton();
+    const crib = currentDeal.getTray('crib_selection').getTiles();
+    currentDeal.getTray('crib').addTiles(crib);
+    draw();
+    const button = document.getElementById('thebutton');
+    button.classList.add('hidden');
     sendCribSelected(crib);
-}
-
-function handlePeg(tileObj) {
-    if (tileObj.owner === 'player') {
-        if (!validatePeg(tileObj)) {
-            rejectPeg(tileObj.tileElt);
-            return;
-        }
-        disableTilePegging(tileObj);
-        sendTilePegged(tileObj.tile);
-    }
-    
-    const numPegged = currentDeal.getNumPegged();
-    tileObj.state = 'pegged';
-    movePeggedTile(tileObj, numPegged);
-    updateTilePositions(currentDeal);
-    checkForMessage(currentDeal);
 }
 
 function checkForMessage(deal) {

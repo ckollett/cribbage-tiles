@@ -3,15 +3,25 @@ class Tile {
         this.tile = tile;
         this.tileElt = renderTile(tile);
         this.owner = owner;
-        this.state = 'hand';
+        this.trayName = '';
     }
     
-    toggleSelection() {
-        if (this.state === 'hand') {
-            this.state = 'selected';
-        } else if (this.state === 'selected') {
-            this.state = 'hand';
-        }
+    setTrayName(name) {
+        this.trayName = name;
+    }
+    
+    getTrayName() {
+        return this.trayName;
+    }
+    
+    update(tile) {
+        this.tile = tile;
+            
+        const front = this.tileElt.getElementsByClassName("tilefront").item(0);
+        front.classList.add(tile.suit);
+    
+        const value = front.getElementsByClassName("value").item(0);
+        value.innerHTML = tile.num;
     }
     
     compareTo(otherTile) {
@@ -49,11 +59,11 @@ class Tile {
     }
     
     getNum() {
-        return this.tileElt.num;
+        return this.tile.num;
     }
     
     getSuit() {
-        return this.tileElt.suit;
+        return this.tile.suit;
     }
     
 }
