@@ -1,14 +1,18 @@
 class Deal {
     constructor(tiles) {
-        this.tiles = tiles;
+        const tileObjs = [];
+        for (let tile of tiles) {
+            tileObjs.push(new Tile(tile,'player'));
+        }
+        for (let i = 0; i < 6; i++) {
+            tileObjs.push(new Tile({'num':0,'suit':''},'opponent'));
+        }
+        
+        this.tiles = tileObjs;
         this.sort();
         this.trays = getTrays(this);
         for (let tray of this.trays) {
             this[tray.name] = tray;
-        }
-        
-        for (let tile of tiles) {
-            this[tile.owner + '_hand'].addTile(tile);
         }
     }
     

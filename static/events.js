@@ -8,12 +8,11 @@ socket.on("reset", doReset);
 socket.on("nogame", doReset);
 
 socket.on("hand", function(tiles) {
-    doReset().then(() => {
-        setTimeout(() => {
-            currentDeal = dealTiles(tiles);
-            draw(250);
-        },500);
-    });
+    console.log("In hand");
+    const popFunc = function() {
+        return populateDeck(tiles);
+    }
+    doReset().then(popFunc).then(dealTiles);
 });
 
 socket.on("opponentCrib", function() {
@@ -23,7 +22,7 @@ socket.on("opponentCrib", function() {
 });
 
 socket.on("fullcrib", function(turnTile) {
-    currentDeal.player_hand.setClickTo('peg',beforePeg);
+    currentDeal.player_hand.setClickTo('peg');
     turn(turnTile);
     showGoButton();
 });
@@ -68,22 +67,33 @@ function sendShuffle() {
 /***** Events that originate on the client side *****/
 
 function doReset() {
+    console.log("In doReset");
     if (currentDeal) {
         currentDeal.deck.addTiles(currentDeal.tiles);
-        return draw().then(new Promise((resolve) => {
+        draw();
+        return new Promise(resolve => {
             setTimeout(() => {
-                clearBoard();
+                currentDeal = null;
+                document.getElementById('game').innerHTML = '';
+                console.log("Resolving doReset");
                 resolve();
-            }, 500)
-        }));
+            },500);
+        })
     } else {
-        return clearBoard();
+        document.getElementById('game').innerHTML = '';
+        return Promise.resolve();        
     }
 }
 
-function clearBoard() {
-    document.getElementById('game').innerHTML = '';
-    return Promise.resolve();
+function populateDeck(tiles) {
+    currentDeal = new Deal(tiles);
+    // TODO: Just put this in the Deal constructor?
+    currentDeal.deck.addTiles(currentDeal.tiles);
+    draw();
+    console.log("In populateDeck");
+    return new Promise(resolve => {
+        setTimeout(resolve, 100);
+    });
 }
 
 function commitCrib() {

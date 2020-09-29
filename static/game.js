@@ -1,19 +1,15 @@
-function dealTiles(tiles) {
-    tileObjs = [];
-    for (let tile of tiles) {
-        tileObjs.push(new Tile(tile,'player'));
-    }
-    for (let i = 0; i < 6; i++) {
-        tileObjs.push(new Tile({'num':0,'suit':''},'opponent'));
+function dealTiles() {
+    console.log("In dealTiles");
+    for (let tile of currentDeal.tiles) {
+        currentDeal[tile.owner + '_hand'].addTile(tile);
     }
     
-    const deal = new Deal(tileObjs);
     const thebutton = document.getElementById('thebutton');
     thebutton.innerHTML = 'Send to Crib';
     thebutton.classList.add('hidden');
     thebutton.onclick = commitCrib;
     
-    return deal;
+    draw(200);
 }
 
 function draw(delay) {
@@ -49,24 +45,22 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
         delay = 0;
     }
     
-    setTimeout(function() {
-        const tileElt = tiles[idx].elt;
-        const position = positions[idx];
-        tileElt.style.top = position.top;
-        tileElt.style.left = position.left;
-        tileElt.style.zIndex = idx + 2;
-        if (position.flip) {
-            tileElt.classList.add('flip');
-        } else {
-            tileElt.classList.remove('flip');
-        }
-        
-        if (idx < tiles.length-1) {
-            positionTile(tiles,positions,idx+1,delay,resolveFcn);
-        } else {
-            resolveFcn();
-        }
-    },delay);
+    const tileElt = tiles[idx].elt;
+    const position = positions[idx];
+    tileElt.style.top = position.top;
+    tileElt.style.left = position.left;
+    tileElt.style.zIndex = idx + 2;
+    if (position.flip) {
+        tileElt.classList.add('flip');
+    } else {
+        tileElt.classList.remove('flip');
+    }
+    
+    if (idx < tiles.length-1) {
+        setTimeout(() => positionTile(tiles,positions,idx+1,delay,resolveFcn), delay);
+    } else {
+        resolveFcn();
+    }
 }
 
 function renderTile(tile) {
@@ -81,7 +75,6 @@ function renderTile(tile) {
     }
     
     document.getElementById('game').appendChild(tileElt);
-    
     return tileElt;
 }
 
@@ -91,21 +84,6 @@ function turn(tile) {
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
     }, 500);
-}
-
-// TODO: Where does this go?
-function beforePeg(tileObj) {
-    var total = tileObj.getPegValue();
-    const pegged = currentDeal.peg.getTiles();
-    for (let tile of pegged) {
-        total += tile.getPegValue();
-    }
-    if (total > 31) {
-        shake(tileObj.elt);
-        return false;
-    } else {
-        return true;
-    }
 }
 
 function checkForMessage() {

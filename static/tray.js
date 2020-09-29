@@ -7,13 +7,14 @@ class Tray {
         this.deal = deal;
         this.name = name;
         this.row = row;
-        this.trayXOffset = options.trayXOffset ? options.trayXOffset : 0;
-        this.xOffset = options.xOffset ? options.xOffset : columnWidth;
-        this.yOffset = options.yOffset ? options.yOffset : 0;
-        this.rightSide = options.rightSide;
-        this.clickTo = options.clickTo;
-        this.flipped = options.flipped;
+        
+        // Some default values.
+        this.trayXOffset = 0;
+        this.xOffset = columnWidth;
+        this.yOffset = 0;
+        
         this.needsRedraw = false;
+        Object.assign(this,options);
     }
     
     getTiles() {
@@ -21,18 +22,30 @@ class Tray {
     }
     
     addTile(tile) {
+        if (this.validate && !this.validate(tile)) {
+            return false;
+        }
+        
+        const oldTray = tile.getTray();
         tile.setTray(this);
         this.needsRedraw = true;
         if (this.clickTo) {
             this.setTileOnclick(tile);
         }
         this.onTileAdded(tile);
+        if (oldTray) {
+            oldTray.onTileRemoved(tile);
+        }
+        return true;
     }
     
     addTiles(tiles) {
         for (let tile of tiles) {
-            this.addTile(tile);
+            if (!this.addTile(tile)) {
+                return false;
+            }
         }
+        return true;
     }
     
     onTileAdded(tile) {
@@ -40,15 +53,15 @@ class Tray {
     }
     
     onTileRemoved(tile) {
-        // Do nothing by default.
+        this.needsRedraw = true;
     }
     
-    setClickTo(newTrayName,validator) {
+    setClickTo(newTrayName) {
         this.clickTo = newTrayName;
         if (newTrayName && newTrayName !== '') {
             const newTray = this.deal[newTrayName];
             for (let tile of this.getTiles()) {
-                this.setTileOnclick(tile,newTray,validator);
+                this.setTileOnclick(tile,newTray);
             }
         } else {
             for (let tile of this.getTiles()) {
@@ -57,32 +70,23 @@ class Tray {
         }
     }
     
-    setTileOnclick(tile,toTray,validator) {
+    setTileOnclick(tile,toTray) {
         if (!toTray) {
             toTray = this.deal[this.clickTo];
         }
         
         const fromTray = this;
         tile.elt.onclick = function() {
-            if (!validator || validator(tile)) {
-                toTray.addTile(tile);
-                fromTray.needsRedraw = true;
-                toTray.needsRedraw = true;
+            if (toTray.addTile(tile)) {
                 draw();
+            } else {
+                shake(tile.elt);
             }
         }
     }
     
     clear() {
         // Do nothing by default.
-    }
-    
-    moveAllTilesTo(trayName) {
-        const newTray = currentDeal[trayName];
-        const tiles = this.getTiles();
-        this.clear();
-        newTray.addTiles(tiles);
-        draw();
     }
     
     getPosition(idx, tile) {
@@ -118,7 +122,6 @@ class Tray {
 }
 
 class SortOrderTray extends Tray {
-    
     getTiles() {
         const tiles = this.deal.getTilesInTray(this.name);
         if (this.rightSide) {
@@ -129,18 +132,19 @@ class SortOrderTray extends Tray {
 }
 
 class CribSelectionTray extends SortOrderTray {
-    
     onTileAdded(tile) {
         this.checkNumSelected();
     }
     
     onTileRemoved(tile) {
+        super.onTileRemoved(tile);
         this.checkNumSelected();
     }
     
     checkNumSelected() {
         const button = document.getElementById('thebutton');
         const selected = this.getTiles();
+        // TODO: Move this if/else block?
         if (selected.length === 2) {
             button.classList.remove('hidden');
         } else {
@@ -156,9 +160,8 @@ class PlayOrderTray extends Tray {
         return this.tiles;
     }
     
-    addTile(tile) {
+    onTileAdded(tile) {
         this.tiles.push(tile);
-        super.addTile(tile);
     }
     
     clear() {
@@ -167,8 +170,16 @@ class PlayOrderTray extends Tray {
 }
 
 class PegTray extends PlayOrderTray {
+    validate(tile) {
+        var total = tile.getPegValue();
+        for (let tile of this.getTiles()) {
+            total += tile.getPegValue();
+        }
+        return total <= 31;
+    }
     
     onTileAdded(tile) {
+        super.onTileAdded(tile);
         checkForMessage();
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
