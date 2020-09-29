@@ -3,15 +3,21 @@ class Tile {
         this.data = data;
         this.elt = renderTile(data);
         this.owner = owner;
-        this.trayName = '';
     }
     
-    setTrayName(name) {
-        this.trayName = name;
+    setTray(tray) {
+        if (tray && this.tray && this.tray !== tray) {
+            this.tray.onTileRemoved(this);
+        }
+        this.tray = tray;
+    }
+    
+    getTray() {
+        return this.tray;
     }
     
     getTrayName() {
-        return this.trayName;
+        return this.tray ? this.tray.name : '';
     }
     
     update(data) {

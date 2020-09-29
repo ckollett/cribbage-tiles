@@ -8,6 +8,10 @@ function dealTiles(tiles) {
     }
     
     const deal = new Deal(tileObjs);
+    const thebutton = document.getElementById('thebutton');
+    thebutton.innerHTML = 'Send to Crib';
+    thebutton.classList.add('hidden');
+    thebutton.onclick = commitCrib;
     
     return deal;
 }
@@ -17,47 +21,52 @@ function draw(delay) {
         delay = 0;
     }
     
-    for (let tray of currentDeal.trays) {
-        if (tray.needsRedraw) {
-            drawTray(tray,delay);
+    const resolveFcn = function(resolve) {
+        for (let tray of currentDeal.trays) {
+            if (tray.needsRedraw) {
+                drawTray(tray,delay,resolve);
+            }
         }
-    }
+    };
+    
+    return new Promise(resolveFcn);
 }
 
-function drawTray(tray,delay) {
+function drawTray(tray,delay,resolveFcn) {
     const tiles = tray.getTiles();
     const positions = [];
     for (let i = 0; i < tiles.length; i++) {
         positions.push(tray.getPosition(i,tiles[i]));
     }
-    console.log('About to draw ' + tiles.length + ' tiles');
-    
     if (tiles.length > 0) {
-        positionTile(tiles,positions,0,delay);
+        positionTile(tiles,positions,0,delay,resolveFcn);
     }
     tray.needsRedraw = false;
 }
 
-function positionTile(tiles,positions,idx,delay) {
-    const tileElt = tiles[idx].elt;
-    const position = positions[idx];
-    tileElt.style.top = position.top;
-    tileElt.style.left = position.left;
-    if (position.flip) {
-        tileElt.classList.add('flip');
-    } else {
-        tileElt.classList.remove('flip');
+function positionTile(tiles,positions,idx,delay,resolveFcn) {
+    if (!delay) {
+        delay = 0;
     }
     
-    if (idx < tiles.length-1) {
-        if (delay && delay > 0) {
-            setTimeout(function() {
-                positionTile(tiles,positions,idx+1,delay);
-            },delay);
+    setTimeout(function() {
+        const tileElt = tiles[idx].elt;
+        const position = positions[idx];
+        tileElt.style.top = position.top;
+        tileElt.style.left = position.left;
+        tileElt.style.zIndex = idx + 2;
+        if (position.flip) {
+            tileElt.classList.add('flip');
         } else {
-            positionTile(tiles,positions,idx+1);
+            tileElt.classList.remove('flip');
         }
-    }
+        
+        if (idx < tiles.length-1) {
+            positionTile(tiles,positions,idx+1,delay,resolveFcn);
+        } else {
+            resolveFcn();
+        }
+    },delay);
 }
 
 function renderTile(tile) {
@@ -78,10 +87,44 @@ function renderTile(tile) {
 
 function turn(tile) {
     const turnTile = new Tile(tile,'');
-    currentDeal.getTray('deck').addTile(turnTile);
+    currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
-        turnTile.tileElt.classList.remove('flip');
+        turnTile.elt.classList.remove('flip');
     }, 500);
+}
+
+// TODO: Where does this go?
+function beforePeg(tileObj) {
+    var total = tileObj.getPegValue();
+    const pegged = currentDeal.peg.getTiles();
+    for (let tile of pegged) {
+        total += tile.getPegValue();
+    }
+    if (total > 31) {
+        shake(tileObj.elt);
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function checkForMessage() {
+    var pegged = currentDeal.peg.getTiles();
+    if (pegged.length === 3) {
+        if (pegged[1].getPegValue() === 10 && pegged[0].getPegValue() + pegged[2].getPegValue() === 5) {
+            const msgElt = document.getElementById('message');
+            msgElt.innerHTML = "It's a trap!";
+            msgElt.classList.add('ackbar');
+            msgElt.onclick = function() {
+                msgElt.innerHTML = "";
+                msgElt.classList.remove('ackbar');
+                document.getElementById('messagecontainer').style.display = 'none';
+                msgElt.onclick = null;
+            };
+            document.getElementById('messagecontainer').style.display = 'block';
+        }
+    }
+    return true;
 }
 
 function showGoButton() {
@@ -113,23 +156,37 @@ function acceptGo() {
 }    
 
 function clearPegging() {
-    const pegTray = currentDeal.getTray('peg');
+    const pegTray = currentDeal.peg;
     for (let tile of pegTray.getTiles()) {
-        const newTray = currentDeal.getTray(tile.owner + '_played');
+        const newTray = currentDeal[tile.owner + '_played'];
         newTray.addTile(tile);
     }
     pegTray.clear();
     draw();
     
+    var actionButton = document.getElementById('thebutton');
     if (isPeggingComplete()) {
-        var actionButton = document.getElementById('thebutton');
         actionButton.innerHTML = 'Show Crib';
         actionButton.onclick = sendShowCrib;
+    } else {
+        actionButton.onclick = rejectGo;
     }
+        
 }
 
 function isPeggingComplete() {
-    const player = currentDeal.getTray('player_played');
-    const opp = currentDeal.getTray('opponent_played');
+    const player = currentDeal.player_played;
+    const opp = currentDeal.opponent_played;
     return player.getTiles().length === 4 && opp.getTiles().length === 4;
+}
+
+function revealCrib(oppCrib) {
+    const cribTiles = currentDeal.crib.getTiles();
+    const oppTiles = cribTiles.filter(tile => tile.owner === 'opponent');
+    oppTiles[0].update(oppCrib[0]);
+    oppTiles[1].update(oppCrib[1]);
+    
+    cribTiles.reverse(); // Just for the animation.
+    currentDeal.crib_display.addTiles(cribTiles);
+    draw(250);
 }
