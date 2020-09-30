@@ -1,5 +1,4 @@
 function dealTiles() {
-    console.log("In dealTiles");
     for (let tile of currentDeal.tiles) {
         currentDeal[tile.owner + '_hand'].addTile(tile);
     }
@@ -17,27 +16,40 @@ function draw(delay) {
         delay = 0;
     }
     
-    const resolveFcn = function(resolve) {
-        for (let tray of currentDeal.trays) {
-            if (tray.needsRedraw) {
-                drawTray(tray,delay,resolve);
+    var promise = null;
+    for (let tray of currentDeal.trays) {
+        if (tray.needsRedraw) {
+            const drawFcn = createDrawFcn(tray,delay);
+            if (promise) {
+                promise = promise.then(drawFcn);
+            } else {
+                promise = drawTray(tray,delay);
             }
         }
-    };
-    
-    return new Promise(resolveFcn);
+    }
+    return promise;
 }
 
-function drawTray(tray,delay,resolveFcn) {
-    const tiles = tray.getTiles();
-    const positions = [];
-    for (let i = 0; i < tiles.length; i++) {
-        positions.push(tray.getPosition(i,tiles[i]));
+function createDrawFcn(tray,delay) {
+    return function() {
+        drawTray(tray, delay);
     }
-    if (tiles.length > 0) {
-        positionTile(tiles,positions,0,delay,resolveFcn);
-    }
-    tray.needsRedraw = false;
+}
+
+function drawTray(tray,delay) {
+    return new Promise(resolve => {
+        const tiles = tray.getTiles();
+        const positions = [];
+        for (let i = 0; i < tiles.length; i++) {
+            positions.push(tray.getPosition(i,tiles[i]));
+        }
+        if (tiles.length > 0) {
+            positionTile(tiles,positions,0,delay,resolve);
+        } else {
+            resolve();
+        }
+        tray.needsRedraw = false;
+    });
 }
 
 function positionTile(tiles,positions,idx,delay,resolveFcn) {
@@ -49,7 +61,7 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
     const position = positions[idx];
     tileElt.style.top = position.top;
     tileElt.style.left = position.left;
-    tileElt.style.zIndex = idx + 2;
+    tileElt.style.zIndex = position.zIndex;
     if (position.flip) {
         tileElt.classList.add('flip');
     } else {
@@ -83,7 +95,7 @@ function turn(tile) {
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
-    }, 500);
+    }, 200);
 }
 
 function checkForMessage() {
@@ -165,6 +177,7 @@ function revealCrib(oppCrib) {
     oppTiles[1].update(oppCrib[1]);
     
     cribTiles.reverse(); // Just for the animation.
+    currentDeal.crib.clear();
     currentDeal.crib_display.addTiles(cribTiles);
     draw(250);
 }

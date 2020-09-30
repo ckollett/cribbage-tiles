@@ -105,8 +105,18 @@ class Tray {
         return {
             "left":x.toString() + '%',
             "top":y.toString() + '%',
-            "flip":this.flipped
+            "flip":this.flipped,
+            'zIndex':this.getZIndex(idx)
         };
+    }
+    
+    getZIndex(idx) {
+        // It's useful to have the trays that don't overlap
+        // have a higher z index than the crib and pegging trays.
+        // That way when we flip cards from the crib to reveal it,
+        // each card will be on top of the crib when it starts
+        // flipping.
+        return 10;
     }
     
     getLastTile() {
@@ -169,6 +179,12 @@ class PlayOrderTray extends Tray {
     }
 }
 
+class CribTray extends PlayOrderTray {
+    getZIndex(idx) {
+        return idx + 2;
+    }
+}
+
 class PegTray extends PlayOrderTray {
     validate(tile) {
         var total = tile.getPegValue();
@@ -184,6 +200,10 @@ class PegTray extends PlayOrderTray {
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
         }
+    }
+    
+    getZIndex(idx) {
+        return idx + 2;
     }
 }
 
