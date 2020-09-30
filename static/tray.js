@@ -21,6 +21,10 @@ class Tray {
         return [];
     }
     
+    getTilesToDraw() {
+        return this.getTiles();
+    }
+    
     addTile(tile) {
         if (this.validate && !this.validate(tile)) {
             return false;
@@ -61,7 +65,12 @@ class Tray {
         // Do nothing by default.
     }
     
-    getPosition(idx, tile) {
+    getPosition(tile) {
+        const idx = this.getTiles().indexOf(tile);
+        if (idx < 0) {
+            return;
+        }
+        
         var x = this.trayXOffset + (idx * this.xOffset);
         if (this.rightSide) {
             x = 100 - x - tileWidth;
@@ -149,6 +158,19 @@ class PlayOrderTray extends Tray {
 class CribTray extends PlayOrderTray {
     getZIndex(idx) {
         return idx + 2;
+    }
+    
+    getTilesToDraw() {
+        // Only ever need to draw two tiles at a time.
+        // This prevents a delay when the second pair 
+        // of tiles is sent to the crib; no need to redraw
+        // the first pair.
+        const tiles = super.getTilesToDraw();
+        if (tiles.length > 2) {
+            return tiles.slice(2,4);
+        } else {
+            return tiles;
+        }
     }
 }
 

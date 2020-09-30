@@ -38,10 +38,10 @@ function createDrawFcn(tray,delay) {
 
 function drawTray(tray,delay) {
     return new Promise(resolve => {
-        const tiles = tray.getTiles();
+        const tiles = tray.getTilesToDraw();
         const positions = [];
         for (let i = 0; i < tiles.length; i++) {
-            positions.push(tray.getPosition(i,tiles[i]));
+            positions.push(tray.getPosition(tiles[i]));
         }
         if (tiles.length > 0) {
             positionTile(tiles,positions,0,delay,resolve);
