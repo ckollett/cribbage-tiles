@@ -50,6 +50,7 @@ div#container {
     height:calc(var(--board-width)*.7);
     margin-left:auto;
     margin-right:auto;
+    margin-top:2vh;
 }
 
 div#game {

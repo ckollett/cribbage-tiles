@@ -29,9 +29,6 @@ class Tray {
         const oldTray = tile.getTray();
         tile.setTray(this);
         this.needsRedraw = true;
-        if (this.clickTo) {
-            this.setTileOnclick(tile);
-        }
         this.onTileAdded(tile);
         if (oldTray) {
             oldTray.onTileRemoved(tile);
@@ -58,31 +55,6 @@ class Tray {
     
     setClickTo(newTrayName) {
         this.clickTo = newTrayName;
-        if (newTrayName && newTrayName !== '') {
-            const newTray = this.deal[newTrayName];
-            for (let tile of this.getTiles()) {
-                this.setTileOnclick(tile,newTray);
-            }
-        } else {
-            for (let tile of this.getTiles()) {
-                this.elt.onclick = null;
-            }
-        }
-    }
-    
-    setTileOnclick(tile,toTray) {
-        if (!toTray) {
-            toTray = this.deal[this.clickTo];
-        }
-        
-        const fromTray = this;
-        tile.elt.onclick = function() {
-            if (toTray.addTile(tile)) {
-                draw();
-            } else {
-                shake(tile.elt);
-            }
-        }
     }
     
     clear() {
@@ -111,12 +83,7 @@ class Tray {
     }
     
     getZIndex(idx) {
-        // It's useful to have the trays that don't overlap
-        // have a higher z index than the crib and pegging trays.
-        // That way when we flip cards from the crib to reveal it,
-        // each card will be on top of the crib when it starts
-        // flipping.
-        return 10;
+        return this.zIndex ? this.zIndex : 1;
     }
     
     getLastTile() {

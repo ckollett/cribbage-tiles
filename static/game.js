@@ -90,12 +90,29 @@ function renderTile(tile) {
     return tileElt;
 }
 
+
+function commitCrib() {
+    currentDeal.player_hand.setClickTo(null);
+    const crib = currentDeal.crib_selection.getTiles().reverse();
+    currentDeal.crib.addTiles(crib);
+    draw(200).then(function() {
+        const button = document.getElementById('thebutton');
+        button.classList.add('hidden');
+        
+        const cribData = [];
+        for (let tile of crib) {
+            cribData.push(tile.data);
+        }
+        sendCribSelected(cribData)
+    });
+}
+
 function turn(tile) {
     const turnTile = new Tile(tile,'');
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
-    }, 200);
+    }, 500);
 }
 
 function checkForMessage() {
@@ -176,8 +193,57 @@ function revealCrib(oppCrib) {
     oppTiles[0].update(oppCrib[0]);
     oppTiles[1].update(oppCrib[1]);
     
-    cribTiles.reverse(); // Just for the animation.
+    cribTiles.reverse(); // This is just for the animation.
     currentDeal.crib.clear();
     currentDeal.crib_display.addTiles(cribTiles);
     draw(250);
+}
+
+function tileClicked(tileElt) {
+    const tile = tileElt.tile;
+    const tray = tile.tray;
+    if (tray.clickTo) {
+        const toTray = currentDeal[tray.clickTo];
+        if (toTray.addTile(tile)) {
+            draw();
+        } else {
+            shake(tileElt);
+        }
+    }
+}
+
+function doReset() {
+    if (currentDeal) {
+        currentDeal.deck.addTiles(currentDeal.tiles);
+        draw();
+        return new Promise(resolve => {
+            setTimeout(() => {
+                currentDeal = null;
+                document.getElementById('game').innerHTML = '';
+                resolve();
+            },500);
+        })
+    } else {
+        document.getElementById('game').innerHTML = '';
+        return Promise.resolve();        
+    }
+}
+
+function populateDeck(tiles) {
+    currentDeal = new Deal(tiles);
+    draw();
+    return new Promise(resolve => {
+        setTimeout(resolve, 100);
+    });
+}
+
+function handleShowCrib(crib) {
+    revealCrib(crib);
+    const thebutton = document.getElementById('thebutton');
+    thebutton.innerHTML = 'Deal';
+    thebutton.onclick = sendShuffle;
+}
+
+function shuffle() {
+    clearTiles();
 }

@@ -2,6 +2,7 @@ class Tile {
     constructor(data, owner) {
         this.data = data;
         this.elt = renderTile(data);
+        this.elt.tile = this;
         this.owner = owner;
     }
     
