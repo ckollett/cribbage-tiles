@@ -11,6 +11,21 @@ function dealTiles() {
     draw(200);
 }
 
+function renderTile(tile) {
+    const template = document.querySelector('#tiletemplate');
+    const tileElt = template.content.cloneNode(true).firstElementChild;
+    
+    if (tile.num !== 0) {
+        const tileFront = tileElt.querySelector('.tilefront');   
+        tileFront.classList.add(tile.suit);
+        const tileValue = tileElt.querySelector('.value');
+        tileValue.innerHTML = tile.num;
+    }
+    
+    document.getElementById('game').appendChild(tileElt);
+    return tileElt;
+}
+
 function draw(delay) {
     if (!delay) {
         delay = 0;
@@ -74,22 +89,6 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
         resolveFcn();
     }
 }
-
-function renderTile(tile) {
-    const template = document.querySelector('#tiletemplate');
-    const tileElt = template.content.cloneNode(true).firstElementChild;
-    
-    if (tile.num !== 0) {
-        const tileFront = tileElt.querySelector('.tilefront');   
-        tileFront.classList.add(tile.suit);
-        const tileValue = tileElt.querySelector('.value');
-        tileValue.innerHTML = tile.num;
-    }
-    
-    document.getElementById('game').appendChild(tileElt);
-    return tileElt;
-}
-
 
 function commitCrib() {
     currentDeal.player_hand.setClickTo(null);
@@ -193,7 +192,7 @@ function revealCrib(oppCrib) {
     oppTiles[0].update(oppCrib[0]);
     oppTiles[1].update(oppCrib[1]);
     
-    cribTiles.reverse(); // This is just for the animation.
+    cribTiles.reverse(); // This is just to make the animation look nice.
     currentDeal.crib.clear();
     currentDeal.crib_display.addTiles(cribTiles);
     draw(250);
