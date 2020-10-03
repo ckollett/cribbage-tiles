@@ -2,12 +2,7 @@ function dealTiles() {
     for (let tile of currentDeal.tiles) {
         currentDeal[tile.owner + '_hand'].addTile(tile);
     }
-    
-    const thebutton = document.getElementById('thebutton');
-    thebutton.innerHTML = 'Send to Crib';
-    thebutton.classList.add('hidden');
-    thebutton.onclick = commitCrib;
-    
+        
     draw(200);
 }
 
@@ -95,9 +90,6 @@ function commitCrib() {
     const crib = currentDeal.crib_selection.getTiles().reverse();
     currentDeal.crib.addTiles(crib);
     draw(200).then(function() {
-        const button = document.getElementById('thebutton');
-        button.classList.add('hidden');
-        
         const cribData = [];
         for (let tile of crib) {
             cribData.push(tile.data);
@@ -108,6 +100,8 @@ function commitCrib() {
 
 function turn(tile) {
     const turnTile = new Tile(tile,'');
+    currentDeal.tiles.push(turnTile);
+    currentDeal.deck.flipped = false;
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
@@ -133,17 +127,10 @@ function checkForMessage() {
     return true;
 }
 
-function showGoButton() {
-    const button = document.getElementById('thebutton');
-    button.innerHTML = 'Go';
-    button.onclick = rejectGo;
-    button.classList.remove('hidden');
-}
-
 function rejectGo() {
-    var actionButton = document.getElementById('thebutton');
-    actionButton.innerHTML = "Nope";
-    shake(actionButton, () => actionButton.innerHTML = "Go");
+    const pegTiles = currentDeal.peg.getTiles();
+    const lastPegged = pegTiles[pegTiles.length-1];
+    shake(lastPegged.elt);
 }
 
 function shake(elt, afterShake) {
@@ -170,12 +157,10 @@ function clearPegging() {
     pegTray.clear();
     draw();
     
-    var actionButton = document.getElementById('thebutton');
     if (isPeggingComplete()) {
-        actionButton.innerHTML = 'Show Crib';
-        actionButton.onclick = sendShowCrib;
+        currentDeal.crib.clickTo = sendShowCrib;
     } else {
-        actionButton.onclick = rejectGo;
+        currentDeal.peg.clickTo = rejectGo;
     }
         
 }
@@ -202,17 +187,24 @@ function tileClicked(tileElt) {
     const tile = tileElt.tile;
     const tray = tile.tray;
     if (tray.clickTo) {
-        const toTray = currentDeal[tray.clickTo];
-        if (toTray.addTile(tile)) {
-            draw();
+        if (typeof tray.clickTo === 'function') {
+            tray.clickTo();
         } else {
-            shake(tileElt);
+            const toTray = currentDeal[tray.clickTo];
+            if (toTray) {
+                if (toTray.addTile(tile)) {
+                    draw();
+                } else {
+                    shake(tileElt);
+                }
+            }
         }
     }
 }
 
 function doReset() {
     if (currentDeal) {
+        currentDeal.deck.flipped = true;
         currentDeal.deck.addTiles(currentDeal.tiles);
         draw();
         return new Promise(resolve => {
@@ -238,11 +230,5 @@ function populateDeck(tiles) {
 
 function handleShowCrib(crib) {
     revealCrib(crib);
-    const thebutton = document.getElementById('thebutton');
-    thebutton.innerHTML = 'Deal';
-    thebutton.onclick = sendShuffle;
-}
-
-function shuffle() {
-    clearTiles();
+    currentDeal.deck.clickTo = sendShuffle;
 }

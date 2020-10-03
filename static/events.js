@@ -23,7 +23,6 @@ socket.on("opponentCrib", function() {
 socket.on("fullcrib", function(turnTile) {
     currentDeal.player_hand.setClickTo('peg');
     turn(turnTile);
-    showGoButton();
 });
 
 socket.on("opponentPegged", function(tile) {
@@ -35,7 +34,7 @@ socket.on("opponentPegged", function(tile) {
 });
 
 socket.on("go", function() {
-    document.getElementById('thebutton').onclick = acceptGo;
+    currentDeal.peg.clickTo = acceptGo;
 });
 
 socket.on("clearPegging", clearPegging);

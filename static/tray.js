@@ -128,13 +128,13 @@ class CribSelectionTray extends SortOrderTray {
     }
     
     checkNumSelected() {
-        const button = document.getElementById('thebutton');
+        const arrow = document.getElementById('cribarrow');
         const selected = this.getTiles();
         // TODO: Move this if/else block?
         if (selected.length === 2) {
-            button.classList.remove('hidden');
+            arrow.classList.remove('hidden');
         } else {
-            button.classList.add('hidden');
+            arrow.classList.add('hidden');
         }
     }
 }
