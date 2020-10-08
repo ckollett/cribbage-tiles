@@ -1,3 +1,5 @@
+var drawPromise = Promise.resolve();
+
 function dealTiles() {
     for (let tile of currentDeal.tiles) {
         currentDeal[tile.owner + '_hand'].addTile(tile);
@@ -21,32 +23,48 @@ function renderTile(tile) {
     return tileElt;
 }
 
+function clear() {
+    drawPromise = drawPromise.then(() => {
+        document.getElementById('game').innerHTML = '';
+    });
+    return drawPromise;
+}
+
 function draw(delay) {
     if (!delay) {
         delay = 0;
     }
     
-    var promise = null;
+    var wait = false;
     for (let tray of currentDeal.trays) {
-        if (tray.needsRedraw) {
+        if (tray.shouldRedraw()) {
+            console.log('Need to redraw ' + tray.name);
+            tray.needsRedraw = false;
+            wait = true;
             const drawFcn = createDrawFcn(tray,delay);
-            if (promise) {
-                promise = promise.then(drawFcn);
-            } else {
-                promise = drawTray(tray,delay);
-            }
+            drawPromise = drawPromise.then(drawFcn);
         }
     }
-    return promise;
+    
+    if (wait) {
+        drawPromise = drawPromise.then(resolve => {
+            console.log('Waiting...');
+            setTimeout(resolve, 500);
+        });
+    } else {
+        console.log('No need to wait');
+    }
+    return drawPromise;
 }
 
 function createDrawFcn(tray,delay) {
     return function() {
-        drawTray(tray, delay);
+        return drawTray(tray, delay);
     }
 }
 
 function drawTray(tray,delay) {
+    tray.needsRedraw = false;
     return new Promise(resolve => {
         const tiles = tray.getTilesToDraw();
         const positions = [];
@@ -58,7 +76,6 @@ function drawTray(tray,delay) {
         } else {
             resolve();
         }
-        tray.needsRedraw = false;
     });
 }
 
@@ -89,13 +106,14 @@ function commitCrib() {
     currentDeal.player_hand.setClickTo(null);
     const crib = currentDeal.crib_selection.getTiles().reverse();
     currentDeal.crib.addTiles(crib);
-    draw(200).then(function() {
-        const cribData = [];
-        for (let tile of crib) {
-            cribData.push(tile.data);
-        }
-        sendCribSelected(cribData)
-    });
+    
+    const cribData = [];
+    for (let tile of crib) {
+        cribData.push(tile.data);
+    }
+    sendCribSelected(cribData);
+    
+    return draw(200);
 }
 
 function turn(tile) {
@@ -203,29 +221,23 @@ function tileClicked(tileElt) {
 }
 
 function doReset() {
+    console.log('In doReset');
     if (currentDeal) {
         currentDeal.deck.flipped = true;
         currentDeal.deck.addTiles(currentDeal.tiles);
-        draw();
-        return new Promise(resolve => {
-            setTimeout(() => {
-                currentDeal = null;
-                document.getElementById('game').innerHTML = '';
-                resolve();
-            },500);
-        })
+        currentDeal.crib_display.clear();
+        return draw(200).then(() => {
+            currentDeal = null;
+            return clear();
+        });
     } else {
-        document.getElementById('game').innerHTML = '';
-        return Promise.resolve();        
+        return clear();       
     }
 }
 
 function populateDeck(tiles) {
     currentDeal = new Deal(tiles);
-    draw();
-    return new Promise(resolve => {
-        setTimeout(resolve, 100);
-    });
+    return draw();
 }
 
 function handleShowCrib(crib) {

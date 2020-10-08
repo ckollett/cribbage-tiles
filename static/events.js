@@ -5,7 +5,6 @@ var currentDeal = null;
 
 const socket = io();
 socket.on("reset", doReset);
-socket.on("nogame", doReset);
 
 socket.on("hand", function(tiles) {
     const popFunc = function() {

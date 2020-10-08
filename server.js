@@ -138,7 +138,7 @@ function checkNumPlayers() {
         dealCards();
     } else {
         reset();
-        notifyAll("nogame");
+        notifyAll("reset");
     }
 }
 

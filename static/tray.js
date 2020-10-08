@@ -31,6 +31,10 @@ class Tray {
         }
         
         const oldTray = tile.getTray();
+        if (oldTray === this) {
+            return true;
+        }
+        
         tile.setTray(this);
         this.needsRedraw = true;
         this.onTileAdded(tile);
@@ -38,6 +42,10 @@ class Tray {
             oldTray.onTileRemoved(tile);
         }
         return true;
+    }
+    
+    shouldRedraw() {
+        return this.needsRedraw && this.getTiles().length > 0;
     }
     
     addTiles(tiles) {
