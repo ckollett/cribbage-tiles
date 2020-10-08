@@ -158,9 +158,10 @@ class PlayOrderTray extends Tray {
         this.tiles.push(tile);
     }
     
-    clear() {
-        this.tiles = [];
-    }
+    onTileRemoved(tile) {
+        const removeIdx = this.tiles.indexOf(tile);
+        this.tiles.splice(removeIdx,1);
+    }  
 }
 
 class CribTray extends PlayOrderTray {

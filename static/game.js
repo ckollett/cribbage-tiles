@@ -38,7 +38,6 @@ function draw(delay) {
     var wait = false;
     for (let tray of currentDeal.trays) {
         if (tray.shouldRedraw()) {
-            console.log('Need to redraw ' + tray.name);
             tray.needsRedraw = false;
             wait = true;
             const drawFcn = createDrawFcn(tray,delay);
@@ -48,11 +47,8 @@ function draw(delay) {
     
     if (wait) {
         drawPromise = drawPromise.then(resolve => {
-            console.log('Waiting...');
             setTimeout(resolve, 500);
         });
-    } else {
-        console.log('No need to wait');
     }
     return drawPromise;
 }
@@ -168,7 +164,8 @@ function acceptGo() {
 
 function clearPegging() {
     const pegTray = currentDeal.peg;
-    for (let tile of pegTray.getTiles()) {
+    const pegTiles = pegTray.getTiles().slice();
+    for (let tile of pegTiles) {
         const newTray = currentDeal[tile.owner + '_played'];
         newTray.addTile(tile);
     }
@@ -190,7 +187,7 @@ function isPeggingComplete() {
 }
 
 function revealCrib(oppCrib) {
-    const cribTiles = currentDeal.crib.getTiles();
+    const cribTiles = currentDeal.crib.getTiles().slice();
     const oppTiles = cribTiles.filter(tile => tile.owner === 'opponent');
     oppTiles[0].update(oppCrib[0]);
     oppTiles[1].update(oppCrib[1]);
@@ -221,10 +218,16 @@ function tileClicked(tileElt) {
 }
 
 function doReset() {
-    console.log('In doReset');
     if (currentDeal) {
         currentDeal.deck.flipped = true;
-        currentDeal.deck.addTiles(currentDeal.tiles);
+        
+        for (let tray of currentDeal.trays) {
+            if (tray.name !== 'deck') {
+                const trayTiles = tray.getTiles().slice().reverse();
+                currentDeal.deck.addTiles(trayTiles);
+            }
+        }
+        
         currentDeal.crib_display.clear();
         return draw(200).then(() => {
             currentDeal = null;
