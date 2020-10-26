@@ -1,5 +1,5 @@
 var currentDeal = null;
-
+var scoreState = null;
 
 /***** Events that originate on the server side *****/
 
@@ -13,11 +13,7 @@ socket.on("hand", function(tiles) {
     doReset().then(popFunc).then(dealTiles);
 });
 
-socket.on("opponentCrib", function() {
-    const tiles = currentDeal.opponent_hand.getLastTiles(2).reverse();
-    currentDeal.crib.addTiles(tiles);
-    draw(200);
-});
+socket.on("opponentCrib", moveOpponentCrib);
 
 socket.on("fullcrib", function(turnTile) {
     currentDeal.player_hand.setClickTo('peg');
@@ -40,6 +36,8 @@ socket.on("clearPegging", clearPegging);
 
 socket.on("showCrib", handleShowCrib);
 
+socket.on("opponentScored", handleOpponentScored);
+
 /***** Communications back to the server *****/
 function sendCribSelected(crib) {
     socket.emit("cribSelected",crib);
@@ -59,4 +57,8 @@ function sendShowCrib() {
 
 function sendShuffle() {
     socket.emit("shuffle");
+}
+
+function sendScore(points) {
+    socket.emit("score",points);
 }

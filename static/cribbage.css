@@ -1,8 +1,10 @@
 :root {
-    --board-width:min(90vw,115vh);
+    --board-width:min(60vw,80vh);
     --header-height:calc(var(--board-width)/16);
     --tile-font-size:calc(var(--board-width)/25);
     --tile-font-stroke-width:calc(var(--tile-font-size)/10);
+    --player-color:black;
+    --opponent-color:white;
 }
 
 @font-face {
@@ -44,6 +46,18 @@ div#header img {
     width:var(--header-height);
 }
 
+div#main {
+    position:relative;
+}
+
+div#history {
+    position:absolute;
+    top:0;
+    bottom:0;
+    right:0;
+    width:100px;
+}
+
 div#container {
     position:relative;
     width:var(--board-width);
@@ -51,6 +65,12 @@ div#container {
     margin-left:auto;
     margin-right:auto;
     margin-top:2vh;
+}
+
+div#scoreboardarea {
+    width:var(--board-width);
+    margin-left:auto;
+    margin-right:auto;
 }
 
 div#game {

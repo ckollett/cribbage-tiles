@@ -78,6 +78,10 @@ io.on('connection', function(socket) {
         currentDeal = new deal();
         dealCards();
     });
+    
+    socket.on("score", function(points) {
+        notifyOtherPlayer("opponentScored", points);
+    });
 });
 
 function deal() {

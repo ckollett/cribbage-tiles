@@ -99,20 +99,31 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
 }
 
 function commitCrib() {
-    currentDeal.player_hand.setClickTo(null);
-    const crib = currentDeal.crib_selection.getTiles().reverse();
-    currentDeal.crib.addTiles(crib);
-    
-    const cribData = [];
-    for (let tile of crib) {
-        cribData.push(tile.data);
-    }
-    sendCribSelected(cribData);
-    
-    return draw(200);
+    drawPromise = drawPromise.then(function() {
+        const crib = currentDeal.crib_selection.getTiles().reverse();
+        currentDeal.crib.addTiles(crib);
+        
+        const cribData = [];
+        for (let tile of crib) {
+            cribData.push(tile.data);
+        }
+        sendCribSelected(cribData);
+        currentDeal.player_hand.setClickTo(null);
+        
+        draw(200);
+    });
+}
+
+function moveOpponentCrib() {
+    drawPromise = drawPromise.then(function() {
+        const tiles = currentDeal.opponent_hand.getLastTiles(2).reverse();
+        currentDeal.crib.addTiles(tiles);
+        draw(200);
+    });
 }
 
 function turn(tile) {
+    scoreState = 'Peg';
     const turnTile = new Tile(tile,'');
     currentDeal.tiles.push(turnTile);
     currentDeal.deck.flipped = false;
@@ -173,6 +184,7 @@ function clearPegging() {
     draw();
     
     if (isPeggingComplete()) {
+        scoreState = 'Hand';
         currentDeal.crib.clickTo = sendShowCrib;
     } else {
         currentDeal.peg.clickTo = rejectGo;
@@ -187,6 +199,7 @@ function isPeggingComplete() {
 }
 
 function revealCrib(oppCrib) {
+    scoreState = 'Crib';
     const cribTiles = currentDeal.crib.getTiles().slice();
     const oppTiles = cribTiles.filter(tile => tile.owner === 'opponent');
     oppTiles[0].update(oppCrib[0]);
@@ -218,6 +231,7 @@ function tileClicked(tileElt) {
 }
 
 function doReset() {
+    scoreState = null;
     if (currentDeal) {
         currentDeal.deck.flipped = true;
         
