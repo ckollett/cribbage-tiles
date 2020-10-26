@@ -1,17 +1,34 @@
 class Tile {
-    constructor(tile, owner) {
-        this.tile = tile;
-        this.tileElt = renderTile(tile);
+    constructor(data, owner) {
+        this.data = data;
+        this.elt = renderTile(data);
+        this.elt.tile = this;
         this.owner = owner;
-        this.state = 'hand';
     }
     
-    toggleSelection() {
-        if (this.state === 'hand') {
-            this.state = 'selected';
-        } else if (this.state === 'selected') {
-            this.state = 'hand';
+    setTray(tray) {
+        if (tray && this.tray && this.tray !== tray) {
+            this.tray.onTileRemoved(this);
         }
+        this.tray = tray;
+    }
+    
+    getTray() {
+        return this.tray;
+    }
+    
+    getTrayName() {
+        return this.tray ? this.tray.name : '';
+    }
+    
+    update(data) {
+        this.data = data;
+            
+        const front = this.elt.getElementsByClassName("tilefront").item(0);
+        front.classList.add(data.suit);
+    
+        const value = front.getElementsByClassName("value").item(0);
+        value.innerHTML = data.num;
     }
     
     compareTo(otherTile) {
@@ -49,11 +66,11 @@ class Tile {
     }
     
     getNum() {
-        return this.tileElt.num;
+        return this.data.num;
     }
     
     getSuit() {
-        return this.tileElt.suit;
+        return this.data.suit;
     }
     
 }

@@ -1,385 +1,249 @@
-var socket = io();
+var drawPromise = Promise.resolve();
 
-var numSelections = 2;
-var maxZIndex = 1;
-
-/* ************************************************** */
-/* Handle messages from the server */
-
-socket.on("reset", doReset);
-socket.on("nogame", doReset);
-
-
-
-
-socket.on("go", handleGo);
-
-socket.on("clearPegging", function() {
-    currentDeal.clearPegging();
-});
-
-socket.on("showCrib", function(crib) {
-    revealCrib(crib);
-});
-
-/* ************************************************** */
-/* Game events */
-
-function doReset() {
-//    document.getElementById("playerHandLabel").innerHTML = "Hand";
-//    var trays = document.getElementsByClassName("tray");
-//    for (let tray of trays) {
-//        tray.innerHTML = "";
-//    }
-//
-//    //hideTrays(["playerPegContainer","opponentPegContainer"]);
-//    document.getElementById("thebutton").innerHTML = "Send to Crib";
-//    document.getElementById("thebutton").onclick=commitCrib;
-//    disableSortingOnPegTrays();
+function dealTiles() {
+    for (let tile of currentDeal.tiles) {
+        currentDeal[tile.owner + '_hand'].addTile(tile);
+    }
+        
+    draw(200);
 }
 
-function quit() {
-    socket.emit('leave');
+function renderTile(tile) {
+    const template = document.querySelector('#tiletemplate');
+    const tileElt = template.content.cloneNode(true).firstElementChild;
+    
+    if (tile.num !== 0) {
+        const tileFront = tileElt.querySelector('.tilefront');   
+        tileFront.classList.add(tile.suit);
+        const tileValue = tileElt.querySelector('.value');
+        tileValue.innerHTML = tile.num;
+    }
+    
+    document.getElementById('game').appendChild(tileElt);
+    return tileElt;
+}
+
+function clear() {
+    drawPromise = drawPromise.then(() => {
+        document.getElementById('game').innerHTML = '';
+    });
+    return drawPromise;
+}
+
+function draw(delay) {
+    if (!delay) {
+        delay = 0;
+    }
+    
+    var wait = false;
+    for (let tray of currentDeal.trays) {
+        if (tray.shouldRedraw()) {
+            tray.needsRedraw = false;
+            wait = true;
+            const drawFcn = createDrawFcn(tray,delay);
+            drawPromise = drawPromise.then(drawFcn);
+        }
+    }
+    
+    if (wait) {
+        drawPromise = drawPromise.then(resolve => {
+            setTimeout(resolve, 500);
+        });
+    }
+    return drawPromise;
+}
+
+function createDrawFcn(tray,delay) {
+    return function() {
+        return drawTray(tray, delay);
+    }
+}
+
+function drawTray(tray,delay) {
+    tray.needsRedraw = false;
+    return new Promise(resolve => {
+        const tiles = tray.getTilesToDraw();
+        const positions = [];
+        for (let i = 0; i < tiles.length; i++) {
+            positions.push(tray.getPosition(tiles[i]));
+        }
+        if (tiles.length > 0) {
+            positionTile(tiles,positions,0,delay,resolve);
+        } else {
+            resolve();
+        }
+    });
+}
+
+function positionTile(tiles,positions,idx,delay,resolveFcn) {
+    if (!delay) {
+        delay = 0;
+    }
+    
+    const tileElt = tiles[idx].elt;
+    const position = positions[idx];
+    tileElt.style.top = position.top;
+    tileElt.style.left = position.left;
+    tileElt.style.zIndex = position.zIndex;
+    if (position.flip) {
+        tileElt.classList.add('flip');
+    } else {
+        tileElt.classList.remove('flip');
+    }
+    
+    if (idx < tiles.length-1) {
+        setTimeout(() => positionTile(tiles,positions,idx+1,delay,resolveFcn), delay);
+    } else {
+        resolveFcn();
+    }
 }
 
 function commitCrib() {
-}
-
-
-function showTurn(turn) {
-    const turnTile = renderTile(turn);
-    moveTile(turnTile,'turn');
-}
-
-function enablePegging() {
-    numSelections = 0;
-    eachTileInTray('tiles',enablePegSelection);
+    currentDeal.player_hand.setClickTo(null);
+    const crib = currentDeal.crib_selection.getTiles().reverse();
+    currentDeal.crib.addTiles(crib);
     
-    var actionButton = document.getElementById("thebutton");
-    actionButton.classList.remove("hidden");
-    actionButton.disabled = false;
-    actionButton.innerHTML = "Go";
-    actionButton.onclick = rejectGo;
-}
-
-function peg(pegTile) {
-    if (checkPegTotal(pegTile)) {
-        pegTile.onclick = null;
-        addPeggedTileStyles(pegTile);
-        pegTile.classList.add('player');
-        moveTile(pegTile, 'crib');
-        socket.emit("pegged",pegTile.tile);
-    } else {
-        pegTile.classList.add('rejected');
-        setTimeout(function() {
-            pegTile.classList.remove('rejected');
-        },1000);
+    const cribData = [];
+    for (let tile of crib) {
+        cribData.push(tile.data);
     }
-}
-
-function getTilePegValue(tile) {
-    switch (tile.num) {
-        case 'J' :
-        case 'Q' :
-        case 'K' : return 10;
-        default : return tile.num;
-    }
-}
-
-function checkPegTotal(pegTile) {
-    var pegged = 0;
-
-    var peggedTiles = getTilesFromTray("crib");
-    for (let tile of peggedTiles) {
-        pegged += getTilePegValue(tile);
-    }
+    sendCribSelected(cribData);
     
-    return getTilePegValue(pegTile) + pegged <= 31;
+    return draw(200);
 }
 
-function addPeggedTileStyles(pegTile) {
-    const numPegged = getTilesFromTray('crib').length;
-    pegTile.classList.add('pegged');
-    pegTile.style.zIndex = (numPegged+1).toString();
-    pegTile.style.right = 'calc(var(--pegged-tile-shift)*' + (numPegged/2).toString() + ')';
+function turn(tile) {
+    const turnTile = new Tile(tile,'');
+    currentDeal.tiles.push(turnTile);
+    currentDeal.deck.flipped = false;
+    currentDeal.deck.addTile(turnTile);
+    window.setTimeout(function() {
+        turnTile.elt.classList.remove('flip');
+    }, 500);
 }
 
-function removePeggedTileStyles(pegTile) {
-    pegTile.classList.remove('pegged');
-    pegTile.style.zIndex = '';
-    pegTile.style.left = '';
+function checkForMessage() {
+    var pegged = currentDeal.peg.getTiles();
+    if (pegged.length === 3) {
+        if (pegged[1].getPegValue() === 10 && pegged[0].getPegValue() + pegged[2].getPegValue() === 5) {
+            const msgElt = document.getElementById('message');
+            msgElt.innerHTML = "It's a trap!";
+            msgElt.classList.add('ackbar');
+            msgElt.onclick = function() {
+                msgElt.innerHTML = "";
+                msgElt.classList.remove('ackbar');
+                document.getElementById('messagecontainer').style.display = 'none';
+                msgElt.onclick = null;
+            };
+            document.getElementById('messagecontainer').style.display = 'block';
+        }
+    }
+    return true;
 }
 
-function handleGo() {
-    var actionButton = document.getElementById("thebutton");
-    actionButton.disabled = false;
-    actionButton.innerHTML = "Go";
-    actionButton.onclick = function() {
-        socket.emit("clearPegging");
-        currentDeal.clearPegging();
-    };
+function rejectGo() {
+    const pegTiles = currentDeal.peg.getTiles();
+    const lastPegged = pegTiles[pegTiles.length-1];
+    shake(lastPegged.elt);
 }
+
+function shake(elt, afterShake) {
+    elt.classList.add('rejected');
+    setTimeout(function() {
+        elt.classList.remove('rejected');
+        if (afterShake) {
+            afterShake();
+        }
+    }, 1000);
+}
+
+function acceptGo() {
+    clearPegging();
+    sendClearPegging();
+}    
 
 function clearPegging() {
-    const lastGo = countCardsInTrays(['peg1','peg2','crib']) === 8;
-    
-    var playerTiles = document.getElementById('crib').getElementsByClassName('player');
-    for (var i = playerTiles.length-1; i >= 0; i--) {
-        var tile = playerTiles.item(i);
-        removePeggedTileStyles(tile);
-        moveTile(tile,'peg1',true);
+    const pegTray = currentDeal.peg;
+    const pegTiles = pegTray.getTiles().slice();
+    for (let tile of pegTiles) {
+        const newTray = currentDeal[tile.owner + '_played'];
+        newTray.addTile(tile);
     }
+    pegTray.clear();
+    draw();
     
-    var oppTiles = document.getElementById('crib').getElementsByClassName('opponent');
-    for (var i = oppTiles.length-1; i >= 0; i--) {
-        var tile = oppTiles.item(i);
-        removePeggedTileStyles(tile);
-        moveTile(tile,'peg2',true);
-    }   
-
-    updateButtonAfterGo(lastGo);
-}
-
-function countCardsInTrays(trays) {
-    var total = 0;
-    for (let tray of trays) {
-        total += getTilesFromTray(tray).length;
-    }
-    return total;
-}
-
-function updateButtonAfterGo(lastGo) {
-    var actionButton = document.getElementById("thebutton");
-    if (lastGo) {
-        actionButton.disabled = false;
-        actionButton.onclick = function() {
-            socket.emit("cribRequested");
-        }
-        actionButton.innerHTML = "Show Crib";
-        numSelections = 0;
+    if (isPeggingComplete()) {
+        currentDeal.crib.clickTo = sendShowCrib;
     } else {
-        enablePegging();
+        currentDeal.peg.clickTo = rejectGo;
     }
+        
 }
 
-function revealCrib(crib) {
-    for (var tile of crib) {
-        document.getElementById("crib").appendChild(renderTile(tile));
-    }
-    var actionButton = document.getElementById("thebutton");
-    actionButton.disabled = false;
-    actionButton.innerHTML = "Shuffle";
-    actionButton.onclick = shuffle;
+function isPeggingComplete() {
+    const player = currentDeal.player_played;
+    const opp = currentDeal.opponent_played;
+    return player.getTiles().length === 4 && opp.getTiles().length === 4;
 }
 
-function shuffle() {
-    socket.emit("shuffle");
+function revealCrib(oppCrib) {
+    const cribTiles = currentDeal.crib.getTiles().slice();
+    const oppTiles = cribTiles.filter(tile => tile.owner === 'opponent');
+    oppTiles[0].update(oppCrib[0]);
+    oppTiles[1].update(oppCrib[1]);
+    
+    cribTiles.reverse(); // This is just to make the animation look nice.
+    currentDeal.crib.clear();
+    currentDeal.crib_display.addTiles(cribTiles);
+    draw(250);
 }
 
-/* ************************************************** */
-/* Update UI states */
-
-/* The button */
-function updateButtonState(selectedClass) {
-    var numSelected = document.getElementsByClassName(selectedClass).length;
-    document.getElementById("thebutton").disabled = (numSelected !== numSelections);
-}
-
-/* Tile click behaviors */
-function eachTileInTray(tray,action) {
-    const tiles = getTilesFromTray(tray);
-    for (let tile of tiles) {
-        action(tile);
-    }
-}
-
-function enablePegSelection(tile) {
-    tile.onclick = function() {
-        peg(tile);
-    };
-}
-
-function enableCribSelection(tile) {
-    tile.onclick=function() {
-        tile.classList.toggle("crib");
-        if (tile.classList.contains("crib")) {
-            moveTile(tile,"crib",true);
+function tileClicked(tileElt) {
+    const tile = tileElt.tile;
+    const tray = tile.tray;
+    if (tray.clickTo) {
+        if (typeof tray.clickTo === 'function') {
+            tray.clickTo();
         } else {
-            moveTile(tile,"tiles",true);
-        }
-        updateButtonState("crib");
-    };
-}
-
-function disableSelection(tile) {
-    tile.onclick = null;
-}
-
-/* On-click sorting for trays */
-function enableSortingOnPegTrays() {
-    var trayContainers = document.getElementsByClassName("sortable");
-    for (let trayContainer of trayContainers) {
-        enableTraySorting(trayContainer);
-    }
-}
-
-function enableTraySorting(trayContainer) {
-    const labelElt = trayContainer.getElementsByClassName("label").item(0);
-    const trayElt = trayContainer.getElementsByClassName("tray").item(0);
-    labelElt.onclick = function() {
-        sortTray(trayElt.id);
-    }
-}
-
-function disableSortingOnPegTrays() {
-    var trayContainers = document.getElementsByClassName("sortable");
-    for (let trayContainer of trayContainers) {
-        disableTraySorting(trayContainer);
-    }
-}
-
-function disableTraySorting(trayContainer) {
-    const labelElt = trayContainer.getElementsByClassName("label").item(0);
-    labelElt.onclick = null;
-}
-
-/* Trays */
-function hideTrays(trays) {
-    for (let tray of trays) {
-        hideTray(tray);
-    }
-}
-
-function hideTray(tray) {
-    document.getElementById(tray).classList.add("hidden");
-}
-
-function showTrays(trays) {
-    for (let tray of trays) {
-        showTray(tray);
-    }
-}
-
-function showTray(tray) {
-    document.getElementById(tray).classList.remove("hidden");
-}
-
-
-function getTilesFromTray(tray) {
-    return document.getElementById(tray).children;
-}
-
-function sortTray(trayId) {
-    var tiles = getTilesFromTray(trayId);
-    for (tile of tiles) {
-        moveTile(tile, trayId, true);
-    }
-}
-
-function moveTile(tile, tray, sorted) {
-    const trayElt = document.getElementById(tray);
-    tile.remove();
-    if (sorted) {
-        const trayTiles = getTilesFromTray(tray);
-        for (trayTile of trayTiles) {
-            if (compareTiles(tile,trayTile) < 0) {
-                trayElt.insertBefore(tile,trayTile);
-                return;
+            const toTray = currentDeal[tray.clickTo];
+            if (toTray) {
+                if (toTray.addTile(tile)) {
+                    draw();
+                } else {
+                    shake(tileElt);
+                }
             }
         }
-        // If we get here this must be the "biggest" tile in the tray.
-        trayElt.appendChild(tile);
+    }
+}
+
+function doReset() {
+    if (currentDeal) {
+        currentDeal.deck.flipped = true;
+        
+        for (let tray of currentDeal.trays) {
+            if (tray.name !== 'deck') {
+                const trayTiles = tray.getTiles().slice().reverse();
+                currentDeal.deck.addTiles(trayTiles);
+            }
+        }
+        
+        currentDeal.crib_display.clear();
+        return draw(200).then(() => {
+            currentDeal = null;
+            return clear();
+        });
     } else {
-        trayElt.insertAdjacentElement('afterbegin',tile);
+        return clear();       
     }
 }
 
-function removeGoSeparators() {
-    const seps = document.getElementsByClassName('go');
-    for (var i = seps.length-1; i >= 0; i--) {
-        seps.item(i).remove();
-    }
+function populateDeck(tiles) {
+    currentDeal = new Deal(tiles);
+    return draw();
 }
 
-/* Individual tiles */
-
-
-
-
-
-
-function createGoSeparator() {
-    var container = document.createElement("div");
-    container.classList.add('label');
-    container.classList.add('go');
-    
-    var elt = document.createElement("div");
-    elt.classList.add('rightlabel');
-    elt.innerHTML = 'GO';
-
-    container.appendChild(elt);
-    return container;
-}
-
-function moveTileNew(tile, row, column) {
-    for (var i = tile.classList.length-1; i >= 0; i--) {
-        var tileClass = tile.classList.item(i);
-        if (tileClass !== "tileborder") {
-            tile.classList.remove(tileClass);
-        }
-    }
-    tile.classList.add(row);
-    tile.classList.add(column);
-}
-
-function moveTileByNum(tile, row, side) {
-    const toClass = "row_" + row + "_side_" + side;
-    const topStr = (row*33).toString() + "%";
-    doTileMove(tile, toClass, topStr, side, 16, 16);
-}
-
-function pegTile(tile,player) {
-    const topStr = player ? "31%" : "35%";
-    doTileMove(tile, "row_peg_side_right", topStr, "right", 16, 8);
-}
-
-function TilePosition(rowNum, colNum, side, isPeg) {
-    this.rowNum = rowNum;
-    this.colNum = colNum;
-}
-
-function doTileMove(tile, toClass, topStr, side, fromWidth, toWidth) {
-    const fromClass = getPositionClass(tile);
-    if (fromClass === toClass) {
-        return;
-    }
-    tile.style.zIndex = ++maxZIndex;
-    tile.classList.remove(fromClass);
-
-    const posNum = document.getElementsByClassName(toClass).length;
-    tile.style.left = getLeftValue(posNum, toWidth, side);
-    tile.style.top = topStr;
-    tile.classList.add(toClass);
-    
-    const fromTiles = document.getElementsByClassName(fromClass);
-    for (var i = 0; i < fromTiles.length; i++) {
-        fromTiles.item(i).style.left = getLeftValue(i, fromWidth, "left");
-    }    
-}
-
-function getLeftValue(tileNum, width, side) {
-    var left = width * tileNum;
-    if (side === "right") {
-        left = 85-left;
-    }    
-    return left.toString() + "%";
-}
-
-function getPositionClass(tile) {
-    for (let tileClass of tile.classList) {
-        if (tileClass.startsWith("row_")) {
-            return tileClass;
-        }
-    }
-    return "row_1_side_left";
+function handleShowCrib(crib) {
+    revealCrib(crib);
+    currentDeal.deck.clickTo = sendShuffle;
 }
