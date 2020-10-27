@@ -14,6 +14,10 @@ function handleOpponentScored(points) {
 }
 
 function updateScore(player,points,type) {
+    if (points === 0) {
+        return;
+    }
+    
     const scoreElt = document.getElementById(player + 'score');
     const oldScore = parseInt(scoreElt.innerHTML);
     const typeElt = document.getElementById(player + type);
