@@ -230,6 +230,13 @@ function tileClicked(tileElt) {
     }
 }
 
+function noGame() {
+    currentDeal = null;
+    return drawPromise.then(() => {
+        document.getElementById('game').innerHTML = '';
+    });
+}
+
 function doReset() {
     scoreState = null;
     if (currentDeal) {
@@ -244,7 +251,6 @@ function doReset() {
         
         currentDeal.crib_display.clear();
         return draw(200).then(() => {
-            currentDeal = null;
             return clear();
         });
     } else {
@@ -253,7 +259,11 @@ function doReset() {
 }
 
 function populateDeck(tiles) {
+    const oldDealer = currentDeal ? currentDeal.dealer : null;
     currentDeal = new Deal(tiles);
+    if (oldDealer) {
+        currentDeal.dealerChanged(oldDealer);
+    }
     return draw();
 }
 

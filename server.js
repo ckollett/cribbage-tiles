@@ -74,7 +74,6 @@ io.on('connection', function(socket) {
     });
     
     socket.on("shuffle", function() {
-        notifyAll("reset");
         currentDeal = new deal();
         dealCards();
     });

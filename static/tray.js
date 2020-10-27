@@ -198,6 +198,10 @@ class PegTray extends PlayOrderTray {
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
         }
+        if (!currentDeal.dealer) {
+            currentDeal.dealerChanged(tile.owner);
+        }
+        
     }
     
     getZIndex(idx) {

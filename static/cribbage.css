@@ -1,7 +1,8 @@
 :root {
-    --board-width:min(60vw,80vh);
-    --header-height:calc(var(--board-width)/16);
-    --tile-font-size:calc(var(--board-width)/25);
+    --atomic-unit:min(.3vw,.4vh);
+    --board-width:calc(var(--atomic-unit)*200);
+    --header-height:calc(var(--atomic-unit)*13);
+    --tile-font-size:calc(var(--atomic-unit)*8);
     --tile-font-stroke-width:calc(var(--tile-font-size)/10);
     --player-color:black;
     --opponent-color:white;
@@ -64,7 +65,7 @@ div#container {
     height:calc(var(--board-width)*.7);
     margin-left:auto;
     margin-right:auto;
-    margin-top:2vh;
+    margin-top:calc(var(--atomic-unit)*5);
 }
 
 div#scoreboardarea {
@@ -116,7 +117,7 @@ div#deck {
 }
 
 div#deck div.tilesides div.tile {
-    box-shadow:-0.4vh 0.4vh;
+    box-shadow:calc(var(--atomic-unit)*-1) var(--atomic-unit);
 }    
 
 div.tilecontainer {
@@ -165,8 +166,8 @@ div.tile {
     width:100%;
     height:100%;
     opacity:1;
-    border:0.5vh solid black;
-    border-radius:2vh;
+    border:var(--atomic-unit) solid black;
+    border-radius:calc(var(--atomic-unit)*4);
     background-repeat: no-repeat;
     background-color:white;
     backface-visibility: hidden;
@@ -187,10 +188,6 @@ div.front {
 /* back, initially hidden pane */
 div.back {
 	transform: rotateY(180deg);
-}
-
-div.hidden {
-    display:none;
 }
 
 div#cribarrow {
@@ -250,9 +247,9 @@ div#message.ackbar {
     background-repeat: no-repeat;
     text-align:center;
     font-size:larger;
-    padding-top:2vh;
-    border: 0.75vh solid black;
-    border-radius: 2vh;
+    padding-top:calc(var(--atomic-unit)*5);
+    border: calc(var(--atomic-unit)*2) solid black;
+    border-radius: calc(var(--atomic-unit)*5);
 }
 
 .rejected {
@@ -264,4 +261,41 @@ div#message.ackbar {
    30% { transform: rotate(-5deg); }
    70% { transform: rotate(5deg); }
   100% { transform: rotate(0deg); }
+}
+
+div.label {
+    position:absolute;
+    display:inline-block;
+    vertical-align:top;
+    background-color:black;
+    color:white;
+    text-align:center;
+    height: var(--tile-font-size);
+    font-size: calc(var(--tile-font-size)*.75);
+    /* Ugh, this calculation...
+     * Since we're rotating the label we want its width to match
+     * the tile height, which is 25% of 70% of var(--board-width).
+     */
+    width: calc(var(--board-width)*.175);
+    border-radius: 4px;
+    line-height: calc(var(--tile-font-size));    
+}
+
+div.leftlabel {
+    transform: rotate(-90deg) translateX(calc(var(--board-width)*-.175));
+    transform-origin: top left;
+    left: calc(var(--tile-font-size)*-1.3);
+    transition: top 1s ease;    
+}
+
+div.playerDeal {
+    top:0;
+}
+
+div.opponentDeal {
+    top:66%;
+}
+
+div.hidden {
+    display:none;
 }

@@ -4,7 +4,7 @@ var scoreState = null;
 /***** Events that originate on the server side *****/
 
 const socket = io();
-socket.on("reset", doReset);
+socket.on("reset", noGame);
 
 socket.on("hand", function(tiles) {
     const popFunc = function() {
