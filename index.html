@@ -129,7 +129,12 @@
         <div id="history"></div>
         
         <div id="container">
-          <div class="label leftlabel hidden" id="dealerlabel">Dealer</div>
+          <div class="label leftlabel hidden" id="dealerlabel">
+            <div id="dealersides">
+              <div id="playerdealer" class="labelside">Dealer</div>
+              <div id="opponentdealer" class="labelside">Dealer</div>
+            </div>
+          </div>
 
           <div id="deck" class="tilecontainer flip"><div class="tilesides"><div class="tile tilefront"></div><div class="tile tileback"></div></div></div>
           <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();"><img src="/static/images/left-arrow.svg" id="arrow" /></div>

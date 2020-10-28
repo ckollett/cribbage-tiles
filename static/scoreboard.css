@@ -8,7 +8,7 @@
 
 #scorecontainer {
   position:relative;
-  height:161px;
+  height:calc(var(--board-width)*.35);
   width:100%;
 }
 
@@ -166,6 +166,7 @@ div#scorebuttons {
     margin-top:10px;
     margin-bottom:10px;
     position:relative;
+    font-size:calc(var(--tile-font-size)*.8);
 }
 
 div.scorenumbers {
@@ -201,15 +202,11 @@ div.scorebutton:hover {
 div.scorebutton:first-child {
     margin-left:2%;
     border-left-width:1px;
-    border-radius:7px 0 0 7px;
+    border-radius:calc(var(--atomic-unit)*2) 0 0 calc(var(--atomic-unit)*2);
 }
 
 div.scorebutton:last-child {
-    border-radius:0 7px 7px 0;
-}
-
-div.maxscorebutton {
-    border-radius:0 7px 7px 0;
+    border-radius:0 calc(var(--atomic-unit)*2) calc(var(--atomic-unit)*2) 0;
 }
 
 div#monsterbutton {
@@ -222,33 +219,4 @@ div#monsterbutton {
     background-position:50%;
     background-repeat:no-repeat;
     position:absolute;
-}
-
-div.historyItem {
-    width:100%;
-    border:1px solid black;
-    border-radius:7px;
-    box-sizing:border-box;
-    margin-bottom:2px;
-    padding-top:2px;
-    padding-bottom:2px;
-}
-
-div.historyItem.historyplayer {
-    background-color:black;
-    color:white;
-}
-
-div.historyItem > span {
-    display:inline-block;
-    text-align:center;
-    box-sizing:border-box;
-}
-
-span.historyScore {
-    width:30%;
-}
-
-span.historyType {
-    width:70%;
 }
