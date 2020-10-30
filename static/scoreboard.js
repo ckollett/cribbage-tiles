@@ -34,8 +34,8 @@ function updateScore(player,points,type) {
         "typeElt" : typeElt,
         "score" : oldScore,
         "typeScore" : oldTypeScore,
-        "remaining" : Math.abs(points),
-        "delta" : points > 0 ? 1 : -1
+        "remaining" : Math.abs(score-oldScore),
+        "direction" : points > 0 ? 1 : -1
     }
 
     animateScore(updateObj,delay);
@@ -64,8 +64,8 @@ function clearScores() {
 
 function animateScore(updateObj,delay) {
     window.setTimeout(() => {
-        updateObj.score += updateObj.delta;
-        updateObj.typeScore += updateObj.delta;
+        updateObj.score += updateObj.direction;
+        updateObj.typeScore += updateObj.direction;
         
         updateObj.scoreElt.innerHTML = updateObj.score;
         updateObj.typeElt.innerHTML = updateObj.typeScore;
