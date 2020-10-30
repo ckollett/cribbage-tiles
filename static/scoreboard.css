@@ -220,3 +220,11 @@ div#monsterbutton {
     background-repeat:no-repeat;
     position:absolute;
 }
+
+div#monsterbutton:hover {
+    background: url('/static/images/monster_alt.svg');
+    background-size:100%;
+    background-position:50%;
+    background-repeat:no-repeat;
+}
+}
