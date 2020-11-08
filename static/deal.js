@@ -29,6 +29,13 @@ class Deal {
         this.tiles.sort((t1,t2) => t1.compareTo(t2));
     }
     
+    dealerChanged(oldDealer) {
+        this.dealer = oldDealer === 'player' ? 'opponent' : 'player';
+        const dealerClasses = document.getElementById('dealerlabel').classList;
+        dealerClasses.remove('hidden');
+        dealerClasses.remove(oldDealer + 'Deal');
+        dealerClasses.add(this.dealer + 'Deal');
+    }
 }
 
 function getTrays(deal) {

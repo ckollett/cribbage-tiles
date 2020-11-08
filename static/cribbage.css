@@ -1,8 +1,11 @@
 :root {
-    --board-width:min(90vw,115vh);
-    --header-height:calc(var(--board-width)/16);
-    --tile-font-size:calc(var(--board-width)/25);
+    --atomic-unit:min(.3vw,.4vh);
+    --board-width:calc(var(--atomic-unit)*200);
+    --header-height:calc(var(--atomic-unit)*13);
+    --tile-font-size:calc(var(--atomic-unit)*8);
     --tile-font-stroke-width:calc(var(--tile-font-size)/10);
+    --player-color:black;
+    --opponent-color:white;
 }
 
 @font-face {
@@ -36,12 +39,25 @@ div#header{
     color:black;
     text-align:center;
     font-size:calc(var(--header-height)*.9);
-    padding-top:10px;
+    padding-top:var(--atomic-unit);
 }
 
 div#header img {
     transform:translate(0,4px);
     width:var(--header-height);
+}
+
+div#main {
+    position:relative;
+}
+
+div#history {
+    position:absolute;
+    top:0;
+    bottom:30px;
+    right:0;
+    width:calc(var(--atomic-unit)*40);
+    overflow-y: auto;
 }
 
 div#container {
@@ -50,7 +66,13 @@ div#container {
     height:calc(var(--board-width)*.7);
     margin-left:auto;
     margin-right:auto;
-    margin-top:2vh;
+    margin-top:calc(var(--atomic-unit)*5);
+}
+
+div#scoreboardarea {
+    width:var(--board-width);
+    margin-left:auto;
+    margin-right:auto;
 }
 
 div#game {
@@ -95,16 +117,15 @@ div#deck {
     left:0;
 }
 
-div#deck div.tilesides div.tile {
-    box-shadow:-0.4vh 0.4vh;
+div#deck div.tilesides {
+    box-shadow: var(--atomic-unit) var(--atomic-unit);
 }    
 
 div.tilecontainer {
     perspective: 1000px;
     position:absolute;
-    width:13%;
-    height:25%;
-    box-sizing: border-box;
+    width:12%;
+    height:23%;
     border:0;
     transition: left 0.5s ease,top 0.5s ease;
     top:33%;
@@ -120,6 +141,9 @@ div.tilesides {
     transition: transform 0.5s;
     transform-style:preserve-3d;
     background-color:transparent;
+    border:var(--atomic-unit) solid black;
+    border-radius:calc(var(--atomic-unit)*4);
+    background-color:white;
 }
 
 div.tilefront {
@@ -145,12 +169,8 @@ div.tile {
     width:100%;
     height:100%;
     opacity:1;
-    border:0.5vh solid black;
-    border-radius:2vh;
     background-repeat: no-repeat;
-    background-color:white;
     backface-visibility: hidden;
-    box-sizing: border-box;
 }
 
 div.tilecontainer.flip div.tilesides {
@@ -167,10 +187,6 @@ div.front {
 /* back, initially hidden pane */
 div.back {
 	transform: rotateY(180deg);
-}
-
-div.hidden {
-    display:none;
 }
 
 div#cribarrow {
@@ -229,10 +245,10 @@ div#message.ackbar {
     background-position:50% 70%;
     background-repeat: no-repeat;
     text-align:center;
-    font-size:larger;
-    padding-top:2vh;
-    border: 0.75vh solid black;
-    border-radius: 2vh;
+    font-size:calc(var(--tile-font-size)*1.3);
+    padding-top:calc(var(--atomic-unit)*5);
+    border: calc(var(--atomic-unit)*2) solid black;
+    border-radius: calc(var(--atomic-unit)*5);
 }
 
 .rejected {
@@ -244,4 +260,139 @@ div#message.ackbar {
    30% { transform: rotate(-5deg); }
    70% { transform: rotate(5deg); }
   100% { transform: rotate(0deg); }
+}
+
+div.label {
+    position:absolute;
+    text-align:center;
+    height: var(--tile-font-size);
+    bottom: var(--tile-font-size);
+    font-size: calc(var(--tile-font-size)*.75);
+    line-height: calc(var(--tile-font-size));    
+    /* Ugh, these calculations...
+     * We want the label to be as wide as the tiles are tall
+     * so that when we rotate them they're the right height.
+     *
+     * The board height is 140 atomic units (.7 * board height).
+     * Tiles are 23% of that, or 32.2 atomic units.
+     */
+    width: calc(var(--atomic-unit)*32.2);
+}
+
+div#dealersides {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    transform-style:preserve-3d;
+    background-color:transparent;
+    transition: transform 0.5s ease;
+}
+
+div.labelside {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:1;
+    backface-visibility: hidden;
+    border:var(--atomic-unit) solid black;
+    border-radius: calc(var(--atomic-unit)*2);
+}
+
+div#playerdealer {
+    transform: rotateX(0);
+    background-color: black;
+    color:white;
+    z-index:2;
+}
+
+div#opponentdealer {
+    transform: rotateX(180deg);
+    background-color:white;
+    color:black;
+}
+
+div.leftlabel {
+    /* Push the label down to the bottom of the tile height so we can
+     * rotate it into position easily
+     */
+    margin-top: calc(var(--atomic-unit)*34.2);
+    transform: rotate(-90deg);
+    transform-origin: top left;
+    left: calc(var(--tile-font-size)*-1.5);
+    transition: top 1s ease;    
+}
+
+div.playerDeal {
+    top:0;
+}
+
+div.opponentDeal {
+    top:66%;
+}
+
+div.opponentDeal div#dealersides {
+    transform:rotateX(180deg);
+}
+
+div.hidden {
+    display:none;
+}
+
+div.historyItem {
+    width:100%;
+    border:1px solid black;
+    border-radius: calc(var(--atomic-unit)*2);
+    box-sizing:border-box;
+    margin-bottom:var(--atomic-unit);
+    padding-top:2px;
+    padding-bottom:2px;
+    font-size:calc(var(--tile-font-size)*.8);
+}
+
+div.historyItem.historyplayer {
+    background-color:black;
+    color:white;
+}
+
+div.historyItem > span {
+    display:inline-block;
+    text-align:center;
+    box-sizing:border-box;
+}
+
+span.historyScore {
+    width:30%;
+}
+
+span.historyType {
+    width:70%;
+}
+
+div#links {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:30px;
+    line-height:30px;
+    padding-left:10px;
+    padding-top:2px;
+    padding-bottom:2px;
+    background-color:black;
+    color:white;
+    box-sizing:border-box;
+}
+
+div#links a {
+    color:white;
+    text-decoration:none;
+}
+
+span#lastscore {
+    position:absolute;
+    right:10px;
+    height:25px;
 }
