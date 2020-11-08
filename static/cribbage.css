@@ -39,7 +39,7 @@ div#header{
     color:black;
     text-align:center;
     font-size:calc(var(--header-height)*.9);
-    padding-top:10px;
+    padding-top:var(--atomic-unit);
 }
 
 div#header img {
@@ -54,9 +54,10 @@ div#main {
 div#history {
     position:absolute;
     top:0;
-    bottom:0;
+    bottom:30px;
     right:0;
     width:calc(var(--atomic-unit)*40);
+    overflow-y: auto;
 }
 
 div#container {
@@ -369,4 +370,29 @@ span.historyScore {
 
 span.historyType {
     width:70%;
+}
+
+div#links {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:30px;
+    line-height:30px;
+    padding-left:10px;
+    padding-top:2px;
+    padding-bottom:2px;
+    background-color:black;
+    color:white;
+    box-sizing:border-box;
+}
+
+div#links a {
+    color:white;
+    text-decoration:none;
+}
+
+span#lastscore {
+    position:absolute;
+    right:10px;
+    height:25px;
 }

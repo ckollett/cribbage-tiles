@@ -12,6 +12,7 @@
     <script src="static/tray.js"></script>
     <script src="static/scoreboard.js"></script>
     <script src="static/events.js"></script>
+    <script src="static/cribsheet.js"></script>
   </head>
   <body>
     <div style="height:100%;width:90%;padding-left:5%;padding-right:5%;">
@@ -142,11 +143,19 @@
           <div id="game"></div>
         </div>
       </div>
+      
     </div>
+
+    <div id="links">
+      <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=0" target="_blank">The Crib Sheet</a>
+      <span id="lastscore"></span>
+    </div>
+
     <script type="text/javascript">
-      socket.emit('join', '');
+        getLastScore();
+        socket.emit('join', '');
     </script>
-    
+
     <template id="tiletemplate">
       <div class="tilecontainer flip" onclick="tileClicked(this)";>
         <div class="tilesides">
