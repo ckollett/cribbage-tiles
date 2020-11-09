@@ -8,78 +8,6 @@
     --opponent-color:white;
 }
 
-@font-face {
-  font-family: 'katahdin';
-  src: url('/static/fonts/katahdin-round.regular.otf');
-}
-
-html,body {
-    height:100%;
-    width:100%;
-}
-
-body {
-    font-family: katahdin, sans-serif;
-    margin:0;
-}
-
-div {
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-div#header{
-    display:block;
-    top:0;
-    left:0;
-    width:100%;
-    color:black;
-    text-align:center;
-    font-size:calc(var(--header-height)*.9);
-    padding-top:var(--atomic-unit);
-}
-
-div#header img {
-    transform:translate(0,4px);
-    width:var(--header-height);
-}
-
-div#main {
-    position:relative;
-}
-
-div#history {
-    position:absolute;
-    top:0;
-    bottom:30px;
-    right:0;
-    width:calc(var(--atomic-unit)*40);
-    overflow-y: auto;
-}
-
-div#container {
-    position:relative;
-    width:var(--board-width);
-    height:calc(var(--board-width)*.7);
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:calc(var(--atomic-unit)*5);
-}
-
-div#scoreboardarea {
-    width:var(--board-width);
-    margin-left:auto;
-    margin-right:auto;
-}
-
-div#game {
-    width:100%;
-    height:100%;
-}
-
 /* ***** Tile ***** */
 div.content {
     position:absolute;
@@ -113,22 +41,23 @@ div.sleepingbag {
 }
 
 div#deck {
-    top:33%;
+    top:35%;
     left:0;
+    z-index:-1;
 }
 
 div#deck div.tilesides {
-    box-shadow: var(--atomic-unit) var(--atomic-unit);
+    box-shadow: 0.5vh 0.5vh;
 }    
 
 div.tilecontainer {
     perspective: 1000px;
     position:absolute;
-    width:12%;
-    height:23%;
+    width:13.6%;
+    height:30%;
     border:0;
     transition: left 0.5s ease,top 0.5s ease;
-    top:33%;
+    top:35%;
     left:0;
 }
 
@@ -141,6 +70,7 @@ div.tilesides {
     transition: transform 0.5s;
     transform-style:preserve-3d;
     background-color:transparent;
+    box-sizing:border-box;
     border:var(--atomic-unit) solid black;
     border-radius:calc(var(--atomic-unit)*4);
     background-color:white;
@@ -192,10 +122,9 @@ div.back {
 div#cribarrow {
     position:absolute;
     /* 100 - 2*column - tile width = 100-28-13 = 59*/
-    left:59%;
-    top:33%;
+    left:57.6%;
+    top:35.71%;
     opacity:1;
-    transition-delay:0s;
     transition: opacity 0s linear;
     transition-delay:0.5s;
 }
@@ -265,18 +194,12 @@ div#message.ackbar {
 div.label {
     position:absolute;
     text-align:center;
-    height: var(--tile-font-size);
-    bottom: var(--tile-font-size);
-    font-size: calc(var(--tile-font-size)*.75);
-    line-height: calc(var(--tile-font-size));    
-    /* Ugh, these calculations...
-     * We want the label to be as wide as the tiles are tall
-     * so that when we rotate them they're the right height.
-     *
-     * The board height is 140 atomic units (.7 * board height).
-     * Tiles are 23% of that, or 32.2 atomic units.
-     */
-    width: calc(var(--atomic-unit)*32.2);
+    height: 4vh;
+    font-size: 3vh;
+    line-height: 3.5vh;    
+    /* Tiles take up 30% of the height of the playing area,
+       which is 60vh high */
+    width: 18vh;
 }
 
 div#dealersides {
@@ -298,6 +221,7 @@ div.labelside {
     height:100%;
     opacity:1;
     backface-visibility: hidden;
+    box-sizing:border-box;
     border:var(--atomic-unit) solid black;
     border-radius: calc(var(--atomic-unit)*2);
 }
@@ -316,22 +240,18 @@ div#opponentdealer {
 }
 
 div.leftlabel {
-    /* Push the label down to the bottom of the tile height so we can
-     * rotate it into position easily
-     */
-    margin-top: calc(var(--atomic-unit)*34.2);
     transform: rotate(-90deg);
-    transform-origin: top left;
-    left: calc(var(--tile-font-size)*-1.5);
-    transition: top 1s ease;    
+    transform-origin: bottom left;
+    left: -0.5vh;
+    transition: bottom 1s ease;
 }
 
 div.playerDeal {
-    top:0;
+    bottom:70%;
 }
 
 div.opponentDeal {
-    top:66%;
+    bottom:0;
 }
 
 div.opponentDeal div#dealersides {
@@ -395,4 +315,20 @@ span#lastscore {
     position:absolute;
     right:10px;
     height:25px;
+}
+
+div.scoreSummary {
+    border:0.5vh solid black;
+    border-radius:2vh;
+    padding:0.5vh;
+    margin-bottom:1vh;
+}
+
+div.playerSummary {
+    background-color:black;
+    color:white;
+}
+
+span.subscore {
+    float:right;
 }

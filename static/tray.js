@@ -1,5 +1,5 @@
-const tileWidth = 13;
-const columnWidth = 14;
+const columnWidth = 14.4;
+const tileWidth = 13.6;
 
 class Tray {
     
@@ -74,7 +74,7 @@ class Tray {
     }
     
     getPosition(tile) {
-        const idx = this.getTiles().indexOf(tile);
+        let idx = this.getTiles().indexOf(tile);
         if (idx < 0) {
             return;
         }
@@ -84,7 +84,7 @@ class Tray {
             x = 100 - x - tileWidth;
         }
         
-        var y = this.row * 33;
+        var y = this.row * 35;
         if (tile.owner === 'player') {
             y -= this.yOffset;
         } else {

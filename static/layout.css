@@ -1,0 +1,128 @@
+/* ***** Main Layout ***** */
+@font-face {
+  font-family: 'katahdin';
+  src: url('/static/fonts/katahdin-round.regular.otf');
+}
+
+html,body {
+    height:100%;
+    width:100%;
+}
+
+body {
+    font-family: katahdin, sans-serif;
+    margin:0;
+    box-sizing:border-box;
+}
+
+div {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div#outer {
+    position:relative;
+    width: 144vh;
+    height: 100vh;
+    margin:auto;
+    top:0;
+}
+
+/* ***** Header ***** */
+div#header {
+    position:absolute;
+    width:100%;
+    height:10vh;
+    top:0;
+    color:black;
+    text-align:center;
+    font-size:7vh;
+    line-height:10vh;
+}
+
+div#header img {
+    width:7vh;
+    transform:translateY(0.75vh);
+}
+
+/* ***** Side Areas ***** */
+div.sideposition {
+    position:absolute;
+    height:90vh;
+    top:10vh;
+}
+
+div.sidearea {
+    width:16vh;
+    font-size:2.5vh;
+}
+
+div.leftarea {
+    left:0;
+}
+
+div#rightscroll {
+    position:absolute;
+    width:17vh;
+    height:90vh;
+    right:-1vh;
+    overflow-y:auto;
+}
+
+div#rightscroll::-webkit-scrollbar {
+    width: 1vh;
+}
+
+div#rightscroll::-webkit-scrollbar-track {
+    background: white;
+}
+
+div#rightscroll::-webkit-scrollbar-thumb {
+    background:black;
+    border-radius:.5vh;
+}
+
+div.rightarea {
+    position:relative;
+}
+
+/* ***** Main Screen Area ***** */
+div#main {
+    position:absolute;
+    width:100vh;
+    height:90vh;
+    left:22vh;
+    top:10vh;
+}
+
+/* **** Main Area Sections ***** */
+div#scorebuttons {
+    position:relative;
+    height:6vh;
+    width:100%;
+}
+
+div#scoreboardarea {
+    position:relative;
+    height:20vh;
+    width:100%;
+}
+
+div.gamearea {
+    position:absolute;
+    top:26vh;
+    height:60vh;
+    width:100%;
+}
+
+div#footer {
+    position:absolute;
+    height:3vh;
+    font-size:2vh;
+    bottom:0;
+    width:100%;
+}
+

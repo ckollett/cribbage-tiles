@@ -42,13 +42,9 @@ function updateScore(player,points,type) {
 }
 
 function positionScoreboard(player,pct) {
-    const triangleLeft = 'calc(' + (pct*100).toString() + '% - 1vh)';
-    document.getElementById(player + 'triangle').style.left = triangleLeft;
-    
-    // The scoreboard starts at -3% - 38% and should go to 62% - 103%
-    // So left should run from -3 to 65
-    const scoreboardLeft = 65*pct-3;
-    document.getElementById(player + 'scoreboard').style.left = scoreboardLeft.toString() + '%';
+    const playerBoard = document.getElementById(player + 'scoreboard');
+    pctStr = (100*pct).toString() + '%';
+    playerBoard.style.left = pctStr;
 }    
 
 function clearScores() {

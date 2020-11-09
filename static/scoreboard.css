@@ -16,30 +16,22 @@
     position:absolute;
     top:0px;
     bottom:0px;
-    left:3%;
-    right:3%;
+    left:5vh;
+    right:5vh;
 }
 
 .score {
   position:relative;
   display:block;
   color: white;
-  height:48%;
+  height:47%;
   left:0px;
 }
 
 .scoreboard {
     transition: left 1.5s ease-in-out;
     position: absolute;
-    left: -3%;
-    width: 41%;
-    padding-left: 1%;
-    padding-right: 1%;
-    padding-top:0.5%;
-    padding-bottom:0.5%;
-    border-radius: 0.8vh;
-    border:0.5vh solid black;
-    box-sizing:border-box;
+    bottom:0;
 }
 
 .pegarea {
@@ -53,39 +45,52 @@
 }
 
 #playerscoreboard {
-    color:white;
-    background-color: var(--player-color);
-    bottom:1vh;
+  position:relative;
+  height:100%;
+  margin-left:-5vh;
+  left:0;
+  color:white;
+  width:10vh;
+  text-align:center;
+  line-height:4vh;  
 }
 
 #opponentscoreboard {
+  position:relative;
   color:black;
   background-color: var(--opponent-color);
-  top:1vh;
+  margin-left:-5vh;
+  left:0;
+  color:white;
+  width:10vh;
+  text-align:center;
+  line-height:4vh;  
+}
+
+#playerscoreboard .total {
+  bottom:1vh;
+  background-color: var(--player-color);
+}
+
+#opponentscoreboard .total {
+    top:1vh;
+    color: black;
 }
 
 .total {
-  font-size:calc(var(--tile-font-size)*1.5);
-  display:inline-block;
-  width:40%;
-  text-align:center;
-  padding-top:1%;
-  padding-bottom:1%;
-}
-
-.subtotals {
   position:absolute;
+  font-size:3.5vh;
+  line-height:4vh;
+  height:5vh;
+  width:100%;
+  margin-left:-5vh;
   display:inline-block;
-  font-size:calc(var(--tile-font-size)*0.6);
-  right:1%;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);  
-  
-}
-
-.subtotallabels {
-  font-size:calc(var(--tile-font-size)*0.6);
+  text-align:center;
+  padding-left: 1%;
+  padding-right: 1%;
+  border-radius: 0.8vh;
+  border:0.5vh solid black;
+  box-sizing:border-box;
 }
 
 table.subtotals td {
@@ -96,28 +101,31 @@ table.subtotals td {
   position:relative;
   left:0px;
   height:1px;
+  z-index:-1;
+  font-size:2vh;
 }
 
 .triangle {
   transition: left 1.5s ease-in-out;
   position:absolute;
+  bottom:0;
   width: 0; 
   height: 0; 
   border-left: 1vh solid transparent;
   border-right: 1vh solid transparent;
-  left:-1vh;
+  margin-left:-1vh;
 }
 
 .innertriangle {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 0.75vh solid transparent;
-    border-right: 0.75vh solid transparent;
-    left: -0.75vh;
-    border-bottom: 0.75vh solid white;
-    border-top: 0.25vh solid transparent;
-    top: 0.5vh;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 0.75vh solid transparent;
+  border-right: 0.75vh solid transparent;
+  left: -0.75vh;
+  border-bottom: 0.75vh solid white;
+  border-top: 0.25vh solid transparent;
+  top: 0.5vh;
 }
 
 #playertriangle {
@@ -143,30 +151,20 @@ table.subtotals td {
   position:absolute;
   border-left:1px solid #666666;
   width:1px;
-  height:19px;
-  top:-9px;
+  height:3vh;
+  top:-1.25vh;
   color:#666666;
 }
 
 .skunkline {
   position:absolute;
   border:0px;
-  top:-12px;
+  top:-1.5vh;
   color:black;
   left:75%;
   text-align:center;
   margin-left:-2px;
-  font-size:23px;
-}
-
-div#scorebuttons {
-    width:100%;
-    display:flex;
-    align-items:center;
-    margin-top:10px;
-    margin-bottom:10px;
-    position:relative;
-    font-size:calc(var(--tile-font-size)*.8);
+  font-size:3vh;
 }
 
 div.scorenumbers {
@@ -188,10 +186,14 @@ div.scorebutton {
     background-color:white;
     color:black;
     text-align:center;
-    padding-top:2px;
-    padding-bottom:2px;
+    height:4vh;
+    margin-top:1vh;
+    margin-bottom:1vh;
+    box-sizing:border-box;
     border:1px solid black;
     border-left-width:0;
+    font-size:2.5vh;
+    line-height:4vh;
 }
 
 div.scorebutton:hover {
@@ -226,5 +228,4 @@ div#monsterbutton:hover {
     background-size:100%;
     background-position:50%;
     background-repeat:no-repeat;
-}
 }
