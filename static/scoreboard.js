@@ -19,6 +19,7 @@ function updateScore(player,points,type) {
     }
     
     const scoreElt = document.getElementById(player + 'score');
+    const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
     const oldScore = parseInt(scoreElt.innerHTML);
     const typeElt = document.getElementById(player + type);
     const oldTypeScore = parseInt(typeElt.innerHTML);
@@ -31,6 +32,7 @@ function updateScore(player,points,type) {
     const delay = 1500/Math.abs(score-oldScore);
     const updateObj = {
         "scoreElt" : scoreElt,
+        "scoreSummaryElt" : scoreSummaryElt,
         "typeElt" : typeElt,
         "score" : oldScore,
         "typeScore" : oldTypeScore,
@@ -64,6 +66,7 @@ function animateScore(updateObj,delay) {
         updateObj.typeScore += updateObj.direction;
         
         updateObj.scoreElt.innerHTML = updateObj.score;
+        updateObj.scoreSummaryElt.innerHTML = updateObj.score;
         updateObj.typeElt.innerHTML = updateObj.typeScore;
         if (--updateObj.remaining > 0) {
             animateScore(updateObj,delay);
