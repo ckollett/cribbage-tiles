@@ -162,6 +162,10 @@ class PlayOrderTray extends Tray {
         const removeIdx = this.tiles.indexOf(tile);
         this.tiles.splice(removeIdx,1);
     }  
+    
+    getZIndex(idx) {
+        return idx + 2;
+    }    
 }
 
 class CribTray extends PlayOrderTray {

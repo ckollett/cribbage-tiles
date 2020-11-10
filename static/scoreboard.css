@@ -1,15 +1,9 @@
 .playerbg {
-  background-color:var(--player-color);
+  background-color:black;
 }
 
 .opponentbg {
-  background-color:var(--opponent-color);
-}
-
-#scorecontainer {
-  position:relative;
-  height:calc(var(--board-width)*.35);
-  width:100%;
+  background-color:white;
 }
 
 #scoreboard {
@@ -58,7 +52,7 @@
 #opponentscoreboard {
   position:relative;
   color:black;
-  background-color: var(--opponent-color);
+  background-color: white;
   margin-left:-5vh;
   left:0;
   color:white;
@@ -69,7 +63,7 @@
 
 #playerscoreboard .total {
   bottom:1vh;
-  background-color: var(--player-color);
+  background-color: black;
 }
 
 #opponentscoreboard .total {
@@ -204,11 +198,15 @@ div.scorebutton:hover {
 div.scorebutton:first-child {
     margin-left:2%;
     border-left-width:1px;
-    border-radius:calc(var(--atomic-unit)*2) 0 0 calc(var(--atomic-unit)*2);
+    border-radius:0.6vh 0 0 0.6vh;
 }
 
 div.scorebutton:last-child {
-    border-radius:0 calc(var(--atomic-unit)*2) calc(var(--atomic-unit)*2) 0;
+    border-radius:0 0.6vh 0.6vh 0;
+}
+
+div.maxscorebutton {
+    border-radius:0 0.6vh 0.6vh 0;
 }
 
 div#monsterbutton {
