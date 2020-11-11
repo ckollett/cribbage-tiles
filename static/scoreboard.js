@@ -13,7 +13,7 @@ function handleOpponentScored(points) {
     addToHistory('opponent',points,scoreState);
 }
 
-function updateScore(player,points,type) {
+function updateScore(player,points,scoreState) {
     if (points === 0) {
         return;
     }
@@ -21,7 +21,7 @@ function updateScore(player,points,type) {
     const scoreElt = document.getElementById(player + 'score');
     const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
     const oldScore = parseInt(scoreElt.innerHTML);
-    const typeElt = document.getElementById(player + type);
+    const typeElt = document.getElementById(player + scoreState);
     const oldTypeScore = parseInt(typeElt.innerHTML);
     
     const score = Math.min(oldScore + points, 121);
@@ -74,29 +74,39 @@ function animateScore(updateObj,delay) {
     }, delay);
 }
 
-function addToHistory(player, points, type, icon) {
-    const containerElt = document.createElement('div');
-    containerElt.classList.add('historyItem');
+function addToHistory(player, points, icon) {
+    const historyData = {
+        'historyScore' : points,
+        'historyType' : scoreState
+    };
+    
+    const containerElt = createFromTemplate('historyItemTemplate', historyData);
     containerElt.classList.add('history' + player);
     
-    const scoreElt = document.createElement('span');
-    scoreElt.classList.add('historyScore');
-    scoreElt.innerHTML = points;
-    containerElt.appendChild(scoreElt);
+    const currenthand = document.getElementById('currenthand');
+    currenthand.insertBefore(containerElt, currenthand.firstChild);
     
-    const typeElt = document.createElement('span');
-    typeElt.classList.add('historyType');
-    typeElt.innerHTML = type;
-    containerElt.appendChild(typeElt);
-    
-    if (icon) {
-        const iconElt = document.createElement('span');
-        iconElt.classList.add('history' + icon);
-        containerElt.appendChild(iconElt);
+    if (scoreState.toLowerCase() === 'crib') {
+        const summaryElt = getHistorySummaryElt();
+        const history = document.getElementById('history');
+        history.insertBefore(summaryElt, history.firstChild);
+        
+        currenthand.id = null;
+        currenthand.classList.add('pasthand');
+        const newhand = document.createElement('div');
+        newhand.id = 'currenthand';
+        history.insertBefore(newhand, summaryElt);
     }
-    
-    const history = document.getElementById('history');
-    history.insertBefore(containerElt, history.firstChild);
+}
+
+function getHistorySummaryElt() {
+    const playerScore = document.getElementById('playerscore').innerHTML;
+    const opponentScore = document.getElementById('opponentscore').innerHTML;
+    const data = {
+        'playerHandSummary' : playerScore,
+        'opponentHandSummary' : opponentScore
+    };
+    return createFromTemplate('historySummaryTemplate', data);
 }
 
 function monster() {
@@ -121,4 +131,25 @@ function resetScoreBoard() {
     clearScores();
     positionScoreboard("player",0);
     positionScoreboard("opponent",0);
+}
+
+
+function createFromTemplate(templateName, templateData) {
+    const template = document.querySelector('#' + templateName);
+    const templateElt = template.content.cloneNode(true).firstElementChild;
+    
+    const props = Object.getOwnPropertyNames(templateData);
+    for (let prop of props) {
+        const value = templateData[prop];
+        templateElt.querySelector('.' + prop).innerHTML = value;
+    }
+    
+    return templateElt;
+}
+
+function togglePastHands() {
+    const pasthands = document.getElementsByClassName('pasthand');
+    for (let pasthand of pasthands) {
+        pasthand.classList.toggle('collapsed');
+    }
 }

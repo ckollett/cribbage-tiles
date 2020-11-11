@@ -252,15 +252,63 @@ div.hidden {
     display:none;
 }
 
-div.historyItem {
+div#currenthand {
     width:100%;
+}
+
+div.pasthand {
+    width:100%;
+    overflow-y:hidden;
+    max-height:1000px;
+    transition: max-height 0.5s ease;
+}
+
+div.pasthand.collapsed {
+    max-height:0;
+}
+
+div.historyHandSummary {
+    width:100%;
+    display:flex;
+}
+
+span.handSummarySide {
     border:1px solid black;
     border-radius: 0.6vh;
     box-sizing:border-box;
     margin-bottom:0.3vh;
+    font-size:2.5vh;    
+    flex-grow:1;
+    flex-basis:0;
+    display:inline-block;
+    height:100%;
+    text-align:center;
     padding-top:2px;
     padding-bottom:2px;
-    font-size:2.5vh;
+}
+
+span.playerHandSummary {
+    background-color:black;
+    color:white;
+    border-radius: 0.6vh 0 0 0.6vh;
+}
+
+span.opponentHandSummary {
+    background-color:white;
+    color:black;
+    border-radius: 0 0.6vh 0.6vh 0;
+}
+
+div.historyItem {
+    border:1px solid black;
+    border-radius: 0.6vh;
+    box-sizing:border-box;
+    margin-bottom:0.3vh;
+    font-size:2.5vh;    
+    width:14vh;
+    margin-left:2vh;
+    padding-top:2px;
+    padding-bottom:2px;
 }
 
 div.historyItem.historyplayer {
@@ -279,7 +327,7 @@ span.historyScore {
 }
 
 span.historyType {
-    width:70%;
+    width:60%;
 }
 
 div#footer {

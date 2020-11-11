@@ -41,7 +41,9 @@
         </div>
       </div>
       <div class="sideposition" id="rightscroll">
-        <div class="sidearea rightarea" id="history"></div>
+        <div class="sidearea rightarea" id="history">
+          <div id="currenthand"></div>
+        </div>
       </div>
       
       <div id="main">
@@ -166,5 +168,20 @@
         </div>
       </div>
     </template>
+    
+    <template id="historySummaryTemplate">
+      <div class="historyHandSummary" onclick="togglePastHands();">
+        <span class="handSummarySide playerHandSummary"></span>
+        <span class="handSummarySide opponentHandSummary"></span>
+      </div>    
+    </template>
+    
+    <template id="historyItemTemplate">
+      <div class="historyItem">
+        <span class="historyScore"></span>
+        <span class="historyType"></span>
+      </div>
+    </template>
+    
   </body>
 </html>
