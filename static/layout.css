@@ -58,20 +58,21 @@ div.sideposition {
 div.sidearea {
     width:16vh;
     font-size:2.5vh;
-    /* Padding makes the top line up with the score buttons rather than the monster */
-    padding-top:1vh;
 }
 
 div.leftarea {
     left:0;
+    height:80vh;
+    margin-top:1vh;
 }
 
 div#rightscroll {
     position:absolute;
     width:17.5vh;
-    height:90vh;
+    height:89vh;
     right:-1.5vh;
     overflow-y:auto;
+    margin-top:1vh;
 }
 
 div#rightscroll::-webkit-scrollbar {
