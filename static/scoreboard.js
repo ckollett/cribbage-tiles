@@ -1,51 +1,83 @@
+const currentScore = {
+    'player' : {
+        'total' : 0,
+        'peg' : 0,
+        'hand' : 0,
+        'crib' : 0,
+        'nobs' : 0
+    },
+    'opponent' : {
+        'total' : 0,
+        'peg' : 0,
+        'hand' : 0,
+        'crib' : 0,
+        'nobs' : 0
+    }
+}
+
 function score(elt) {
     const points = parseInt(elt.innerHTML);
-    if (scoreState) {
-        updateScore('player',points,scoreState);
-        addToHistory('player',points,scoreState);
-        sendScore(points);
-    }
+    handleScore('player', points);
+    sendScore(points);
     resetScoreButtons();
 }
 
 function handleOpponentScored(points) {
-    updateScore('opponent',points,scoreState);
-    addToHistory('opponent',points,scoreState);
+    handleScore('opponent', points);
 }
 
-function updateScore(player,points,scoreState) {
-    if (points === 0) {
+function handleScore(player, points) {
+    playerObj = currentScore[player];
+    const delta = Math.min(points, 121-playerObj.total);
+    playerObj.total += delta;
+    playerObj[scoreState.toLowerCase()] += delta;
+    currentScore.last = {
+        'player' : player,
+        'points' : points,
+        'delta' : delta,
+        'type' : scoreState.toLowerCase()
+    };
+    
+    positionScoreboard();
+    updateScore();
+    addToHistory();
+}
+
+function updateScore() {
+    const player = currentScore.last.player;
+    const scoreElt = document.getElementById(player + 'score');
+    const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
+    
+    const type = currentScore.last.type;
+    const typeElt = document.getElementById(player + scoreState);
+    
+    playerObj = currentScore[player];
+    var remaining = currentScore.last.delta;
+    
+    if (remaining == 0) {
         return;
     }
     
-    const scoreElt = document.getElementById(player + 'score');
-    const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
-    const oldScore = parseInt(scoreElt.innerHTML);
-    const typeElt = document.getElementById(player + scoreState);
-    const oldTypeScore = parseInt(typeElt.innerHTML);
-    
-    const score = Math.min(oldScore + points, 121);
-    const pct = score/120;
-    
-    positionScoreboard(player,pct);
-    
-    const delay = 1500/Math.abs(score-oldScore);
-    const updateObj = {
-        "scoreElt" : scoreElt,
-        "scoreSummaryElt" : scoreSummaryElt,
-        "typeElt" : typeElt,
-        "score" : oldScore,
-        "typeScore" : oldTypeScore,
-        "remaining" : Math.abs(score-oldScore),
-        "direction" : points > 0 ? 1 : -1
+    const delay = 1500/remaining;
+    const increment = function() {
+        remaining--;
+        scoreElt.innerHTML = (playerObj.total-remaining).toString();
+        scoreSummaryElt.innerHTML = (playerObj.total-remaining).toString();
+        typeElt.innerHTML = (playerObj[type]-remaining).toString();
+        
+        if (remaining > 0) {
+            setTimeout(increment, delay);
+        }
     }
-
-    animateScore(updateObj,delay);
+    
+    increment();
 }
 
-function positionScoreboard(player,pct) {
+
+function positionScoreboard() {
+    const player = currentScore.last.player;
     const playerBoard = document.getElementById(player + 'scoreboard');
-    pctStr = (100*pct).toString() + '%';
+    pctStr = (100*currentScore[player].total/120).toString() + '%';
     playerBoard.style.left = pctStr;
 }    
 
@@ -60,24 +92,11 @@ function clearScores() {
     }
 }
 
-function animateScore(updateObj,delay) {
-    window.setTimeout(() => {
-        updateObj.score += updateObj.direction;
-        updateObj.typeScore += updateObj.direction;
-        
-        updateObj.scoreElt.innerHTML = updateObj.score;
-        updateObj.scoreSummaryElt.innerHTML = updateObj.score;
-        updateObj.typeElt.innerHTML = updateObj.typeScore;
-        if (--updateObj.remaining > 0) {
-            animateScore(updateObj,delay);
-        }
-    }, delay);
-}
-
-function addToHistory(player, points, icon) {
+function addToHistory() {
+    const player = currentScore.last.player;
     const historyData = {
-        'historyScore' : points,
-        'historyType' : scoreState
+        'historyScore' : currentScore.last.points,
+        'historyType' : currentScore.last.type
     };
     
     const containerElt = createFromTemplate('historyItemTemplate', historyData);
@@ -86,7 +105,7 @@ function addToHistory(player, points, icon) {
     const currenthand = document.getElementById('currenthand');
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
-    if (scoreState.toLowerCase() === 'crib') {
+    if (currentScore.last.type === 'crib') {
         const summaryElt = getHistorySummaryElt();
         const history = document.getElementById('history');
         history.insertBefore(summaryElt, history.firstChild);
@@ -100,11 +119,9 @@ function addToHistory(player, points, icon) {
 }
 
 function getHistorySummaryElt() {
-    const playerScore = document.getElementById('playerscore').innerHTML;
-    const opponentScore = document.getElementById('opponentscore').innerHTML;
     const data = {
-        'playerHandSummary' : playerScore,
-        'opponentHandSummary' : opponentScore
+        'playerHandSummary' : currentScore.player.total,
+        'opponentHandSummary' : currentScore.opponent.total
     };
     return createFromTemplate('historySummaryTemplate', data);
 }
