@@ -53,6 +53,7 @@
         bottom:0;
         border-top:0;
         border-left:0;
+        border-radius:0 0 0.4vh 0;
       }
 
       div.firstscore div.scorebottom {
@@ -63,6 +64,7 @@
         top:0;
         border-bottom:0;
         border-right:0;
+        border-radius:0.4vh 0 0 0;
       }
 
       .horizontal {
@@ -83,11 +85,15 @@
         left:0;
       }
       
-      .player {
+      .horizontal.player {
         background-color:black;
       }
       
-      .opponent {
+      .player div {
+        background-color:black;
+      }
+      
+      .horizontal.opponent {
         background-color:white;
       }
     </style>
@@ -179,9 +185,9 @@
     
     <template id="scorebar">
       <div class="score">
-        <div class="scorecap scorebottom"></div>
-        <div class="scorebar"></div>
         <div class="scorecap scoretop"></div>
+        <div class="scorebar"></div>
+        <div class="scorecap scorebottom"></div>
       </div>
     </template>
   </body>
