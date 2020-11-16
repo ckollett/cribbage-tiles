@@ -123,7 +123,7 @@ function moveOpponentCrib() {
 }
 
 function turn(tile) {
-    scoreState = 'Peg';
+    scoreState = 'Nobs';
     const turnTile = new Tile(tile,'');
     currentDeal.tiles.push(turnTile);
     currentDeal.deck.flipped = false;
@@ -169,6 +169,11 @@ function shake(elt, afterShake) {
 }
 
 function acceptGo() {
+    if (!currentScore.lastTileMove.scored) {
+        rejectGo();
+        return;
+    }
+    
     clearPegging();
     sendClearPegging();
 }    
@@ -185,7 +190,6 @@ function clearPegging() {
     
     if (isPeggingComplete()) {
         scoreState = 'Hand';
-        currentDeal.crib.clickTo = sendShowCrib;
     } else {
         currentDeal.peg.clickTo = rejectGo;
     }

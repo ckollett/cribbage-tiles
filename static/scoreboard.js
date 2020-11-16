@@ -12,14 +12,41 @@ const currentScore = {
         'hand' : 0,
         'crib' : 0,
         'nobs' : 0
-    }
+    },
+    'history' : [],
+    'lastTileMove' : null
 }
 
 function score(elt) {
+    if (!isScoringAllowed()) {
+        return;
+    }
+    
     const points = parseInt(elt.innerHTML);
     handleScore('player', points);
     sendScore(points);
     resetScoreButtons();
+    
+    if (scoreState.toLowerCase() === 'hand' && currentDeal.dealer === 'player') {
+        // After the dealer has scored their hand, they can reveal the crib.
+        currentDeal.crib.clickTo = sendShowCrib;
+    } 
+}
+
+function isScoringAllowed() {
+    if (!scoreState) {
+        return false;
+    }
+
+    var state = scoreState.toLowerCase();
+    switch (state) {
+        case 'peg' : return currentScore.lastTileMove.player === 'player';
+        case 'hand' :
+            return currentDeal.dealer === 'opponent' || getLastScoringPlay().type === 'hand';
+        case 'crib' : return currentDeal.dealer === 'player';
+        case 'nobs' : return !currentDeal.dealer || currentDeal.dealer === 'player';
+        default : return true;
+    }
 }
 
 function handleOpponentScored(points) {
@@ -31,28 +58,36 @@ function handleScore(player, points) {
     const delta = Math.min(points, 121-playerObj.total);
     playerObj.total += delta;
     playerObj[scoreState.toLowerCase()] += delta;
-    currentScore.last = {
+    
+    const lastScore = {
         'player' : player,
         'points' : points,
         'delta' : delta,
         'type' : scoreState.toLowerCase()
     };
-    
-    positionScoreboard();
+    currentScore.history.push(lastScore);
+    currentScore.lastTileMove.scored = true;
+        
+    positionScoreboard(player);
     updateScore();
     addToHistory();
+    
+    if (scoreState.toLowerCase() === 'nobs' && !currentDeal.dealer) {
+        currentDeal.dealerChanged(player);
+    }
 }
 
 function updateScore() {
-    const player = currentScore.last.player;
+    const lastScore = getLastScoringPlay();
+    const player = lastScore.player;
     const scoreElt = document.getElementById(player + 'score');
     const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
     
-    const type = currentScore.last.type;
+    const type = lastScore.type;
     const typeElt = document.getElementById(player + scoreState);
     
     playerObj = currentScore[player];
-    var remaining = currentScore.last.delta;
+    var remaining = lastScore.delta;
     
     if (remaining == 0) {
         return;
@@ -74,8 +109,7 @@ function updateScore() {
 }
 
 
-function positionScoreboard() {
-    const player = currentScore.last.player;
+function positionScoreboard(player) {
     const playerBoard = document.getElementById(player + 'scoreboard');
     pctStr = (100*currentScore[player].total/120).toString() + '%';
     playerBoard.style.left = pctStr;
@@ -93,10 +127,11 @@ function clearScores() {
 }
 
 function addToHistory() {
-    const player = currentScore.last.player;
+    const lastScore = getLastScoringPlay();
+    const player = lastScore.player;
     const historyData = {
-        'historyScore' : currentScore.last.points,
-        'historyType' : currentScore.last.type
+        'historyScore' : lastScore.points,
+        'historyType' : lastScore.type
     };
     
     const containerElt = createFromTemplate('historyItemTemplate', historyData);
@@ -105,7 +140,7 @@ function addToHistory() {
     const currenthand = document.getElementById('currenthand');
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
-    if (currentScore.last.type === 'crib') {
+    if (lastScore.type === 'crib') {
         const summaryElt = getHistorySummaryElt();
         const history = document.getElementById('history');
         history.insertBefore(summaryElt, history.firstChild);
@@ -168,5 +203,14 @@ function togglePastHands() {
     const pasthands = document.getElementsByClassName('pasthand');
     for (let pasthand of pasthands) {
         pasthand.classList.toggle('collapsed');
+    }
+}
+
+function getLastScoringPlay() {
+    numHistory = currentScore.history.length;
+    if (numHistory > 0) {
+        return currentScore.history[numHistory-1];
+    } else {
+        return null;
     }
 }

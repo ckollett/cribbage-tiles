@@ -37,10 +37,20 @@ class Tray {
         
         tile.setTray(this);
         this.needsRedraw = true;
+        
+        const lastTileMove = {
+            'player' : tile.owner,
+            'toTray' : this.name,
+            'scored' : false
+        };
+        
         this.onTileAdded(tile);
         if (oldTray) {
             oldTray.onTileRemoved(tile);
+            lastTileMove.fromTray = oldTray.name;
         }
+        
+        currentScore.lastTileMove = lastTileMove;
         return true;
     }
     
@@ -198,6 +208,8 @@ class PegTray extends PlayOrderTray {
     
     onTileAdded(tile) {
         super.onTileAdded(tile);
+        scoreState = 'Peg';
+        
         checkForMessage();
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
@@ -205,7 +217,6 @@ class PegTray extends PlayOrderTray {
         if (!currentDeal.dealer) {
             currentDeal.dealerChanged(tile.owner);
         }
-        
     }
     
     getZIndex(idx) {
