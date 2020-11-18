@@ -46,7 +46,7 @@ function getTrays(deal) {
     trays.push(new SortOrderTray(deal, 'player_played', 0, {'rightSide' : true}));
 
     // Second row: tray, crib, crib_selection, pegging
-    trays.push(new PlayOrderTray(deal, 'deck', 1, {'xOffset' : '0', 'flipped':true}));
+    trays.push(new Deck(deal, 'deck', 1, {'xOffset' : '0', 'flipped':true}));
     trays.push(new CribTray(deal, 'crib', 1, {'trayXOffset':columnWidth, 'xOffset':columnWidth/6, 'flipped':true}));
     trays.push(new CribSelectionTray(deal, 'crib_selection', 1, {'rightSide':true, 'clickTo':'player_hand'}));
     trays.push(new PegTray(deal, 'peg', 1, {'xOffset':columnWidth/2, 'yOffset':3.5, 'rightSide':true, clickTo:rejectGo}));

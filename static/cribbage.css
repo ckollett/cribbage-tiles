@@ -68,7 +68,7 @@ div.tilesides {
 
 div.tilefront {
     transform: rotateY(0deg);
-    z-index:10;
+/*    z-index:10; */
     background-size:85%;
     background-position: 50% 65%;
 }
@@ -263,7 +263,7 @@ div.pasthand {
     transition: max-height 0.5s ease;
 }
 
-div.pasthand.collapsed {
+div#history.collapsed > div.pasthand {
     max-height:0;
 }
 

@@ -145,7 +145,7 @@ function addToHistory() {
         const history = document.getElementById('history');
         history.insertBefore(summaryElt, history.firstChild);
         
-        currenthand.id = null;
+        currenthand.removeAttribute('id');
         currenthand.classList.add('pasthand');
         const newhand = document.createElement('div');
         newhand.id = 'currenthand';
@@ -200,10 +200,7 @@ function createFromTemplate(templateName, templateData) {
 }
 
 function togglePastHands() {
-    const pasthands = document.getElementsByClassName('pasthand');
-    for (let pasthand of pasthands) {
-        pasthand.classList.toggle('collapsed');
-    }
+    document.getElementById('history').classList.toggle('collapsed');
 }
 
 function getLastScoringPlay() {

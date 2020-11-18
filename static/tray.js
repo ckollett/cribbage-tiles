@@ -110,7 +110,7 @@ class Tray {
     }
     
     getZIndex(idx) {
-        return this.zIndex ? this.zIndex : 1;
+        return this.zIndex ? this.zIndex : 12-idx;
     }
     
     getLastTile() {
@@ -174,8 +174,14 @@ class PlayOrderTray extends Tray {
     }  
     
     getZIndex(idx) {
-        return idx + 2;
+        return 10 - idx;
     }    
+}
+
+class Deck extends SortOrderTray {
+    getZIndex(idx) {
+        return 10-idx;
+    }
 }
 
 class CribTray extends PlayOrderTray {
