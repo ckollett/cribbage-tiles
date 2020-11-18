@@ -178,12 +178,6 @@ class PlayOrderTray extends Tray {
     }    
 }
 
-class Deck extends SortOrderTray {
-    getZIndex(idx) {
-        return 10-idx;
-    }
-}
-
 class CribTray extends PlayOrderTray {
     getZIndex(idx) {
         return idx + 2;
