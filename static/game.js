@@ -5,7 +5,7 @@ function dealTiles() {
         currentDeal[tile.owner + '_hand'].addTile(tile);
     }
         
-    draw(200);
+    draw(150);
 }
 
 function renderTile(tile) {
@@ -84,7 +84,18 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
     const position = positions[idx];
     tileElt.style.top = position.top;
     tileElt.style.left = position.left;
-    tileElt.style.zIndex = position.zIndex;
+    
+    
+    console.log('Z Index: ' + position.zIndex);
+    if (delay > 0) {
+        tileElt.style.zIndex = 1000;
+        setTimeout(function() {
+            tileElt.style.zIndex = position.zIndex;
+        }, 500);
+    } else {
+        tileElt.style.zIndex = position.zIndex;
+    }
+    
     if (position.flip) {
         tileElt.classList.add('flip');
     } else {

@@ -110,7 +110,8 @@ class Tray {
     }
     
     getZIndex(idx) {
-        return this.zIndex ? this.zIndex : 12-idx;
+        const zIndex = this.zIndex ? this.zIndex : idx+2;
+        return this.reverseZIndex ? 100 - zIndex : zIndex;
     }
     
     getLastTile() {
@@ -172,10 +173,6 @@ class PlayOrderTray extends Tray {
         const removeIdx = this.tiles.indexOf(tile);
         this.tiles.splice(removeIdx,1);
     }  
-    
-    getZIndex(idx) {
-        return 10 - idx;
-    }    
 }
 
 class CribTray extends PlayOrderTray {
