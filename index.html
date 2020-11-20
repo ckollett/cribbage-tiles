@@ -3,6 +3,7 @@
     <title>Cribbage</title>
   <head>
     <link rel="icon" type="image/svg+xml" href="/static/images/mug.svg" />
+    <link rel="stylesheet" type="text/css" href="static/layout.css" />
     <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
     <link rel="stylesheet" type="text/css" href="static/scoreboard.css" />
     <script src="/socket.io/socket.io.js"></script>
@@ -15,7 +16,7 @@
     <script src="static/cribsheet.js"></script>
   </head>
   <body>
-    <div style="height:100%;width:90%;padding-left:5%;padding-right:5%;">
+    <div id="outer">
       <div id="header">
         <img src="static/images/tent.svg" />
         <img src="static/images/sleepingbag.svg" />
@@ -23,133 +24,136 @@
         <img src="static/images/campfire.svg" />
         <img src="static/images/mug.svg" />
       </div>
+      
+      <div class="sideposition sidearea leftarea">
+        <div class="scoreSummary playerSummary">
+          <div class="totalSummary" id="playerscoreSummary">0</div>
+          <div>Nobs<span class="subscore" id="playerNobs">0</span></div>
+          <div>Peg<span class="subscore" id="playerPeg">0</span></div>
+          <div>Hand<span class="subscore" id="playerHand">0</span></div>
+          <div>Crib<span class="subscore" id="playerCrib">0</span></div>
+        </div>
+        
+        <div class="scoreSummary opponentSummary">
+          <div class="totalSummary"id="opponentscoreSummary">0</div>
+          <div>Nobs<span class="subscore" id="opponentNobs">0</span></div>
+          <div>Peg<span class="subscore" id="opponentPeg">0</span></div>
+          <div>Hand<span class="subscore" id="opponentHand">0</span></div>
+          <div>Crib<span class="subscore" id="opponentCrib">0</span></div>
+        </div>
+      </div>
+      <div class="sideposition" id="rightscroll">
+        <div class="sidearea rightarea collapsed" id="history">
+          <div id="currenthand"></div>
+        </div>
+      </div>
+      
       <div id="main">
+        <div id="scorebuttons">
+          <div id="monsterbutton" onclick="monster();"></div>
+          <div id="scorebuttons1" class="scorenumbers activenumbers">
+            <div class="scorebutton" onclick="score(this)">0</div>
+            <div class="scorebutton" onclick="score(this)">1</div>
+            <div class="scorebutton" onclick="score(this)">2</div>
+            <div class="scorebutton" onclick="score(this)">3</div>
+            <div class="scorebutton" onclick="score(this)">4</div>
+            <div class="scorebutton" onclick="score(this)">5</div>
+            <div class="scorebutton" onclick="score(this)">6</div>
+            <div class="scorebutton" onclick="score(this)">7</div>
+            <div class="scorebutton" onclick="score(this)">8</div>
+            <div class="scorebutton" onclick="score(this)">9</div>
+            <div class="scorebutton" onclick="score(this)">10</div>
+            <div class="scorebutton" onclick="score(this)">11</div>
+            <div class="scorebutton" onclick="score(this)">12</div>
+            <div class="scorebutton" onclick="score(this)">13</div>
+            <div class="scorebutton" onclick="score(this)">14</div>
+          </div>
+          <div id="scorebuttons2" class="scorenumbers">
+            <div class="scorebutton" onclick="score(this)">15</div>
+            <div class="scorebutton" onclick="score(this)">16</div>
+            <div class="scorebutton" onclick="score(this)">17</div>
+            <div class="scorebutton" onclick="score(this)">18</div>
+            <div class="scorebutton" onclick="score(this)">19</div>
+            <div class="scorebutton" onclick="score(this)">20</div>
+            <div class="scorebutton" onclick="score(this)">21</div>
+            <div class="scorebutton" onclick="score(this)">22</div>
+            <div class="scorebutton" onclick="score(this)">23</div>
+            <div class="scorebutton" onclick="score(this)">24</div>
+            <div class="scorebutton" onclick="score(this)">25</div>
+            <div class="scorebutton" onclick="score(this)">26</div>
+            <div class="scorebutton" onclick="score(this)">27</div>
+            <div class="scorebutton" onclick="score(this)">28</div>
+            <div class="scorebutton" onclick="score(this)">29</div>
+          </div>
+          <div id="scorebuttons3" class="scorenumbers">
+            <div class="scorebutton" onclick="score(this)">30</div>
+            <div class="scorebutton" onclick="score(this)">31</div>
+            <div class="scorebutton" onclick="score(this)">32</div>
+            <div class="scorebutton maxscorebutton" onclick="score(this)">33</div>
+            <div style="flex-grow:11;"></div>
+          </div>
+        </div>   
+            
         <div id="scoreboardarea">
-          <div id="scorebuttons">
-            <div id="monsterbutton" onclick="monster();"></div>
-            <div id="scorebuttons1" class="scorenumbers activenumbers">
-              <div class="scorebutton" onclick="score(this)">0</div>
-              <div class="scorebutton" onclick="score(this)">1</div>
-              <div class="scorebutton" onclick="score(this)">2</div>
-              <div class="scorebutton" onclick="score(this)">3</div>
-              <div class="scorebutton" onclick="score(this)">4</div>
-              <div class="scorebutton" onclick="score(this)">5</div>
-              <div class="scorebutton" onclick="score(this)">6</div>
-              <div class="scorebutton" onclick="score(this)">7</div>
-              <div class="scorebutton" onclick="score(this)">8</div>
-              <div class="scorebutton" onclick="score(this)">9</div>
-              <div class="scorebutton" onclick="score(this)">10</div>
-              <div class="scorebutton" onclick="score(this)">11</div>
-              <div class="scorebutton" onclick="score(this)">12</div>
-              <div class="scorebutton" onclick="score(this)">13</div>
-              <div class="scorebutton" onclick="score(this)">14</div>
-            </div>
-            <div id="scorebuttons2" class="scorenumbers">
-              <div class="scorebutton" onclick="score(this)">15</div>
-              <div class="scorebutton" onclick="score(this)">16</div>
-              <div class="scorebutton" onclick="score(this)">17</div>
-              <div class="scorebutton" onclick="score(this)">18</div>
-              <div class="scorebutton" onclick="score(this)">19</div>
-              <div class="scorebutton" onclick="score(this)">20</div>
-              <div class="scorebutton" onclick="score(this)">21</div>
-              <div class="scorebutton" onclick="score(this)">22</div>
-              <div class="scorebutton" onclick="score(this)">23</div>
-              <div class="scorebutton" onclick="score(this)">24</div>
-              <div class="scorebutton" onclick="score(this)">25</div>
-              <div class="scorebutton" onclick="score(this)">26</div>
-              <div class="scorebutton" onclick="score(this)">27</div>
-              <div class="scorebutton" onclick="score(this)">28</div>
-              <div class="scorebutton" onclick="score(this)">29</div>
-            </div>
-            <div id="scorebuttons3" class="scorenumbers">
-              <div class="scorebutton" onclick="score(this)">30</div>
-              <div class="scorebutton" onclick="score(this)">31</div>
-              <div class="scorebutton" onclick="score(this)">32</div>
-              <div class="scorebutton maxscorebutton" onclick="score(this)">33</div>
-              <div style="flex-grow:11;"></div>
-            </div>
-          </div>          
-          <div id="scorecontainer">
-            <div id="scoreboard">
-              <div class="score" id="playerscorearea">
-                <div id="playerpegarea" class="pegarea">
-                  <div id="playerscoreboard" class="scoreboard">
-                    <div class="total" id="playerscore">0</div>
-
-                    <table class="subtotals">
-                      <tr class="subtotallabels">
-                        <td>Peg</td>
-                        <td>Hand</td>
-                        <td>Crib</td>
-                      </tr>
-                      <tr>
-                        <td class="subtotalcell" id="playerPeg">0</td>
-                        <td class="subtotalcell" id="playerHand">0</td>
-                        <td class="subtotalcell" id="playerCrib">0</td>
-                      </tr>
-                    </table>
-                  </div>
+          <div id="scoreboard">
+            <div class="score" id="playerscorearea">
+              <div id="playerpegarea" class="pegarea">
+                <div class="scoreboard" id="playerscoreboard">
+                  <div class="total" id="playerscore">0</div>
                   <span class="triangle" id="playertriangle"></span>
                 </div>
               </div>
-
-              <div id="track">
-                <span id="centerline"></span>
-                <span class="cornerline" style="left:0"></span>
-                <span class="cornerline" style="left:25%">&nbsp;</span>
-                <span class="cornerline" style="left:50%">&nbsp;</span>
-                <span class="skunkline">S</span>
-                <span class="cornerline" style="left:100%">&nbsp;</span>
-              </div>
-
-              <div class="score" id="opponentscorearea">
-                <div id="opponentpegarea" class="pegarea">
-                  <div id="opponentscoreboard" class="scoreboard">
-                    <div id="opponentscore" class="total">0</div>
-                    <table class="subtotals">
-                      <tr class="subtotallabels">
-                        <td>Peg</td>
-                        <td>Hand</td>
-                        <td>Crib</td>
-                      </tr>
-                      <tr>
-                        <td class="subtotalcell" id="opponentPeg">0</td>
-                        <td class="subtotalcell" id="opponentHand">0</td>
-                        <td class="subtotalcell" id="opponentCrib">0</td>
-                      </tr>
-                    </table>
-                  </div>
+            </div>
+  
+            <div id="track">
+              <span id="centerline"></span>
+              <span class="cornerline" style="left:0"></span>
+              <span class="cornerline" style="left:25%">&nbsp;</span>
+              <span class="cornerline" style="left:50%">&nbsp;</span>
+              <span class="skunkline">S</span>
+              <span class="cornerline" style="left:100%">&nbsp;</span>
+            </div>
+  
+            <div class="score" id="opponentscorearea">
+              <div id="opponentpegarea" class="pegarea">
+                <div id="opponentscoreboard" class="scoreboard">
+                  <div id="opponentscore" class="total">0</div>
                   <span class="triangle" id="opponenttriangle"><span class="innertriangle"></span></span>
-                  
                 </div>
+                
               </div>
             </div>
-          </div>
-        </div>
-        
-        <div id="history"></div>
-        
-        <div id="container">
+          </div> <!-- End scoreboard -->
+        </div><!-- End scoreboardarea -->
+
+        <div id="game" class="gamearea"></div>
+      
+        <div id="overlays" class="gamearea">
           <div class="label leftlabel hidden" id="dealerlabel">
             <div id="dealersides">
               <div id="playerdealer" class="labelside">Dealer</div>
               <div id="opponentdealer" class="labelside">Dealer</div>
             </div>
           </div>
-
-          <div id="deck" class="tilecontainer flip"><div class="tilesides"><div class="tile tilefront"></div><div class="tile tileback"></div></div></div>
-          <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();"><img src="/static/images/left-arrow.svg" id="arrow" /></div>
+  
+          <div id="deck" class="tilecontainer flip">
+            <div class="tilesides">
+              <div class="tile tilefront"></div>
+              <div class="tile tileback"></div>
+            </div>
+          </div>
+          <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();">
+            <img src="/static/images/left-arrow.svg" id="arrow" />
+          </div>
           <div id="messagecontainer"><div id="message"></div></div>
-          <div id="game"></div>
         </div>
-      </div>
-      
-    </div>
 
-    <div id="links">
-      <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=0" target="_blank">The Crib Sheet</a>
-      <span id="lastscore"></span>
-    </div>
+        <div id="footer">
+          <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=0" target="_blank">The Crib Sheet</a>
+          <span id="lastscore"></span>
+        </div>
+      </div> <!-- End main -->
+    </div> <!-- End outer -->
 
     <script type="text/javascript">
         getLastScore();
@@ -166,5 +170,20 @@
         </div>
       </div>
     </template>
+    
+    <template id="historySummaryTemplate">
+      <div class="historyHandSummary" onclick="togglePastHands();">
+        <span class="handSummarySide playerHandSummary"></span>
+        <span class="handSummarySide opponentHandSummary"></span>
+      </div>    
+    </template>
+    
+    <template id="historyItemTemplate">
+      <div class="historyItem">
+        <span class="historyScore"></span>
+        <span class="historyType"></span>
+      </div>
+    </template>
+    
   </body>
 </html>

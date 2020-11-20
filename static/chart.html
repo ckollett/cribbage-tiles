@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      div {
+        box-sizing:border-box;
+        z-index:1;
+      }
+    
+      #chart {
+        position:relative;
+        left:20vw;
+        top:10vh;
+        height:80vh;
+        width:60vw;
+        display:flex;
+      }
+      
+      .chartcolumn {
+        position:relative;
+        flex-basis:0;
+        flex-grow:1;
+        height:100%;
+        max-width:20%;
+      }
+      
+      div.score {
+        position:absolute;
+        width:0.65vh;
+        left:0;
+        z-index:2;
+      }
+      
+      div.score > div {
+        z-index:2;
+      }
+      
+      div.scorebar {
+        position:absolute;
+        width:0.65vh;
+        top:0.65vh;
+        bottom:0.65vh;
+        border:1px solid black;
+        border-top:0;
+        border-bottom:0;
+      }
+
+      div.scorecap  {
+        position:absolute;
+        width:0.65vh;
+        height:0.65vh;
+        border:1px solid black;
+        left:0;
+      }
+      
+      div.scorebottom {
+        bottom:0;
+        border-top:0;
+        border-left:0;
+        border-radius:0 0 0.4vh 0;
+      }
+
+      div.firstscore div.scorebottom {
+        border-left:1px solid black;
+      }
+
+      div.scoretop {
+        top:0;
+        border-bottom:0;
+        border-right:0;
+        border-radius:0.4vh 0 0 0;
+      }
+
+      .horizontal {
+        position:absolute;
+        left:0.65vh;
+        right:0;
+        height:0.65vh;
+        border:1px solid black;
+        border-left:0;
+        border-right:0;
+      }
+      
+      .chartcolumn:last-child .horizontal {
+        border-right:1px solid black;
+      }
+      
+      .horizontal.noscore {
+        left:0;
+      }
+      
+      .horizontal.player {
+        background-color:black;
+      }
+      
+      .player div {
+        background-color:black;
+      }
+      
+      .opponent > div {
+        background-color:white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <button onclick="addRandomColumn();">Add Column</button>
+    <script type="text/javascript">
+      var scores = {
+        'player':0,
+        'opponent':0
+      };
+    
+      function addColumn(scoringPlayer,points) {
+        const col = document.createElement('div');
+        col.classList.add('chartcolumn');
+                
+        points = Math.min(points, 121-scores[scoringPlayer]);
+        console.log(points);
+
+        const op = otherPlayer(scoringPlayer);
+        const otherPlayerElt = document.createElement('div');
+        otherPlayerElt.classList.add('horizontal');
+        otherPlayerElt.classList.add(op);
+        otherPlayerElt.classList.add('noscore');
+        otherPlayerElt.style.bottom = (0.65*scores[op]).toString() + 'vh';
+        col.appendChild(otherPlayerElt);
+
+        if (points > 0) {
+            const template = document.querySelector('#scorebar');
+            const scoreElt = template.content.cloneNode(true).firstElementChild;
+            if (scores.player + scores.opponent === 0) {
+              scoreElt.classList.add('firstscore');
+            }
+            scoreElt.classList.add('score');
+            scoreElt.classList.add(scoringPlayer);
+            scoreElt.style.bottom = (0.65*(scores[scoringPlayer])).toString() + 'vh';
+            scoreElt.style.height = (0.65*(points+1)).toString() + 'vh';
+            col.appendChild(scoreElt);
+
+            scores[scoringPlayer] += points;
+
+            const scoringPlayerElt = document.createElement('div');
+            scoringPlayerElt.classList.add('horizontal');
+            scoringPlayerElt.classList.add(scoringPlayer);
+            if (points === 0) {
+                scoringPlayerElt.classList.add('noscore');
+            }
+            scoringPlayerElt.style.bottom = (0.65*scores[scoringPlayer]).toString() + 'vh';
+            col.appendChild(scoringPlayerElt);
+        } else {
+          const noScoreElt = document.createElement('div');
+          noScoreElt.classList.add('horizontal');
+          noScoreElt.classList.add(scoringPlayer);
+          noScoreElt.classList.add('noscore');
+          noScoreElt.style.bottom = (0.65*scores[scoringPlayer]).toString() + 'vh';
+          col.appendChild(noScoreElt);
+        }
+        
+        document.getElementById('chart').appendChild(col);
+    
+        const scoreTitle = scores.player.toString() + ' - ' + scores.opponent.toString();
+        col.setAttribute('title', scoreTitle);
+
+        
+        if (scores[scoringPlayer] === 121) {
+            setTimeout(function() {
+                alert('Winner');
+            },100);
+        }
+      }
+      
+      function addRandomColumn() {
+        const player = randomPlayer();
+        const score = Math.floor(Math.random()*20);
+        addColumn(player, score);
+      }
+      
+      function randomPlayer() {
+        const r = Math.random();
+        return r < .5 ? 'player' : 'opponent';
+      }
+      
+      function otherPlayer(player) {
+        return player === 'player' ? 'opponent' : 'player';
+      }
+      
+    </script>
+    
+    <template id="scorebar">
+      <div class="score">
+        <div class="scorecap scoretop"></div>
+        <div class="scorebar"></div>
+        <div class="scorecap scorebottom"></div>
+      </div>
+    </template>
+  </body>
+</html>

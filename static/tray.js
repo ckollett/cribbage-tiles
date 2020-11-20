@@ -1,5 +1,5 @@
-const tileWidth = 13;
-const columnWidth = 14;
+const columnWidth = 14.4;
+const tileWidth = 13.6;
 
 class Tray {
     
@@ -37,10 +37,20 @@ class Tray {
         
         tile.setTray(this);
         this.needsRedraw = true;
+        
+        const lastTileMove = {
+            'player' : tile.owner,
+            'toTray' : this.name,
+            'scored' : false
+        };
+        
         this.onTileAdded(tile);
         if (oldTray) {
             oldTray.onTileRemoved(tile);
+            lastTileMove.fromTray = oldTray.name;
         }
+        
+        currentScore.lastTileMove = lastTileMove;
         return true;
     }
     
@@ -74,7 +84,7 @@ class Tray {
     }
     
     getPosition(tile) {
-        const idx = this.getTiles().indexOf(tile);
+        let idx = this.getTiles().indexOf(tile);
         if (idx < 0) {
             return;
         }
@@ -84,7 +94,7 @@ class Tray {
             x = 100 - x - tileWidth;
         }
         
-        var y = this.row * 33;
+        var y = this.row * 35;
         if (tile.owner === 'player') {
             y -= this.yOffset;
         } else {
@@ -100,7 +110,8 @@ class Tray {
     }
     
     getZIndex(idx) {
-        return this.zIndex ? this.zIndex : 1;
+        const zIndex = this.zIndex ? this.zIndex : idx+2;
+        return this.reverseZIndex ? 100 - zIndex : zIndex;
     }
     
     getLastTile() {
@@ -194,6 +205,8 @@ class PegTray extends PlayOrderTray {
     
     onTileAdded(tile) {
         super.onTileAdded(tile);
+        scoreState = 'Peg';
+        
         checkForMessage();
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
@@ -201,7 +214,6 @@ class PegTray extends PlayOrderTray {
         if (!currentDeal.dealer) {
             currentDeal.dealerChanged(tile.owner);
         }
-        
     }
     
     getZIndex(idx) {
