@@ -73,7 +73,8 @@ function handleScore(player, points) {
     addToHistory();
     
     if (scoreState.toLowerCase() === 'nobs' && !currentDeal.dealer) {
-        currentDeal.dealerChanged(player);
+        const oldDealer = player === 'opponent' ? 'player' : 'opponent';
+        currentDeal.dealerChanged(oldDealer);
     }
 }
 
