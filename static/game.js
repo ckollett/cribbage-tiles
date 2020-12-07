@@ -86,7 +86,6 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
     tileElt.style.left = position.left;
     
     
-    console.log('Z Index: ' + position.zIndex);
     if (delay > 0) {
         tileElt.style.zIndex = 1000;
         setTimeout(function() {
@@ -286,6 +285,10 @@ function populateDeck(tiles) {
 var gameTimer = null;
 
 function startGameTimer() {
+    if (gameTimer) {
+        stopGameTimer();
+    }
+    
 	const gameStart = new Date();
 	
 	gameTimer = setInterval(function() {
