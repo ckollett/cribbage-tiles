@@ -269,6 +269,7 @@ function doReset() {
             return clear();
         });
     } else {
+		startGameTimer();
         return clear();       
     }
 }
@@ -276,7 +277,6 @@ function doReset() {
 function populateDeck(tiles) {
     const oldDealer = currentDeal ? currentDeal.dealer : null;
     currentDeal = new Deal(tiles);
-	startGameTimer();
     if (oldDealer) {
         currentDeal.dealerChanged(oldDealer);
     }
@@ -287,6 +287,10 @@ var gameTimer = null;
 
 function startGameTimer() {
 	const gameStart = new Date();
+	
+    if (gameTimer) {
+		stopGameTimer();
+	}
 	
 	gameTimer = setInterval(function() {
 
@@ -309,6 +313,7 @@ function startGameTimer() {
 
 function stopGameTimer() {
 	clearInterval(gameTimer);
+	gameTimer = null;
 }
 
 function handleShowCrib(crib) {
