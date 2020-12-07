@@ -349,6 +349,11 @@ div#footer a:hover {
     border-radius:0.75vh;
 }
 
+span#gameTime {
+    position:absolute;
+    left:48%;
+}
+
 span#lastscore {
     position:absolute;
     right:0;
