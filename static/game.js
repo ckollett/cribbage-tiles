@@ -276,10 +276,39 @@ function doReset() {
 function populateDeck(tiles) {
     const oldDealer = currentDeal ? currentDeal.dealer : null;
     currentDeal = new Deal(tiles);
+	startGameTimer();
     if (oldDealer) {
         currentDeal.dealerChanged(oldDealer);
     }
     return draw();
+}
+
+var gameTimer = null;
+
+function startGameTimer() {
+	const gameStart = new Date();
+	
+	gameTimer = setInterval(function() {
+
+	  // Get today's date and time
+	  var now = new Date();
+
+	  // Find the distance between now and the count down date
+	  var distance = now - gameStart;
+
+	  // Time calculations for days, hours, minutes and seconds
+	  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+	  minutes = ("0" + minutes).slice(-2);
+	  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+	  seconds = ("0" + seconds).slice(-2);
+
+	  // Display the result in the element with id="demo"
+	  document.getElementById("gameTime").innerHTML = minutes + ":" + seconds;
+	}, 1000);
+}
+
+function stopGameTimer() {
+	clearInterval(gameTimer);
 }
 
 function handleShowCrib(crib) {
