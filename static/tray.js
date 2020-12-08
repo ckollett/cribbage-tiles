@@ -44,6 +44,8 @@ class Tray {
             'scored' : false
         };
         
+        tile.elt.style.zIndex = this.getZIndex();
+        
         this.onTileAdded(tile);
         if (oldTray) {
             oldTray.onTileRemoved(tile);
@@ -109,9 +111,13 @@ class Tray {
         };
     }
     
-    getZIndex(idx) {
-        const zIndex = this.zIndex ? this.zIndex : idx+2;
-        return this.reverseZIndex ? 100 - zIndex : zIndex;
+    getZIndex() {
+        if (this.zIndex) {
+            return this.zIndex;
+        }
+        
+        const zIndex = this.getNumTiles() + 3;
+        return this.reverseZIndex ? 15 - zIndex : zIndex;
     }
     
     getLastTile() {
@@ -122,6 +128,10 @@ class Tray {
     getLastTiles(num) {
         const tiles = this.getTiles();
         return tiles.slice(tiles.length-2,tiles.length);
+    }
+    
+    getNumTiles() {
+        return this.getTiles().length;
     }
     
 }
@@ -176,10 +186,6 @@ class PlayOrderTray extends Tray {
 }
 
 class CribTray extends PlayOrderTray {
-    getZIndex(idx) {
-        return idx + 2;
-    }
-    
     getTilesToDraw() {
         // Only ever need to draw two tiles at a time.
         // This prevents a delay when the second pair 
@@ -214,10 +220,6 @@ class PegTray extends PlayOrderTray {
         if (!currentDeal.dealer) {
             currentDeal.dealerChanged(tile.owner);
         }
-    }
-    
-    getZIndex(idx) {
-        return idx + 2;
     }
 }
 
