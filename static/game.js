@@ -250,14 +250,13 @@ function doReset() {
             turnTile.elt.style.zIndex = 2;
         }
         
-        for (let tray of currentDeal.trays) {
-            if (tray.name !== 'deck') {
-                const trayTiles = tray.getTiles().slice().reverse();
-                currentDeal.deck.addTiles(trayTiles);
-            }
-        }
+        const playerTiles = currentDeal.player_played.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(playerTiles);
+        const cribTiles = currentDeal.crib_display.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(cribTiles);
+        const opponentTiles = currentDeal.opponent_played.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(opponentTiles);
         
-        currentDeal.crib_display.clear();
         return draw(200).then(() => {
             return clear();
         });
