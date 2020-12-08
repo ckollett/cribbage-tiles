@@ -59,6 +59,10 @@ function handleScore(player, points) {
     playerObj.total += delta;
     playerObj[scoreState.toLowerCase()] += delta;
     
+	if (playerObj.total == 121) {
+		stopGameTimer();
+	}
+	
     const lastScore = {
         'player' : player,
         'points' : points,
