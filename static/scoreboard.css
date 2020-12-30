@@ -69,6 +69,7 @@
 #opponentscoreboard .total {
     top:1vh;
     color: black;
+    background-color:white;
 }
 
 .total {
