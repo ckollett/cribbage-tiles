@@ -3,6 +3,7 @@ const currentScore = {
         'total' : 0,
         'peg' : 0,
         'hand' : 0,
+        'foot' : 0,
         'crib' : 0,
         'nobs' : 0
     },
@@ -10,6 +11,7 @@ const currentScore = {
         'total' : 0,
         'peg' : 0,
         'hand' : 0,
+        'foot' : 0,
         'crib' : 0,
         'nobs' : 0
     },
@@ -27,10 +29,10 @@ function score(elt) {
     sendScore(points);
     resetScoreButtons();
     
-    if (scoreState.toLowerCase() === 'hand' && currentDeal.dealer === 'player') {
-        // After the dealer has scored their hand, they can reveal the crib.
+    if (scoreState.toLowerCase() === 'foot' && currentDeal.dealer === 'player') {
+        // After the dealer has scored their foot, they can reveal the crib.
         currentDeal.crib.clickTo = sendShowCrib;
-    } 
+    }
 }
 
 function isScoringAllowed() {
@@ -41,8 +43,8 @@ function isScoringAllowed() {
     var state = scoreState.toLowerCase();
     switch (state) {
         case 'peg' : return currentScore.lastTileMove.player === 'player';
-        case 'hand' :
-            return currentDeal.dealer === 'opponent' || getLastScoringPlay().type === 'hand';
+        case 'hand' : return currentDeal.dealer === 'opponent';
+        case 'foot' : return currentDeal.dealer === 'player';
         case 'crib' : return currentDeal.dealer === 'player';
         case 'nobs' : return !currentDeal.dealer || currentDeal.dealer === 'player';
         default : return true;
@@ -75,11 +77,16 @@ function handleScore(player, points) {
     positionScoreboard(player);
     updateScore();
     addToHistory();
-    
-    if (scoreState.toLowerCase() === 'nobs' && !currentDeal.dealer) {
-        const oldDealer = player === 'opponent' ? 'player' : 'opponent';
-        currentDeal.dealerChanged(oldDealer);
-    }
+	
+	switch (scoreState.toLowerCase()) {
+	case 'nobs':
+		if (!currentDeal.dealer) {
+			const oldDealer = player === 'opponent' ? 'player' : 'opponent';
+			currentDeal.dealerChanged(oldDealer);
+		}
+	case 'hand':
+		scoreState = 'Foot';
+	}
 }
 
 function updateScore() {
