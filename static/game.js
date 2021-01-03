@@ -152,12 +152,6 @@ function checkForMessage() {
     return true;
 }
 
-function rejectGo() {
-    const pegTiles = currentDeal.peg.getTiles();
-    const lastPegged = pegTiles[pegTiles.length-1];
-    shake(lastPegged.elt);
-}
-
 function shake(elt, afterShake) {
     elt.classList.add('rejected');
     setTimeout(function() {
@@ -168,16 +162,6 @@ function shake(elt, afterShake) {
     }, 1000);
 }
 
-function acceptGo() {
-    if (!currentScore.lastTileMove.scored) {
-        rejectGo();
-        return;
-    }
-    
-    clearPegging();
-    sendClearPegging();
-}    
-
 function clearPegging() {
     const pegTray = currentDeal.peg;
     const pegTiles = pegTray.getTiles().slice();
@@ -186,14 +170,8 @@ function clearPegging() {
         newTray.addTile(tile);
     }
     pegTray.clear();
+	currentDeal.isGo = false;
     draw();
-    
-    if (isPeggingComplete()) {
-        scoreState = 'Hand';
-    } else {
-        currentDeal.peg.clickTo = rejectGo;
-    }
-        
 }
 
 function isPeggingComplete() {
@@ -314,5 +292,4 @@ function stopGameTimer() {
 
 function handleShowCrib(crib) {
     revealCrib(crib);
-    currentDeal.deck.clickTo = sendShuffle;
 }

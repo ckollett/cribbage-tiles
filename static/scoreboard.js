@@ -29,10 +29,17 @@ function score(elt) {
     sendScore(points);
     resetScoreButtons();
     
-    if (scoreState.toLowerCase() === 'foot' && currentDeal.dealer === 'player') {
-        // After the dealer has scored their foot, they can reveal the crib.
-        currentDeal.crib.clickTo = sendShowCrib;
-    }
+	switch (scoreState.toLowerCase()) {
+	case 'foot':
+		// Need to check if current deal is player, since handleScore advances!
+	    if (currentDeal.dealer === 'player') {
+			sendShowCrib();
+		}
+		break;
+	case 'crib':
+		sendShuffle();
+		break;
+	}
 }
 
 function isScoringAllowed() {
@@ -84,8 +91,18 @@ function handleScore(player, points) {
 			const oldDealer = player === 'opponent' ? 'player' : 'opponent';
 			currentDeal.dealerChanged(oldDealer);
 		}
+		break;
 	case 'hand':
 		scoreState = 'Foot';
+		break;
+	case 'peg':
+		if (currentDeal.isGo) {
+			clearPegging();
+			if (isPeggingComplete()) {
+				scoreState = 'Hand';
+			}        
+		}
+		break;
 	}
 }
 

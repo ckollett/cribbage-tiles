@@ -87,6 +87,7 @@ function deal() {
     this.cards = deck.shuffle();
     this.crib = [];
     this.pegRemaining = 31;
+	this.isGo = false;
     
     this.addToCrib = function(id,cards) {
         this.crib.push({"player":id,"cards":cards});
