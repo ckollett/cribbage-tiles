@@ -19,7 +19,6 @@ function renderTile(tile) {
         tileValue.innerHTML = tile.num;
     }
     
-    document.getElementById('game').appendChild(tileElt);
     return tileElt;
 }
 
@@ -85,17 +84,6 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
     tileElt.style.top = position.top;
     tileElt.style.left = position.left;
     
-    
-    console.log('Z Index: ' + position.zIndex);
-    if (delay > 0) {
-        tileElt.style.zIndex = 1000;
-        setTimeout(function() {
-            tileElt.style.zIndex = position.zIndex;
-        }, 500);
-    } else {
-        tileElt.style.zIndex = position.zIndex;
-    }
-    
     if (position.flip) {
         tileElt.classList.add('flip');
     } else {
@@ -127,7 +115,7 @@ function commitCrib() {
 
 function moveOpponentCrib() {
     drawPromise = drawPromise.then(function() {
-        const tiles = currentDeal.opponent_hand.getLastTiles(2).reverse();
+        const tiles = currentDeal.opponent_hand.getLastTiles(2);
         currentDeal.crib.addTiles(tiles);
         draw(200);
     });
@@ -136,6 +124,7 @@ function moveOpponentCrib() {
 function turn(tile) {
     scoreState = 'Nobs';
     const turnTile = new Tile(tile,'');
+    document.getElementById('game').appendChild(turnTile.elt);
     currentDeal.tiles.push(turnTile);
     currentDeal.deck.flipped = false;
     currentDeal.deck.addTile(turnTile);
@@ -234,15 +223,18 @@ function doReset() {
     scoreState = null;
     if (currentDeal) {
         currentDeal.deck.flipped = true;
-        
-        for (let tray of currentDeal.trays) {
-            if (tray.name !== 'deck') {
-                const trayTiles = tray.getTiles().slice().reverse();
-                currentDeal.deck.addTiles(trayTiles);
-            }
+        for (let turnTile of currentDeal.deck.getTiles()) {
+            turnTile.elt.classList.add('flip');
+            turnTile.elt.style.zIndex = 2;
         }
         
-        currentDeal.crib_display.clear();
+        const playerTiles = currentDeal.player_played.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(playerTiles);
+        const cribTiles = currentDeal.crib_display.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(cribTiles);
+        const opponentTiles = currentDeal.opponent_played.getTiles().slice().reverse();
+        currentDeal.deck.addTiles(opponentTiles);
+        
         return draw(200).then(() => {
             return clear();
         });
@@ -264,6 +256,10 @@ function populateDeck(tiles) {
 var gameTimer = null;
 
 function startGameTimer() {
+    if (gameTimer) {
+        stopGameTimer();
+    }
+    
 	const gameStart = new Date();
 	
     if (gameTimer) {
