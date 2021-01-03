@@ -29,10 +29,8 @@ socket.on("opponentPegged", function(tile) {
 });
 
 socket.on("go", function() {
-    currentDeal.peg.clickTo = acceptGo;
+	currentDeal.isGo = true;
 });
-
-socket.on("clearPegging", clearPegging);
 
 socket.on("showCrib", handleShowCrib);
 
@@ -45,10 +43,6 @@ function sendCribSelected(crib) {
 
 function sendTilePegged(tile) {
     socket.emit("pegged", tile);
-}
-
-function sendClearPegging() {
-    socket.emit("clearPegging");
 }
 
 function sendShowCrib() {
