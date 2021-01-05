@@ -228,3 +228,10 @@ div#monsterbutton:hover {
     background-position:50%;
     background-repeat:no-repeat;
 }
+
+.edithistory {
+    background-color:white;
+    color:black;
+    border-radius: 0.4vh;
+    outline:0px;
+}
