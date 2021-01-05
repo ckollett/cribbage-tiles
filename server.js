@@ -82,8 +82,8 @@ io.on('connection', function(socket) {
         notifyOtherPlayer("opponentScored", points);
     });
     
-    socket.on("updateHistory", function(delta) {
-        notifyOtherPlayer("updateHistory", delta);
+    socket.on("updateHistory", function(newScore) {
+        notifyOtherPlayer("updateHistory", newScore);
     });
 });
 

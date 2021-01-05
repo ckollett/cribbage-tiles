@@ -92,7 +92,6 @@ function handleScore(player, points) {
 }
 
 function appendHistory(player, points, scoreType) {
-    console.log('Adding history item: ' + player + ' ' + points + ' ' + scoreType);
     playerObj = currentScore[player];
     const delta = Math.min(points, 121-playerObj.total);
     playerObj.total += delta;
@@ -266,30 +265,51 @@ function enableEditHistory() {
 
     scoreElt.setAttribute('contenteditable','true');
     scoreElt.classList.add('edithistory');
+    scoreElt.focus();
     scoreElt.onkeypress = function(e) {
         e = e || window.event;
         var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
         if (charCode === 13) {
+            // Return key; accept input.
             scoreElt.removeAttribute('contenteditable');
             scoreElt.classList.remove('edithistory');
-            const newScore = parseInt(scoreElt.innerHTML);
-            const delta = newScore - oldScore;
-            updateLastHistoryItem('player', delta);
-            sendUpdateHistory(delta);
+            handleUpdateInput(scoreElt, oldScore);
+        } else {
+            var charStr = String.fromCharCode(charCode);
+            return (/\d/.test(charStr));
         }
-        var charStr = String.fromCharCode(charCode);
-        return (/\d/.test(charStr));
     }
 }
 
-function updateLastHistoryItem(player, delta) {
+function handleUpdateInput(scoreElt, oldScore) {
+    var accepted = false;
+    if (/\d+/.test(scoreElt.innerHTML)) {
+        const newScore = parseInt(scoreElt.innerHTML);
+        if (newScore >= 0 && newScore <= 33) {
+            updateLastHistoryItem('player', newScore, oldScore);
+            sendUpdateHistory(newScore);
+            accepted = true;
+        }
+    }
+    
+    if (!accepted) {
+        scoreElt.innerHTML = oldScore;
+    }
+} 
+
+function updateLastHistoryItem(player, newScore, oldScore) {
     const historyElt = document.getElementById('lastHistory');
     const scoreElt = historyElt.getElementsByClassName('historyScore').item(0);
     const typeElt = historyElt.getElementsByClassName('historyType').item(0);
     
     const type = typeElt.innerHTML;
-    const oldScore = parseInt(scoreElt.innerHTML);
-    
+    // Check for undefined here rather than just using "if (oldScore)" to 
+    // make sure we handle zero correctly.
+    if (typeof(oldScore) === "undefined") {
+        oldScore = parseInt(scoreElt.innerHTML);
+        scoreElt.innerHTML = newScore;
+    }
+    const delta = newScore - oldScore;
     // The history object will contain both the original score and
     // the correction. Is that OK?
     appendHistory(player, delta, type);

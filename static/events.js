@@ -36,8 +36,8 @@ socket.on("showCrib", handleShowCrib);
 
 socket.on("opponentScored", handleOpponentScored);
 
-socket.on("updateHistory", function(delta) {
-    updateLastHistoryItem('opponent', delta);
+socket.on("updateHistory", function(newScore) {
+    updateLastHistoryItem('opponent', newScore);
 });
 
 /***** Communications back to the server *****/
@@ -61,6 +61,6 @@ function sendScore(points) {
     socket.emit("score",points);
 }
 
-function sendUpdateHistory(delta) {
-    socket.emit("updateHistory",delta);
+function sendUpdateHistory(newScore) {
+    socket.emit("updateHistory",newScore);
 }
