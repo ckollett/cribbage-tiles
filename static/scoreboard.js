@@ -63,22 +63,7 @@ function handleOpponentScored(points) {
 }
 
 function handleScore(player, points) {
-    playerObj = currentScore[player];
-    const delta = Math.min(points, 121-playerObj.total);
-    playerObj.total += delta;
-    playerObj[scoreState.toLowerCase()] += delta;
-    
-	if (playerObj.total == 121) {
-		stopGameTimer();
-	}
-	
-    const lastScore = {
-        'player' : player,
-        'points' : points,
-        'delta' : delta,
-        'type' : scoreState.toLowerCase()
-    };
-    currentScore.history.push(lastScore);
+    appendHistory(player, points, scoreState);
     currentScore.lastTileMove.scored = true;
         
     positionScoreboard(player);
@@ -106,6 +91,25 @@ function handleScore(player, points) {
 	}
 }
 
+function appendHistory(player, points, scoreType) {
+    playerObj = currentScore[player];
+    const delta = Math.min(points, 121-playerObj.total);
+    playerObj.total += delta;
+    playerObj[scoreType.toLowerCase()] += delta;
+    
+	if (playerObj.total == 121) {
+		stopGameTimer();
+	}
+	
+    const lastScore = {
+        'player' : player,
+        'points' : points,
+        'delta' : delta,
+        'type' : scoreType.toLowerCase()
+    };
+    currentScore.history.push(lastScore);
+}
+
 function updateScore() {
     const lastScore = getLastScoringPlay();
     const player = lastScore.player;
@@ -113,23 +117,26 @@ function updateScore() {
     const scoreSummaryElt = document.getElementById(player + 'scoreSummary');
     
     const type = lastScore.type;
-    const typeElt = document.getElementById(player + scoreState);
+    // Sooooo ugly. Why did I use camel case?
+    const typeUpper = type.charAt(0).toUpperCase() + type.slice(1);
+    const typeElt = document.getElementById(player + typeUpper);
     
     playerObj = currentScore[player];
     var remaining = lastScore.delta;
+    var dir = remaining/Math.abs(remaining);
     
-    if (remaining == 0) {
+    if (remaining === 0) {
         return;
     }
     
-    const delay = 1500/remaining;
+    const delay = 1500/Math.abs(remaining);
     const increment = function() {
-        remaining--;
+        remaining -= dir;
         scoreElt.innerHTML = (playerObj.total-remaining).toString();
         scoreSummaryElt.innerHTML = (playerObj.total-remaining).toString();
         typeElt.innerHTML = (playerObj[type]-remaining).toString();
         
-        if (remaining > 0) {
+        if (remaining !== 0) {
             setTimeout(increment, delay);
         }
     }
@@ -163,8 +170,17 @@ function addToHistory() {
         'historyType' : lastScore.type
     };
     
+    const lastElt = document.getElementById('lastHistory');
+    if (lastElt) {
+        lastElt.removeAttribute('id');
+        lastElt.removeEventListener('click', enableEditHistory);
+    }
+    
     const containerElt = createFromTemplate('historyItemTemplate', historyData);
     containerElt.classList.add('history' + player);
+    if (player === 'player') {
+        containerElt.addEventListener('click', enableEditHistory);
+    }
     
     const currenthand = document.getElementById('currenthand');
     currenthand.insertBefore(containerElt, currenthand.firstChild);
@@ -238,5 +254,71 @@ function getLastScoringPlay() {
         return currentScore.history[numHistory-1];
     } else {
         return null;
+    }
+}
+
+function enableEditHistory() {
+    // Maybe only allow history change events on the player's own history items?
+    const historyElt = document.getElementById('lastHistory');
+    const scoreElt = historyElt.getElementsByClassName('historyScore').item(0);
+    const oldScore = parseInt(scoreElt.innerHTML);
+
+    scoreElt.setAttribute('contenteditable','true');
+    scoreElt.classList.add('edithistory');
+    scoreElt.focus();
+    scoreElt.onkeypress = function(e) {
+        e = e || window.event;
+        var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
+        if (charCode === 13) {
+            // Return key; accept input.
+            scoreElt.removeAttribute('contenteditable');
+            scoreElt.classList.remove('edithistory');
+            handleUpdateInput(scoreElt, oldScore);
+        } else {
+            var charStr = String.fromCharCode(charCode);
+            return (/\d/.test(charStr));
+        }
+    }
+}
+
+function handleUpdateInput(scoreElt, oldScore) {
+    var accepted = false;
+    if (/\d+/.test(scoreElt.innerHTML)) {
+        const newScore = parseInt(scoreElt.innerHTML);
+        if (newScore >= 0 && newScore <= 33) {
+            updateLastHistoryItem('player', newScore, oldScore);
+            sendUpdateHistory(newScore);
+            accepted = true;
+        }
+    }
+    
+    if (!accepted) {
+        scoreElt.innerHTML = oldScore;
+    }
+} 
+
+function updateLastHistoryItem(player, newScore, oldScore) {
+    const historyElt = document.getElementById('lastHistory');
+    const scoreElt = historyElt.getElementsByClassName('historyScore').item(0);
+    const typeElt = historyElt.getElementsByClassName('historyType').item(0);
+    
+    const type = typeElt.innerHTML;
+    // Check for undefined here rather than just using "if (oldScore)" to 
+    // make sure we handle zero correctly.
+    if (typeof(oldScore) === "undefined") {
+        oldScore = parseInt(scoreElt.innerHTML);
+        scoreElt.innerHTML = newScore;
+    }
+    const delta = newScore - oldScore;
+    // The history object will contain both the original score and
+    // the correction. Is that OK?
+    appendHistory(player, delta, type);
+    updateScore();
+    positionScoreboard(player);    
+    
+    if (type === 'crib') {
+        // We also need to update the last score summary in the history.
+        summaryElt = document.getElementsByClassName(player + 'HandSummary').item(0);
+        summaryElt.innerHTML = currentScore[player].total;
     }
 }
