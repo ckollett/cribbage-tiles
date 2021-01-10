@@ -20,11 +20,19 @@ const currentScore = {
 }
 
 function score(elt) {
+    const points = parseInt(elt.innerHTML);
+
+    const editElts = document.getElementsByClassName('edithistory');
+    if (editElts.length > 0) {
+        updateLastHistoryItem('player', points);
+        sendUpdateHistory(points);
+        return;
+    }
+    
     if (!isScoringAllowed()) {
         return;
     }
     
-    const points = parseInt(elt.innerHTML);
     handleScore('player', points);
     sendScore(points);
     resetScoreButtons();
@@ -173,13 +181,13 @@ function addToHistory() {
     const lastElt = document.getElementById('lastHistory');
     if (lastElt) {
         lastElt.removeAttribute('id');
-        lastElt.removeEventListener('click', enableEditHistory);
+        lastElt.removeEventListener('click', toggleEditHistory);
     }
     
     const containerElt = createFromTemplate('historyItemTemplate', historyData);
     containerElt.classList.add('history' + player);
     if (player === 'player') {
-        containerElt.addEventListener('click', enableEditHistory);
+        containerElt.addEventListener('click', toggleEditHistory);
     }
     
     const currenthand = document.getElementById('currenthand');
@@ -257,59 +265,27 @@ function getLastScoringPlay() {
     }
 }
 
-function enableEditHistory() {
+function toggleEditHistory(evt) {
     // Maybe only allow history change events on the player's own history items?
-    const historyElt = document.getElementById('lastHistory');
+    const historyElt = evt.currentTarget;
     const scoreElt = historyElt.getElementsByClassName('historyScore').item(0);
-    const oldScore = parseInt(scoreElt.innerHTML);
-
-    scoreElt.setAttribute('contenteditable','true');
-    scoreElt.classList.add('edithistory');
-    scoreElt.focus();
-    scoreElt.onkeypress = function(e) {
-        e = e || window.event;
-        var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
-        if (charCode === 13) {
-            // Return key; accept input.
-            scoreElt.removeAttribute('contenteditable');
-            scoreElt.classList.remove('edithistory');
-            handleUpdateInput(scoreElt, oldScore);
-        } else {
-            var charStr = String.fromCharCode(charCode);
-            return (/\d/.test(charStr));
-        }
-    }
+    scoreElt.classList.toggle('edithistory');
 }
 
-function handleUpdateInput(scoreElt, oldScore) {
-    var accepted = false;
-    if (/\d+/.test(scoreElt.innerHTML)) {
-        const newScore = parseInt(scoreElt.innerHTML);
-        if (newScore >= 0 && newScore <= 33) {
-            updateLastHistoryItem('player', newScore, oldScore);
-            sendUpdateHistory(newScore);
-            accepted = true;
-        }
-    }
-    
-    if (!accepted) {
-        scoreElt.innerHTML = oldScore;
-    }
-} 
-
-function updateLastHistoryItem(player, newScore, oldScore) {
+function updateLastHistoryItem(player, newScore) {
     const historyElt = document.getElementById('lastHistory');
     const scoreElt = historyElt.getElementsByClassName('historyScore').item(0);
     const typeElt = historyElt.getElementsByClassName('historyType').item(0);
     
+    scoreElt.classList.remove('edithistory');
+
     const type = typeElt.innerHTML;
     // Check for undefined here rather than just using "if (oldScore)" to 
     // make sure we handle zero correctly.
-    if (typeof(oldScore) === "undefined") {
-        oldScore = parseInt(scoreElt.innerHTML);
-        scoreElt.innerHTML = newScore;
-    }
+    const oldScore = parseInt(scoreElt.innerHTML);
     const delta = newScore - oldScore;
+
+    scoreElt.innerHTML = newScore;
     // The history object will contain both the original score and
     // the correction. Is that OK?
     appendHistory(player, delta, type);
