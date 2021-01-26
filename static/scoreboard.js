@@ -173,6 +173,36 @@ function clearScores() {
 function addToHistory() {
     const lastScore = getLastScoringPlay();
     const player = lastScore.player;
+    const currenthand = document.getElementById('currenthand');
+	
+	trayTiles = [];
+	switch (lastScore.type) {
+	case 'foot':
+	case 'hand':
+		if (player == 'player') {
+			trayTiles = currentDeal.getTilesInTray('player_played');
+		} else {
+			trayTiles = currentDeal.getTilesInTray('opponent_played');
+		}
+		break;
+	case 'crib':
+		trayTiles = currentDeal.getTilesInTray('crib_display')
+		break;
+	}
+	
+	if (trayTiles.length != 0) {
+		trayShort = "";
+		for (let trayTile of trayTiles) {
+			trayShort += trayTile.data.num + trayTile.data.suit[0];
+		}
+		const trayData = {
+			'historyTray' : trayShort
+		};
+		const trayElt = createFromTemplate('historyTrayTemplate', trayData);
+		trayElt.classList.add('history' + player);
+		currenthand.insertBefore(trayElt, currenthand.firstChild);
+	}
+	
     const historyData = {
         'historyScore' : lastScore.points,
         'historyType' : lastScore.type
@@ -190,7 +220,6 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
-    const currenthand = document.getElementById('currenthand');
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
     if (lastScore.type === 'crib') {
@@ -204,6 +233,20 @@ function addToHistory() {
         newhand.id = 'currenthand';
         history.insertBefore(newhand, summaryElt);
     }
+}
+
+function addTurnToHistory(tile) {
+    const currenthand = document.getElementById('currenthand');
+	
+	turnShort = tile.data.num + tile.data.suit[0];
+    const historyData = {
+        'historyScore' : turnShort,
+        'historyType' : 'Turn'
+    };
+    
+    const containerElt = createFromTemplate('historyItemTemplate', historyData);
+    
+    currenthand.insertBefore(containerElt, currenthand.firstChild);
 }
 
 function getHistorySummaryElt() {
