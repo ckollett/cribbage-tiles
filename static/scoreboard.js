@@ -26,6 +26,7 @@ function score(elt) {
     if (editElts.length > 0) {
         updateLastHistoryItem('player', points);
         sendUpdateHistory(points);
+        resetScoreButtons();
         return;
     }
     
