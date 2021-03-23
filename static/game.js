@@ -128,7 +128,7 @@ function turn(tile) {
     currentDeal.tiles.push(turnTile);
     currentDeal.deck.flipped = false;
     currentDeal.deck.addTile(turnTile);
-	window.setTimeout(function() {
+    window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
     }, 500);
 }
