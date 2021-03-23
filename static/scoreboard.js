@@ -190,19 +190,6 @@ function addToHistory() {
 		break;
 	}
 	
-	if (trayTiles.length != 0) {
-		trayShort = "";
-		for (let trayTile of trayTiles) {
-			trayShort += trayTile.data.num + trayTile.data.suit[0];
-		}
-		const trayData = {
-			'historyTray' : trayShort
-		};
-		const trayElt = createFromTemplate('historyTrayTemplate', trayData);
-		trayElt.classList.add('history' + player);
-		currenthand.insertBefore(trayElt, currenthand.firstChild);
-	}
-	
     const historyData = {
         'historyScore' : lastScore.points,
         'historyType' : lastScore.type
@@ -220,6 +207,16 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
+	if (trayTiles.length != 0) {
+		turnTile = currentDeal.deck.tiles[0];
+		trayShort = turnTile.data.suit[0] + turnTile.data.num;
+		for (let trayTile of trayTiles) {
+			trayShort += trayTile.data.suit[0] + trayTile.data.num;
+		}
+		containerElt.accessKey = trayShort;
+        containerElt.addEventListener('auxclick', scoreIt);
+	}
+	
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
     if (lastScore.type === 'crib') {
@@ -233,20 +230,6 @@ function addToHistory() {
         newhand.id = 'currenthand';
         history.insertBefore(newhand, summaryElt);
     }
-}
-
-function addTurnToHistory(tile) {
-    const currenthand = document.getElementById('currenthand');
-	
-	turnShort = tile.data.num + tile.data.suit[0];
-    const historyData = {
-        'historyScore' : turnShort,
-        'historyType' : 'Turn'
-    };
-    
-    const containerElt = createFromTemplate('historyItemTemplate', historyData);
-    
-    currenthand.insertBefore(containerElt, currenthand.firstChild);
 }
 
 function getHistorySummaryElt() {
@@ -307,6 +290,14 @@ function getLastScoringPlay() {
         return null;
     }
 }
+
+function scoreIt(evt) {
+    // Maybe only allow history change events on the player's own history items?
+    const historyElt = evt.currentTarget;
+	url = "https://ckollett.github.io/counter.html#" + historyElt.accessKey;
+	window.open(url);
+}
+
 
 function toggleEditHistory(evt) {
     // Maybe only allow history change events on the player's own history items?
