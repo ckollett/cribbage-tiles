@@ -208,11 +208,12 @@ function addToHistory() {
     }
     
     if (trayTiles.length != 0) {
-        turnTile = currentDeal.deck.tiles[0];
-        trayShort = turnTile.data.suit[0] + turnTile.data.num;
+        trayShort = "";
         for (let trayTile of trayTiles) {
             trayShort += trayTile.data.suit[0] + trayTile.data.num;
         }
+        turnTile = currentDeal.deck.tiles[0];
+        trayShort += turnTile.data.suit[0] + turnTile.data.num;
         containerElt.accessKey = trayShort;
         containerElt.addEventListener('auxclick', scoreIt);
     }
