@@ -51,6 +51,13 @@ div.tilecontainer {
     left:0;
 }
 
+div.pasthandtile {
+    position:relative;
+    width:13vh;
+    height:18vh;
+    border:0;
+}
+
 div.tilesides {
     position:absolute;
     top:0;

@@ -8,15 +8,18 @@ function dealTiles() {
     draw(150);
 }
 
-function renderTile(tile) {
-    const template = document.querySelector('#tiletemplate');
+function renderTile(tile, templateStr) {
+    if (!templateStr) {
+        templateStr = '#tiletemplate';
+    }
+    const template = document.querySelector(templateStr);
     const tileElt = template.content.cloneNode(true).firstElementChild;
     
     if (tile.num !== 0) {
         const tileFront = tileElt.querySelector('.tilefront');   
         tileFront.classList.add(tile.suit);
         const tileValue = tileElt.querySelector('.value');
-        tileValue.innerHTML = tile.num;
+        tileValue.innerHTML = tile.num ? tile.num : tile.value;
     }
     
     return tileElt;

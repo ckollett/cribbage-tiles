@@ -180,11 +180,7 @@ function addToHistory() {
     switch (lastScore.type) {
     case 'foot':
     case 'hand':
-        if (player == 'player') {
-            trayTiles = currentDeal.getTilesInTray('player_played');
-        } else {
-            trayTiles = currentDeal.getTilesInTray('opponent_played');
-        }
+        trayTiles = currentDeal.getTilesInTray(player + '_played');
         break;
     case 'crib':
         trayTiles = currentDeal.getTilesInTray('crib_display')
@@ -209,13 +205,8 @@ function addToHistory() {
     }
     
     if (trayTiles.length != 0) {
-        trayShort = "";
-        for (let trayTile of trayTiles) {
-            trayShort += trayTile.data.suit[0] + trayTile.data.num;
-        }
-        turnTile = currentDeal.deck.tiles[0];
-        trayShort += turnTile.data.suit[0] + turnTile.data.num;
-        containerElt.accessKey = trayShort;
+        let trayShort = getHandCode(trayTiles);
+        containerElt.setAttribute("data-hand", trayShort);
         containerElt.addEventListener('auxclick', scoreIt);
     }
     
@@ -233,6 +224,16 @@ function addToHistory() {
         history.insertBefore(newhand, summaryElt);
     }
 }
+
+function getHandCode(trayTiles) {
+    trayShort = "";
+    for (let trayTile of trayTiles) {
+        trayShort += trayTile.data.suit[0] + trayTile.data.num;
+    }
+    turnTile = currentDeal.deck.tiles[0];
+    trayShort += turnTile.data.suit[0] + turnTile.data.num;
+    return trayShort;
+}    
 
 function getHistorySummaryElt() {
     const data = {
@@ -295,9 +296,16 @@ function getLastScoringPlay() {
 
 function scoreIt(evt) {
     // Maybe only allow history change events on the player's own history items?
-    const historyElt = evt.currentTarget;
-    url = "https://ckollett.github.io/counter.html#" + historyElt.accessKey;
-    window.open(url);
+    const shortHand = evt.currentTarget.getAttribute("data-hand");
+    const hand = getHandFromShortHand(shortHand);
+    const score = scoreHand(hand);
+    const pastHandElt = document.getElementById('pasthand');
+    pastHandElt.innerHTML = getScoreOutput(score);
+    for (let tile of hand) {
+        let tileElt = renderTile(tile, '#pasthandtiletemplate');
+        pastHandElt.appendChild(tileElt);
+    }
+    pastHandElt.style.display = 'block';
 }
 
 

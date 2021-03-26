@@ -129,3 +129,17 @@ div#footer {
     width:100%;
 }
 
+div#pasthand {
+    position:absolute;
+    width:80%;
+    min-height:20vh;
+    right:0;
+    top:26vh;
+    border:1vh solid black;
+    border-radius:2vh;
+    padding:1vh;
+    background-color:white;
+    z-index:50;
+    display:none;
+}
+
