@@ -38,17 +38,17 @@ function score(elt) {
     sendScore(points);
     resetScoreButtons();
     
-	switch (scoreState.toLowerCase()) {
-	case 'foot':
-		// Need to check if current deal is player, since handleScore advances!
-	    if (currentDeal.dealer === 'player') {
-			sendShowCrib();
-		}
-		break;
-	case 'crib':
-		sendShuffle();
-		break;
-	}
+    switch (scoreState.toLowerCase()) {
+    case 'foot':
+        // Need to check if current deal is player, since handleScore advances!
+        if (currentDeal.dealer === 'player') {
+            sendShowCrib();
+        }
+        break;
+    case 'crib':
+        sendShuffle();
+        break;
+    }
 }
 
 function isScoringAllowed() {
@@ -78,26 +78,26 @@ function handleScore(player, points) {
     positionScoreboard(player);
     updateScore();
     addToHistory();
-	
-	switch (scoreState.toLowerCase()) {
-	case 'nobs':
-		if (!currentDeal.dealer) {
-			const oldDealer = player === 'opponent' ? 'player' : 'opponent';
-			currentDeal.dealerChanged(oldDealer);
-		}
-		break;
-	case 'hand':
-		scoreState = 'Foot';
-		break;
-	case 'peg':
-		if (currentDeal.isGo) {
-			clearPegging();
-			if (isPeggingComplete()) {
-				scoreState = 'Hand';
-			}        
-		}
-		break;
-	}
+    
+    switch (scoreState.toLowerCase()) {
+    case 'nobs':
+        if (!currentDeal.dealer) {
+            const oldDealer = player === 'opponent' ? 'player' : 'opponent';
+            currentDeal.dealerChanged(oldDealer);
+        }
+        break;
+    case 'hand':
+        scoreState = 'Foot';
+        break;
+    case 'peg':
+        if (currentDeal.isGo) {
+            clearPegging();
+            if (isPeggingComplete()) {
+                scoreState = 'Hand';
+            }        
+        }
+        break;
+    }
 }
 
 function appendHistory(player, points, scoreType) {
@@ -106,10 +106,10 @@ function appendHistory(player, points, scoreType) {
     playerObj.total += delta;
     playerObj[scoreType.toLowerCase()] += delta;
     
-	if (playerObj.total == 121) {
-		stopGameTimer();
-	}
-	
+    if (playerObj.total == 121) {
+        stopGameTimer();
+    }
+    
     const lastScore = {
         'player' : player,
         'points' : points,
@@ -174,6 +174,23 @@ function clearScores() {
 function addToHistory() {
     const lastScore = getLastScoringPlay();
     const player = lastScore.player;
+    const currenthand = document.getElementById('currenthand');
+    
+    trayTiles = [];
+    switch (lastScore.type) {
+    case 'foot':
+    case 'hand':
+        if (player == 'player') {
+            trayTiles = currentDeal.getTilesInTray('player_played');
+        } else {
+            trayTiles = currentDeal.getTilesInTray('opponent_played');
+        }
+        break;
+    case 'crib':
+        trayTiles = currentDeal.getTilesInTray('crib_display')
+        break;
+    }
+    
     const historyData = {
         'historyScore' : lastScore.points,
         'historyType' : lastScore.type
@@ -191,7 +208,17 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
-    const currenthand = document.getElementById('currenthand');
+    if (trayTiles.length != 0) {
+        trayShort = "";
+        for (let trayTile of trayTiles) {
+            trayShort += trayTile.data.suit[0] + trayTile.data.num;
+        }
+        turnTile = currentDeal.deck.tiles[0];
+        trayShort += turnTile.data.suit[0] + turnTile.data.num;
+        containerElt.accessKey = trayShort;
+        containerElt.addEventListener('auxclick', scoreIt);
+    }
+    
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
     if (lastScore.type === 'crib') {
@@ -265,6 +292,14 @@ function getLastScoringPlay() {
         return null;
     }
 }
+
+function scoreIt(evt) {
+    // Maybe only allow history change events on the player's own history items?
+    const historyElt = evt.currentTarget;
+    url = "https://ckollett.github.io/counter.html#" + historyElt.accessKey;
+    window.open(url);
+}
+
 
 function toggleEditHistory(evt) {
     // Maybe only allow history change events on the player's own history items?
