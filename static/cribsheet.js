@@ -13,9 +13,8 @@ function getLastScore() {
 }
 
 function showLastScore(scoreData) {
-    const dates = scoreData.values[0];
-    const jason = scoreData.values[1];
-    const chris = scoreData.values[2];
-    const msg = "Last game: Jason " + jason[jason.length-1] + " Chris "+ chris[chris.length-1];
+    const winner = scoreData.values[1];
+    
+    const msg = "Last game winner: " + winner[winner.length-1];
     document.getElementById('lastscore').innerHTML = msg;
 }
