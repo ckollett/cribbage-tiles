@@ -158,7 +158,8 @@ table.subtotals td {
   color:black;
   left:75%;
   text-align:center;
-  margin-left:-2px;
+  margin-left:-10px;
+  width:20px;
   font-size:3vh;
 }
 
