@@ -56,6 +56,8 @@ div.pasthandtile {
     width:13vh;
     height:18vh;
     border:0;
+    margin-right:2vh;
+    display:inline-block;
 }
 
 div.tilesides {
