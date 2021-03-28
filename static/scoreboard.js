@@ -204,10 +204,20 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
+    let miscount = false;
     if (trayTiles.length != 0) {
         let trayShort = getHandCode(trayTiles);
+        
+        let counterTotal = getHandScore(trayShort);
+        if (counterTotal !== lastScore.points) {
+            miscount = true;
+            containerElt.classList.add('miscount');
+        }
+        
         containerElt.setAttribute("data-hand", trayShort);
-        containerElt.addEventListener('auxclick', scoreIt);
+        containerElt.setAttribute("data-counter", counterTotal);
+        containerElt.addEventListener('mouseover', scoreIt);
+        containerElt.addEventListener('mouseout', hideScore);
     }
     
     currenthand.insertBefore(containerElt, currenthand.firstChild);
@@ -218,7 +228,9 @@ function addToHistory() {
         history.insertBefore(summaryElt, history.firstChild);
         
         currenthand.removeAttribute('id');
-        currenthand.classList.add('pasthand');
+        if (!miscount) {
+            currenthand.classList.add('pasthand');
+        }
         const newhand = document.createElement('div');
         newhand.id = 'currenthand';
         history.insertBefore(newhand, summaryElt);
@@ -294,18 +306,33 @@ function getLastScoringPlay() {
     }
 }
 
+function getHandScore(shortHand) {
+    const hand = getHandFromShortHand(shortHand);
+    const scoreGroups = scoreHand(hand);
+    return getTotal(scoreGroups);
+}
+
 function scoreIt(evt) {
     // Maybe only allow history change events on the player's own history items?
     const shortHand = evt.currentTarget.getAttribute("data-hand");
     const hand = getHandFromShortHand(shortHand);
     const score = scoreHand(hand);
-    const pastHandElt = document.getElementById('pasthand');
-    pastHandElt.innerHTML = getScoreOutput(score);
+    document.getElementById('pastscore').innerHTML = getScoreOutput(score);
+    
+    // For display, put the turn first.
+    hand.unshift(hand.pop());
+    const pastTilesElt = document.getElementById('pasttiles');
+    pastTilesElt.innerHTML = "";
     for (let tile of hand) {
         let tileElt = renderTile(tile, '#pasthandtiletemplate');
-        pastHandElt.appendChild(tileElt);
+        pastTilesElt.appendChild(tileElt);
     }
-    pastHandElt.style.display = 'block';
+
+    document.getElementById('pasthand').style.display = 'block';
+}
+
+function hideScore() {
+    document.getElementById('pasthand').style.display = 'none';
 }
 
 
@@ -341,4 +368,15 @@ function updateLastHistoryItem(player, newScore) {
         summaryElt = document.getElementsByClassName(player + 'HandSummary').item(0);
         summaryElt.innerHTML = currentScore[player].total;
     }
+    
+    let countedScore = historyElt.getAttribute("data-counter");
+    if (!countedScore || parseInt(countedScore) === newScore) {
+        historyElt.classList.remove("miscount");
+        if (type === 'crib') {
+            historyElt.parentElement.classList.add('pasthand');
+        }
+    } else {
+        historyElt.classList.add("miscount");
+    }
+    
 }

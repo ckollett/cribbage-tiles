@@ -51,13 +51,43 @@ div.tilecontainer {
     left:0;
 }
 
+
+/* It is confusing that pasthand is used as both a class and an ID, for different parts of the board. */
+div#pasthand {
+    position:absolute;
+    width:89%;
+    min-height:20vh;
+    right:0;
+    top:7vh;
+    border:0.5vh solid black;
+    border-radius:1vh;
+    padding:1%;
+    background-color:white;
+    z-index:50;
+    display:none;
+}
+
+div#pasttiles {
+    text-align:center;
+    width:100%;
+    margin-bottom:3vh;
+}
+
 div.pasthandtile {
     position:relative;
     width:13vh;
     height:18vh;
     border:0;
-    margin-right:2vh;
+    margin-right:1.5vh;
     display:inline-block;
+}
+
+div.pasthandtile:first-child {
+    margin-right: 5vh;
+}
+
+div.pasthandtile:first-child div.tilesides {
+    box-shadow: -0.5vh 0.5vh;
 }
 
 div.tilesides {
@@ -263,6 +293,7 @@ div#currenthand {
     width:100%;
 }
 
+
 div.pasthand {
     width:100%;
     overflow-y:hidden;
@@ -327,6 +358,13 @@ div.historyItem > span {
     display:inline-block;
     text-align:center;
     box-sizing:border-box;
+}
+
+div.historyItem.miscount::before {
+    position:absolute;
+    content : '!';
+    left:2px;
+    color:black;
 }
 
 span.historyScore {
