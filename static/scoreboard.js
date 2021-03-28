@@ -180,11 +180,7 @@ function addToHistory() {
     switch (lastScore.type) {
     case 'foot':
     case 'hand':
-        if (player == 'player') {
-            trayTiles = currentDeal.getTilesInTray('player_played');
-        } else {
-            trayTiles = currentDeal.getTilesInTray('opponent_played');
-        }
+        trayTiles = currentDeal.getTilesInTray(player + '_played');
         break;
     case 'crib':
         trayTiles = currentDeal.getTilesInTray('crib_display')
@@ -208,15 +204,20 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
+    let miscount = false;
     if (trayTiles.length != 0) {
-        trayShort = "";
-        for (let trayTile of trayTiles) {
-            trayShort += trayTile.data.suit[0] + trayTile.data.num;
+        let trayShort = getHandCode(trayTiles);
+        
+        let counterTotal = getHandScore(trayShort);
+        if (counterTotal !== lastScore.points) {
+            miscount = true;
+            containerElt.classList.add('miscount');
         }
-        turnTile = currentDeal.deck.tiles[0];
-        trayShort += turnTile.data.suit[0] + turnTile.data.num;
-        containerElt.accessKey = trayShort;
-        containerElt.addEventListener('auxclick', scoreIt);
+        
+        containerElt.setAttribute("data-hand", trayShort);
+        containerElt.setAttribute("data-counter", counterTotal);
+        containerElt.addEventListener('mouseover', scoreIt);
+        containerElt.addEventListener('mouseout', hideScore);
     }
     
     currenthand.insertBefore(containerElt, currenthand.firstChild);
@@ -227,12 +228,24 @@ function addToHistory() {
         history.insertBefore(summaryElt, history.firstChild);
         
         currenthand.removeAttribute('id');
-        currenthand.classList.add('pasthand');
+        if (!miscount) {
+            currenthand.classList.add('pasthand');
+        }
         const newhand = document.createElement('div');
         newhand.id = 'currenthand';
         history.insertBefore(newhand, summaryElt);
     }
 }
+
+function getHandCode(trayTiles) {
+    trayShort = "";
+    for (let trayTile of trayTiles) {
+        trayShort += trayTile.data.suit[0] + trayTile.data.num;
+    }
+    turnTile = currentDeal.deck.tiles[0];
+    trayShort += turnTile.data.suit[0] + turnTile.data.num;
+    return trayShort;
+}    
 
 function getHistorySummaryElt() {
     const data = {
@@ -293,11 +306,33 @@ function getLastScoringPlay() {
     }
 }
 
+function getHandScore(shortHand) {
+    const hand = getHandFromShortHand(shortHand);
+    const scoreGroups = scoreHand(hand);
+    return getTotal(scoreGroups);
+}
+
 function scoreIt(evt) {
     // Maybe only allow history change events on the player's own history items?
-    const historyElt = evt.currentTarget;
-    url = "https://ckollett.github.io/counter.html#" + historyElt.accessKey;
-    window.open(url);
+    const shortHand = evt.currentTarget.getAttribute("data-hand");
+    const hand = getHandFromShortHand(shortHand);
+    const score = scoreHand(hand);
+    document.getElementById('pastscore').innerHTML = getScoreOutput(score);
+    
+    // For display, put the turn first.
+    hand.unshift(hand.pop());
+    const pastTilesElt = document.getElementById('pasttiles');
+    pastTilesElt.innerHTML = "";
+    for (let tile of hand) {
+        let tileElt = renderTile(tile, '#pasthandtiletemplate');
+        pastTilesElt.appendChild(tileElt);
+    }
+
+    document.getElementById('pasthand').style.display = 'block';
+}
+
+function hideScore() {
+    document.getElementById('pasthand').style.display = 'none';
 }
 
 
@@ -333,4 +368,15 @@ function updateLastHistoryItem(player, newScore) {
         summaryElt = document.getElementsByClassName(player + 'HandSummary').item(0);
         summaryElt.innerHTML = currentScore[player].total;
     }
+    
+    let countedScore = historyElt.getAttribute("data-counter");
+    if (!countedScore || parseInt(countedScore) === newScore) {
+        historyElt.classList.remove("miscount");
+        if (type === 'crib') {
+            historyElt.parentElement.classList.add('pasthand');
+        }
+    } else {
+        historyElt.classList.add("miscount");
+    }
+    
 }
