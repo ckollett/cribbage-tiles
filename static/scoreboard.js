@@ -317,7 +317,7 @@ function scoreIt(evt) {
     const shortHand = evt.currentTarget.getAttribute("data-hand");
     const hand = getHandFromShortHand(shortHand);
     const score = scoreHand(hand);
-    document.getElementById('pastscore').innerHTML = getScoreOutput(score);
+    document.getElementById('pastscore').innerHTML = getOutputAsTable(score);
     
     // For display, put the turn first.
     hand.unshift(hand.pop());

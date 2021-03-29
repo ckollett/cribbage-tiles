@@ -238,3 +238,40 @@ div#monsterbutton:hover {
       -1px 1px 0 #ffffff,
        1px 1px 0 #ffffff;
 }
+
+table#pasttable {
+    border-collapse:collapse;
+    border: 1px solid black;
+    margin-bottom:3vh;
+}
+
+table#pasttable tr.pastheader td {
+    background-color:black;
+    color:white;
+}
+
+table#pasttable td {
+    padding:2px;
+}
+
+table#pasttable td.pastname {
+    min-width:200px;
+}
+
+table#pasttable td.pastscore {
+    min-width:80px;
+    text-align:center;
+}
+
+table#pasttable td.pastformula {
+    min-width:200px;
+    text-align:center;
+}
+
+table#pasttable tr {
+    border-bottom:1px solid black;
+}
+
+table#pasttable tr.pasttotal {
+    border-top:2px solid black;
+}
