@@ -54,13 +54,25 @@ io.on('connection', function(socket) {
     });
     
     socket.on("pegged", function(card) {
-        getPlayer(socket.id).hand.removeCard(card);
+        let player = getPlayer(socket.id);
+        player.hand.removeCard(card);
         currentDeal.playerPegged(card.pegValue);
-        
-        notifyOtherPlayer("opponentPegged", card);
-        if (currentDeal.isGo()) {
-            notifyAll("go");
+        let go = currentDeal.isGo();
+        let bummer = false;
+        if (!go) {
+            let otherPlayer = getOtherPlayer(socket.id);
+            if (otherPlayer.hand.isGo(currentDeal.pegRemaining)) {
+                bummer = true;
+            }
         }
+        
+        let pegData = {
+            'card' : card,
+            'go' : go,
+            'bummer' : bummer 
+        }
+        notifyOtherPlayer("opponentPegged", pegData);
+        notifyPlayer(player, "afterPeg", pegData);
     });
     
     socket.on("clearPegging", function() {
@@ -175,9 +187,14 @@ function notifyPlayer(player, messageId, message) {
 }
 
 function notifyOtherPlayerById(id, messageId, message) {
+    let otherPlayer = getOtherPlayer(id);
+    notifyPlayer(otherPlayer, messageId, message);
+}
+
+function getOtherPlayer(id) {
     for (let player of currentGame.players) {
         if (player.id !== id) {
-            notifyPlayer(player, messageId, message);
+            return player;
         }
     }
 }

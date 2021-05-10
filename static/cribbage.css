@@ -17,6 +17,10 @@ div.value {
     top:2%;
 }
 
+div.go div.value {
+    color:black;
+}
+
 div.tent {
     background: url('/static/images/tent.svg');
 }
@@ -49,45 +53,6 @@ div.tilecontainer {
     transition: left 0.5s ease,top 0.5s ease;
     top:35%;
     left:0;
-}
-
-
-/* It is confusing that pasthand is used as both a class and an ID, for different parts of the board. */
-div#pasthand {
-    position:absolute;
-    width:89%;
-    min-height:20vh;
-    right:0;
-    top:7vh;
-    border:0.5vh solid black;
-    border-radius:1vh;
-    padding:1%;
-    background-color:white;
-    z-index:50;
-    display:none;
-}
-
-div#pasttiles {
-    text-align:center;
-    width:100%;
-    margin-bottom:3vh;
-}
-
-div.pasthandtile {
-    position:relative;
-    width:13vh;
-    height:18vh;
-    border:0;
-    margin-right:1.5vh;
-    display:inline-block;
-}
-
-div.pasthandtile:first-child {
-    margin-right: 5vh;
-}
-
-div.pasthandtile:first-child div.tilesides {
-    box-shadow: -0.5vh 0.5vh;
 }
 
 div.tilesides {

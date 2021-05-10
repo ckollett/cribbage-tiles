@@ -7,14 +7,14 @@
     <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
     <link rel="stylesheet" type="text/css" href="static/scoreboard.css" />
     <script src="/socket.io/socket.io.js"></script>
-    <script src="static/tile.js"></script>
-    <script src="static/game.js"></script>
-    <script src="static/deal.js"></script>
-    <script src="static/tray.js"></script>
-    <script src="static/scoreboard.js"></script>
-    <script src="static/events.js"></script>
-    <script src="static/cribsheet.js"></script>
-    <script src="https://ckollett.github.io/counter.js?202104020850"></script>
+    <script src="static/tile.js?202104130822"></script>
+    <script src="static/game.js?202104130822"></script>
+    <script src="static/deal.js?202104130822"></script>
+    <script src="static/tray.js?202104130822"></script>
+    <script src="static/scoreboard.js?202104130822"></script>
+    <script src="static/events.js?202104130822"></script>
+    <script src="static/cribsheet.js?202104130822"></script>
+    <script src="https://ckollett.github.io/counter.js?202104130822"></script>
   </head>
   <body>
     <div id="outer">
@@ -46,13 +46,14 @@
         </div>
       </div>
       <div class="sideposition" id="rightscroll">
-        <div class="sidearea rightarea collapsed" id="history">
+        <div class="sidearea rightarea" id="history">
           <div id="currenthand"></div>
         </div>
       </div>
       
       <div id="main">
         <div id="scorebuttons">
+          <div id="counterbutton">Nobs</div>
           <div id="monsterbutton" onclick="monster();"></div>
           <div id="scorebuttons1" class="scorenumbers activenumbers">
             <div class="scorebutton" onclick="score(this)">0</div>
@@ -96,7 +97,7 @@
             <div style="flex-grow:11;"></div>
           </div>
         </div>   
-            
+        
         <div id="scoreboardarea">
           <div id="scoreboard">
             <div class="score" id="playerscorearea">

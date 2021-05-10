@@ -165,6 +165,7 @@ table.subtotals td {
 
 div.scorenumbers {
     margin-left:6%;
+    margin-right:10%;
     flex-grow:1;
     flex-basis:0;
     display:none;
@@ -223,6 +224,48 @@ div#monsterbutton {
     position:absolute;
 }
 
+div#counterbutton {
+    display:inline;
+    background-color:white;
+    color:black;
+    text-align:center;
+    height:4vh;
+    width:9%;
+    margin-top:1vh;
+    margin-bottom:1vh;
+    box-sizing:border-box;
+    border:1px solid black;
+    font-size:2.5vh;
+    line-height:4vh;
+    border-radius:0.75vh;
+    position:absolute;
+    right:0;
+}
+
+/*
+div#counterbutton {
+    display:inline-block;
+    width:6%;
+    padding-top:6%;
+    right:0;
+    padding-bottom:0;
+    background: url('/static/images/calculator.svg');
+    background-size:100%;
+    background-position:50%;
+    background-repeat:no-repeat;
+    position:absolute;
+    text-align:center;
+    font-size:6vh;
+    line-height:9vh;
+}
+*/
+
+div#counterbutton.active {
+    background-color:black;
+    color:white;
+}
+
+
 div#monsterbutton:hover {
     background: url('/static/images/monster_alt.svg');
     background-size:100%;
@@ -242,6 +285,8 @@ div#monsterbutton:hover {
 table#pasttable {
     border-collapse:collapse;
     border: 1px solid black;
+    width:90%;
+    margin:auto;
     margin-bottom:3vh;
 }
 
@@ -250,21 +295,21 @@ table#pasttable tr.pastheader td {
     color:white;
 }
 
+table#pasttable th {
+    font-size:2.5vh;
+}
+
 table#pasttable td {
     padding:2px;
+    font-size:2.5vh;
 }
 
 table#pasttable td.pastname {
-    min-width:200px;
+    width:70%;
 }
 
 table#pasttable td.pastscore {
-    min-width:80px;
-    text-align:center;
-}
-
-table#pasttable td.pastformula {
-    min-width:200px;
+    width:30%;
     text-align:center;
 }
 
@@ -274,4 +319,94 @@ table#pasttable tr {
 
 table#pasttable tr.pasttotal {
     border-top:2px solid black;
+}
+
+/* It is confusing that pasthand is used as both a class and an ID, for different parts of the board. */
+div#pasthand {
+    position:absolute;
+    width:89%;
+    min-height:20vh;
+    right:0;
+    top:7vh;
+    border:0.5vh solid black;
+    border-radius:1vh;
+    padding:1%;
+    background-color:white;
+    z-index:50;
+    display:none;
+    text-align:center;
+}
+
+div#pasttiles {
+    text-align:center;
+    width:100%;
+}
+
+div.pasthandtile {
+    position:relative;
+    width:13vh;
+    height:18vh;
+    border:0;
+    margin-right:1.5vh;
+    display:inline-block;
+}
+
+div.pastturn {
+    margin-right: 5vh;
+}
+
+div.pastturn div.tilesides {
+    box-shadow: -0.5vh 0.5vh;
+}
+
+div.pastpeg_container {
+    height: 22vh;
+    margin: auto;
+    position: relative;
+}
+
+div.pastpeg {
+    position:absolute;
+    margin:0;
+}
+
+div.pastpeg_player {
+    top:0vh;
+}
+
+div.pastpeg_opponent {
+    top:4vh;
+}
+
+div.pastpeg1 {
+    right:0;
+    z-index:1;
+}
+div.pastpeg2 {
+    right:7vh;
+    z-index:2;
+}
+div.pastpeg3 {
+    right:14vh;
+    z-index:3;
+}
+div.pastpeg4 {
+    right:21vh;
+    z-index:4;
+}
+div.pastpeg5 {
+    right:28vh;
+    z-index:5;
+}
+div.pastpeg6 {
+    right:35vh;
+    z-index:6;
+}
+div.pastpeg7 {
+    right:42vh;
+    z-index:7;
+}
+div.pastpeg8 {
+    right:49vh;
+    z-index:8;
 }

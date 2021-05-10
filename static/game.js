@@ -103,6 +103,10 @@ function positionTile(tiles,positions,idx,delay,resolveFcn) {
 function commitCrib() {
     drawPromise = drawPromise.then(function() {
         const crib = currentDeal.crib_selection.getTiles().reverse();
+        if (crib.length !== 2) {
+            return;
+        }
+        
         currentDeal.crib.addTiles(crib);
         
         const cribData = [];
@@ -125,7 +129,7 @@ function moveOpponentCrib() {
 }
 
 function turn(tile) {
-    scoreState = 'Nobs';
+    setScoreState('Nobs');
     const turnTile = new Tile(tile,'');
     document.getElementById('game').appendChild(turnTile.elt);
     currentDeal.tiles.push(turnTile);
@@ -133,6 +137,9 @@ function turn(tile) {
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
+        if (turnTile.getNum() === 'J') {
+            updateCounterButtonForNobs(turnTile);
+        }
     }, 500);
 }
 
@@ -166,15 +173,23 @@ function shake(elt, afterShake) {
 }
 
 function clearPegging() {
+    drawPromise = drawPromise.then(doClearPegging);
+}
+
+function doClearPegging() {
     const pegTray = currentDeal.peg;
     const pegTiles = pegTray.getTiles().slice();
     for (let tile of pegTiles) {
         const newTray = currentDeal[tile.owner + '_played'];
         newTray.addTile(tile);
+        tile.elt.classList.remove('go');
     }
     pegTray.clear();
 	currentDeal.isGo = false;
     draw();
+    if (scoreState === 'Peg' && isPeggingComplete()) {
+        setScoreState('Hand');
+    }        
 }
 
 function isPeggingComplete() {
@@ -184,7 +199,6 @@ function isPeggingComplete() {
 }
 
 function revealCrib(oppCrib) {
-    scoreState = 'Crib';
     const cribTiles = currentDeal.crib.getTiles().slice();
     const oppTiles = cribTiles.filter(tile => tile.owner === 'opponent');
     oppTiles[0].update(oppCrib[0]);
@@ -194,6 +208,7 @@ function revealCrib(oppCrib) {
     currentDeal.crib.clear();
     currentDeal.crib_display.addTiles(cribTiles);
     draw(250);
+    setScoreState('Crib');
 }
 
 function tileClicked(tileElt) {
@@ -223,7 +238,7 @@ function noGame() {
 }
 
 function doReset() {
-    scoreState = null;
+    setScoreState('Nobs');
     if (currentDeal) {
         currentDeal.deck.flipped = true;
         for (let turnTile of currentDeal.deck.getTiles()) {
@@ -295,4 +310,77 @@ function stopGameTimer() {
 
 function handleShowCrib(crib) {
     revealCrib(crib);
+}
+
+function markGoTile() {
+    const pegged = currentDeal.getTray('peg').tiles;
+    pegged[pegged.length-1].elt.classList.add('go');
+}
+
+function setScoreState(state) {
+    scoreState = state;
+    const counterElt = document.getElementById('counterbutton');
+    counterElt.innerHTML = state;
+    switch (state) {
+    case 'Hand' :
+        if (currentDeal.dealer === 'opponent') {
+            updateCounterButtonForHand(currentDeal.player_played);
+        }
+        return;
+    case 'Foot' :
+        if (currentDeal.dealer === 'player') {
+            updateCounterButtonForHand(currentDeal.player_played);
+        }
+        return;
+    case 'Crib' :
+        if (currentDeal.dealer === 'player') {
+            updateCounterButtonForHand(currentDeal.crib_display);
+        }
+        return;    
+    }
+    
+    removeData(counterElt);
+}
+
+function updateCounterButtonForHand(tray) {
+    let trayTiles = tray.getTiles();
+    let trayShort = getHandCode(trayTiles, true);
+    let counterTotal = getHandScore(trayShort);
+    let counterElt = activateCounterButton(counterTotal);
+    addHandData(counterElt, tray.getTiles());
+}
+
+function updateCounterButtonForPeg() {
+    let trayShort = getHandCode(currentDeal.peg.getTiles(), false);
+    let counterTotal = getPegScore(trayShort);
+    if (counterTotal > 0) {
+        let counterElt = activateCounterButton(counterTotal);
+        addPegData(counterElt, currentDeal.peg.getTiles());
+    }
+}
+
+function updateCounterButtonForNobs(tile) {
+    debugger;
+    let nobsShort = getHandCode([tile], false);
+    let counterTotal = 2;
+    let counterElt = activateCounterButton(counterTotal);
+    addNobsData(counterElt, tile);
+}
+
+function activateCounterButton(points) {
+    const counterElt = document.getElementById('counterbutton');
+    counterElt.classList.add('active');
+    counterElt.onclick = function() {
+        scorePoints('player', points);
+    }
+    return counterElt;
+}
+
+function removeData(elt) {
+    hideScore();
+    elt.removeEventListener('mouseover', showPegScore);
+    elt.removeEventListener('mouseover', showHandScore);
+    elt.removeEventListener('mouseout', hideScore);
+    elt.onclick = null;
+    elt.classList.remove('active');
 }

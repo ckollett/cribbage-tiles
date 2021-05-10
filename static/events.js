@@ -20,16 +20,32 @@ socket.on("fullcrib", function(turnTile) {
     turn(turnTile);
 });
 
-socket.on("opponentPegged", function(tile) {
+socket.on("opponentPegged", function(cardData) {
+    let tile = cardData.card;
     const tileObj = currentDeal.opponent_hand.getLastTile();
     tileObj.update(tile);
     currentDeal.sort();
     currentDeal.peg.addTile(tileObj);
     draw();
+    
+    if (cardData.go) {
+        currentDeal.isGo = true;
+        markGoTile();
+    } else if (cardData.bummer) {
+        markGoTile();
+    }
+    
 });
 
-socket.on("go", function() {
-	currentDeal.isGo = true;
+socket.on("afterPeg", function(cardData) {
+    if (cardData.go) {
+        currentDeal.isGo = true;
+        markGoTile();
+    } else if (cardData.bummer) {
+        markGoTile();
+    }
+    
+    updateCounterButtonForPeg();
 });
 
 socket.on("showCrib", handleShowCrib);

@@ -108,10 +108,29 @@ div#scorebuttons {
     width:100%;
 }
 
+div#scoremessage {
+    display:inline-block;
+    width:100%;
+}
+
 div#scoreboardarea {
     position:relative;
-    height:20vh;
+    height:18vh;
     width:100%;
+}
+
+div#scoremessage span {
+    display:inline-block;
+}
+
+div#scoremessage span a {
+    padding:0.3vh 0.9vh 0.3vh 0.9vh;
+}
+
+div#scoremessage span a:hover {
+    background-color: black;
+    color: white;
+    border-radius: 0.75vh;
 }
 
 div.gamearea {

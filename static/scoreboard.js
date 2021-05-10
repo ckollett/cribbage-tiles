@@ -30,13 +30,18 @@ function score(elt) {
         return;
     }
     
-    if (!isScoringAllowed()) {
-        return;
+    if (isScoringAllowed()) {
+        scorePoints('player', points);
     }
     
-    handleScore('player', points);
-    sendScore(points);
-    resetScoreButtons();
+}
+
+function scorePoints(player, points) {
+    handleScore(player, points);
+    if (player === 'player') {
+        sendScore(points);
+        resetScoreButtons();
+    }
     
     switch (scoreState.toLowerCase()) {
     case 'foot':
@@ -87,13 +92,13 @@ function handleScore(player, points) {
         }
         break;
     case 'hand':
-        scoreState = 'Foot';
+        setScoreState('Foot');
         break;
     case 'peg':
         if (currentDeal.isGo) {
             clearPegging();
             if (isPeggingComplete()) {
-                scoreState = 'Hand';
+                setScoreState('Hand');
             }        
         }
         break;
@@ -151,8 +156,8 @@ function updateScore() {
     }
     
     increment();
+    removeData(document.getElementById('counterbutton'));
 }
-
 
 function positionScoreboard(player) {
     const playerBoard = document.getElementById(player + 'scoreboard');
@@ -176,17 +181,6 @@ function addToHistory() {
     const player = lastScore.player;
     const currenthand = document.getElementById('currenthand');
     
-    trayTiles = [];
-    switch (lastScore.type) {
-    case 'foot':
-    case 'hand':
-        trayTiles = currentDeal.getTilesInTray(player + '_played');
-        break;
-    case 'crib':
-        trayTiles = currentDeal.getTilesInTray('crib_display')
-        break;
-    }
-    
     const historyData = {
         'historyScore' : lastScore.points,
         'historyType' : lastScore.type
@@ -204,22 +198,7 @@ function addToHistory() {
         containerElt.addEventListener('click', toggleEditHistory);
     }
     
-    let miscount = false;
-    if (trayTiles.length != 0) {
-        let trayShort = getHandCode(trayTiles);
-        
-        let counterTotal = getHandScore(trayShort);
-        if (counterTotal !== lastScore.points) {
-            miscount = true;
-            containerElt.classList.add('miscount');
-        }
-        
-        containerElt.setAttribute("data-hand", trayShort);
-        containerElt.setAttribute("data-counter", counterTotal);
-        containerElt.addEventListener('mouseover', scoreIt);
-        containerElt.addEventListener('mouseout', hideScore);
-    }
-    
+    addTileData(containerElt, player, lastScore.type, lastScore.points);
     currenthand.insertBefore(containerElt, currenthand.firstChild);
     
     if (lastScore.type === 'crib') {
@@ -228,7 +207,7 @@ function addToHistory() {
         history.insertBefore(summaryElt, history.firstChild);
         
         currenthand.removeAttribute('id');
-        if (!miscount) {
+        if (!containerElt.classList.contains('miscount')) {
             currenthand.classList.add('pasthand');
         }
         const newhand = document.createElement('div');
@@ -237,13 +216,80 @@ function addToHistory() {
     }
 }
 
-function getHandCode(trayTiles) {
+function addTileData(containerElt, player, scoreType, expPoints) {
+    let trayTiles = [];
+    switch(scoreType) {
+        case 'foot' :
+        case 'hand' :
+            trayTiles = currentDeal.getTilesInTray(player + '_played');
+            addHandData(containerElt, trayTiles, expPoints);
+            break;
+        case 'crib' :
+            trayTiles = currentDeal.getTilesInTray('crib_display');
+            addHandData(containerElt, trayTiles, expPoints);
+            break;
+        case 'peg' :
+            // Use getTray('peg').getTiles() to get the tiles in play order.
+            trayTiles = currentDeal.getTray('peg').getTiles();
+            addPegData(containerElt, trayTiles, expPoints);
+            break;
+        case 'nobs' :
+            let nobsTile = currentDeal.deck.getTiles()[0];
+            addNobsData(containerElt, nobsTile);
+            break;
+    }
+}
+
+function addHandData(containerElt, trayTiles, expPoints) {
+    let trayShort = getHandCode(trayTiles, true);
+    
+    let counterTotal = getHandScore(trayShort);
+    if (expPoints && counterTotal !== expPoints) {
+        containerElt.classList.add('miscount');
+    }
+    
+    containerElt.setAttribute("data-hand", trayShort);
+    containerElt.setAttribute("data-counter", counterTotal);
+    containerElt.addEventListener('mouseover', showHandScore);
+    containerElt.addEventListener('mouseout', hideScore);
+}
+
+function addPegData(containerElt, trayTiles, expPoints) {
+    let trayShort = getHandCode(trayTiles, false);
+    let playersShort = "";
+    for (let tile of trayTiles) {
+        playersShort += tile.owner.charAt(0);
+    }
+    
+    let counterTotal = getPegScore(trayShort);
+    if (expPoints && counterTotal != expPoints) {
+        containerElt.classList.add('miscount');
+    }
+    
+    containerElt.setAttribute('data-tiles', trayShort);
+    containerElt.setAttribute('data-players', playersShort);
+    containerElt.setAttribute('data-go', getGoScore(getHandFromShortHand(trayShort)));
+    containerElt.addEventListener('mouseover', showPegScore);
+    containerElt.addEventListener('mouseout', hideScore);
+}
+
+function addNobsData(containerElt, tile) {
+    let nobsShort = getHandCode([tile], false);
+    containerElt.setAttribute("data-hand", nobsShort);
+    containerElt.setAttribute("data-counter", 2);
+    containerElt.addEventListener('mouseover', showNobsScore);
+    containerElt.addEventListener('mouseout', hideScore);
+}
+
+function getHandCode(trayTiles, inclTurn) {
     trayShort = "";
     for (let trayTile of trayTiles) {
         trayShort += trayTile.data.suit[0] + trayTile.data.num;
     }
-    turnTile = currentDeal.deck.tiles[0];
-    trayShort += turnTile.data.suit[0] + turnTile.data.num;
+    if (inclTurn) {
+        turnTile = currentDeal.deck.tiles[0];
+        trayShort += turnTile.data.suit[0] + turnTile.data.num;
+    }
     return trayShort;
 }    
 
@@ -312,7 +358,17 @@ function getHandScore(shortHand) {
     return getTotal(scoreGroups);
 }
 
-function scoreIt(evt) {
+function showNobsScore(evt) {
+    const shortTile = evt.currentTarget.getAttribute("data-hand");
+    const pastTilesElt = document.getElementById('pasttiles');
+    pastTilesElt.innerHTML = '';
+    const tile = getHandFromShortHand(shortTile)[0];
+    let tileElt = renderTile(tile, '#pasthandtiletemplate');
+    pastTilesElt.appendChild(tileElt);
+    document.getElementById('pasthand').style.display = 'block';
+}
+
+function showHandScore(evt) {
     // Maybe only allow history change events on the player's own history items?
     const shortHand = evt.currentTarget.getAttribute("data-hand");
     const hand = getHandFromShortHand(shortHand);
@@ -323,11 +379,74 @@ function scoreIt(evt) {
     hand.unshift(hand.pop());
     const pastTilesElt = document.getElementById('pasttiles');
     pastTilesElt.innerHTML = "";
-    for (let tile of hand) {
+    for (let i = 0; i < hand.length; i++) {
+        let tile = hand[i];
         let tileElt = renderTile(tile, '#pasthandtiletemplate');
+        if (i === 0) {
+            tileElt.classList.add('pastturn');
+        }
         pastTilesElt.appendChild(tileElt);
     }
 
+    document.getElementById('pasthand').style.display = 'block';
+}
+
+function scorePeggingTilesWithGo(tiles, goScore) {
+    const scoreGroups = scorePeggingTiles(tiles);
+    switch(goScore) {
+        case 2 : scoreGroups.push(new ThirtyOne()); break;
+        case 1 : scoreGroups.push(new Go()); break;
+    }
+    return scoreGroups;
+}
+
+function getGoScore(tiles) {
+    if (currentDeal.isGo) {
+        let sumReducer = function(total, tile) {
+            // So bad. We have THREE different tile objects?!
+            let points = tile.pegValue || tile.number || tile.value;
+            return total + Math.min(points,10);
+        }
+        let total = tiles.reduce(sumReducer, 0);
+        console.log("Pegging total: " + total);
+        return total === 31 ? 2 : 1
+    }
+    return 0;
+}
+
+function getPegScore(shortHand) {
+    const pegged = getHandFromShortHand(shortHand);
+    const scoreGroups = scorePeggingTilesWithGo(pegged, getGoScore(pegged));
+    return getTotal(scoreGroups);
+}
+
+function showPegScore(evt) {
+    const shortHand = evt.currentTarget.getAttribute('data-tiles');
+    const tiles = getHandFromShortHand(shortHand);
+    let goPoints = evt.currentTarget.getAttribute('data-go');
+    goPoints = goPoints ? parseInt(goPoints) : 0;
+    const score = scorePeggingTilesWithGo(tiles, goPoints);
+    document.getElementById('pastscore').innerHTML = getOutputAsTable(score);
+    
+    const players = evt.currentTarget.getAttribute('data-players');
+    
+    const container = document.createElement('div');
+    container.classList.add('pastpeg_container');
+    for (let i = 0; i < tiles.length; i++) {
+        let tile = tiles[i];
+        let p = players.charAt(i);
+        let tileElt = renderTile(tile, '#pasthandtiletemplate');
+        tileElt.classList.add('pastpeg');
+        tileElt.classList.add('pastpeg' + (i+1).toString());
+        tileElt.classList.add('pastpeg_' + (p === 'p' ? 'player' : 'opponent'));
+        container.appendChild(tileElt);
+    }
+    // Yuck.
+    let containerWidth = (tiles.length)*7 + 6;
+    container.style.width = '' + containerWidth + 'vh';
+    const pastTilesElt = document.getElementById('pasttiles');
+    pastTilesElt.innerHTML = '';
+    pastTilesElt.appendChild(container);
     document.getElementById('pasthand').style.display = 'block';
 }
 
@@ -378,5 +497,4 @@ function updateLastHistoryItem(player, newScore) {
     } else {
         historyElt.classList.add("miscount");
     }
-    
 }

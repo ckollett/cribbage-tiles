@@ -211,12 +211,13 @@ class PegTray extends PlayOrderTray {
     
     onTileAdded(tile) {
         super.onTileAdded(tile);
-        scoreState = 'Peg';
+        setScoreState('Peg');
         
         checkForMessage();
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
         }
+
         if (!currentDeal.dealer) {
             currentDeal.dealerChanged(tile.owner);
         }
