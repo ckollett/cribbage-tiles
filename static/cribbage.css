@@ -17,10 +17,6 @@ div.value {
     top:2%;
 }
 
-div.go div.value {
-    color:black;
-}
-
 div.tent {
     background: url('/static/images/tent.svg');
 }
@@ -390,3 +386,20 @@ div.playerSummary {
 span.subscore {
     float:right;
 }
+
+div#pegCounter {
+    font-size:6vh;
+    color:black;
+    text-align:center;
+    width:6.8%;
+    position:absolute;
+    height:5%;
+    font-size: 3.7vh
+}
+
+div#pegCounter.go {
+    color:white;
+	-webkit-text-stroke-width: .35vh;
+    -webkit-text-stroke-color: black;
+}
+

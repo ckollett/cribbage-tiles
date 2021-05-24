@@ -187,9 +187,10 @@ function doClearPegging() {
     pegTray.clear();
 	currentDeal.isGo = false;
     draw();
+    document.getElementById('pegCounter').classList.add('hidden');
     if (scoreState === 'Peg' && isPeggingComplete()) {
         setScoreState('Hand');
-    }        
+    }
 }
 
 function isPeggingComplete() {
@@ -313,8 +314,7 @@ function handleShowCrib(crib) {
 }
 
 function markGoTile() {
-    const pegged = currentDeal.getTray('peg').tiles;
-    pegged[pegged.length-1].elt.classList.add('go');
+    document.getElementById('pegCounter').classList.add('go');
 }
 
 function setScoreState(state) {

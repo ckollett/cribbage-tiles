@@ -111,6 +111,7 @@ class Tray {
         };
     }
     
+    
     getZIndex() {
         if (this.zIndex) {
             return this.zIndex;
@@ -202,10 +203,8 @@ class CribTray extends PlayOrderTray {
 
 class PegTray extends PlayOrderTray {
     validate(tile) {
-        var total = tile.getPegValue();
-        for (let tile of this.getTiles()) {
-            total += tile.getPegValue();
-        }
+        var total = this.getTotal();
+        total += tile.getPegValue();
         return total <= 31;
     }
     
@@ -214,13 +213,43 @@ class PegTray extends PlayOrderTray {
         setScoreState('Peg');
         
         checkForMessage();
+        
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
         }
-
+        this.positionPegCounter(tile);
+        
         if (!currentDeal.dealer) {
             currentDeal.dealerChanged(tile.owner);
         }
+    }
+    
+    getTotal() {
+        let total = 0;
+        for (let tile of this.getTiles()) {
+            total += tile.getPegValue();
+        }
+        return total;
+    }
+    
+    positionPegCounter(tile) {
+        let pegCounter = document.getElementById('pegCounter');
+        pegCounter.classList.remove('hidden');
+        pegCounter.innerHTML = this.getTotal();
+
+        let idx = this.getTiles().length - 1;
+        if (idx <= 0) {
+            pegCounter.classList.remove('go');
+            pegCounter.classList.add('hidden');
+        } else {
+            let x = 100 - this.trayXOffset - tileWidth - idx*this.xOffset;
+            let y = tile.owner === 'player' ? 65 : 35;
+            y -= this.yOffset;
+            pegCounter.classList.remove('hidden');
+            pegCounter.style.top = '' + y + '%';
+            pegCounter.style.left = '' + x + '%';
+        }
+
     }
 }
 
