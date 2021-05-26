@@ -16,6 +16,7 @@ socket.on("hand", function(tiles) {
 socket.on("opponentCrib", moveOpponentCrib);
 
 socket.on("fullcrib", function(turnTile) {
+    currentDeal.peg.canPlay = (!currentDeal.dealer || currentDeal.dealer === 'opponent');    
     currentDeal.player_hand.setClickTo('peg');
     turn(turnTile);
 });
@@ -35,6 +36,9 @@ socket.on("opponentPegged", function(cardData) {
         markGoTile();
     }
     
+    let trayShort = getHandCode(currentDeal.peg.getTiles(), false);
+    let counterTotal = getPegScore(trayShort);
+    currentDeal.peg.canPlay = counterTotal === 0;
 });
 
 socket.on("afterPeg", function(cardData) {
@@ -42,7 +46,12 @@ socket.on("afterPeg", function(cardData) {
         currentDeal.isGo = true;
         markGoTile();
     } else if (cardData.bummer) {
+        currentDeal.peg.canPlay = true;
         markGoTile();
+    }
+        
+    if (currentDeal.opponent_hand.getTiles().length === 0) {
+        currentDeal.peg.canPlay = true;
     }
     
     updateCounterButtonForPeg();

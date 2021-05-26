@@ -74,6 +74,7 @@ function isScoringAllowed() {
 
 function handleOpponentScored(points) {
     handleScore('opponent', points);
+    currentDeal.peg.canPlay = scoreState === 'Peg';
 }
 
 function handleScore(player, points) {
@@ -408,7 +409,6 @@ function getGoScore(tiles) {
             return total + Math.min(points,10);
         }
         let total = tiles.reduce(sumReducer, 0);
-        console.log("Pegging total: " + total);
         return total === 31 ? 2 : 1
     }
     return 0;

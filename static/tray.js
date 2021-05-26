@@ -202,7 +202,14 @@ class CribTray extends PlayOrderTray {
 }
 
 class PegTray extends PlayOrderTray {
+    
+    canPlay = false;
+    
     validate(tile) {
+        if (tile.owner === 'player' && !this.canPlay) {
+            return false;
+        }
+        
         var total = this.getTotal();
         total += tile.getPegValue();
         return total <= 31;
@@ -216,6 +223,7 @@ class PegTray extends PlayOrderTray {
         
         if (tile.owner === 'player') {
             sendTilePegged(tile.data);
+            this.canPlay = false;
         }
         this.positionPegCounter(tile);
         

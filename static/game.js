@@ -383,4 +383,9 @@ function removeData(elt) {
     elt.removeEventListener('mouseout', hideScore);
     elt.onclick = null;
     elt.classList.remove('active');
+    elt.removeAttribute('data-hand');
+    elt.removeAttribute('data-counter');
+    elt.removeAttribute('data-tiles');
+    elt.removeAttribute('data-players');
+    elt.removeAttribute('data-go');
 }
