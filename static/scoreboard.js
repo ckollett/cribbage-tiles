@@ -360,11 +360,12 @@ function getHandScore(shortHand) {
 }
 
 function showNobsScore(evt) {
-    document.getElementById('pastscore').innerHTML = "";
     const shortTile = evt.currentTarget.getAttribute("data-hand");
+    const tile = getHandFromShortHand(shortTile)[0];
+    let nobsScore = new ScoringJack(tile.suit, 2);
+    document.getElementById('pastscore').innerHTML = getOutputAsTable([nobsScore]);
     const pastTilesElt = document.getElementById('pasttiles');
     pastTilesElt.innerHTML = '';
-    const tile = getHandFromShortHand(shortTile)[0];
     let tileElt = renderTile(tile, '#pasthandtiletemplate');
     pastTilesElt.appendChild(tileElt);
     document.getElementById('pasthand').style.display = 'block';
