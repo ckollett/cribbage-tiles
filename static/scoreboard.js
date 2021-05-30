@@ -74,7 +74,7 @@ function isScoringAllowed() {
 
 function handleOpponentScored(points) {
     handleScore('opponent', points);
-    currentDeal.peg.canPlay = scoreState === 'Peg';
+    currentDeal.peg.canPlay = (scoreState === 'Peg' || scoreState === 'Nobs');
 }
 
 function handleScore(player, points) {
@@ -360,6 +360,7 @@ function getHandScore(shortHand) {
 }
 
 function showNobsScore(evt) {
+    document.getElementById('pastscore').innerHTML = "";
     const shortTile = evt.currentTarget.getAttribute("data-hand");
     const pastTilesElt = document.getElementById('pasttiles');
     pastTilesElt.innerHTML = '';

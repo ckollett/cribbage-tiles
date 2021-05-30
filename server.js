@@ -49,6 +49,9 @@ io.on('connection', function(socket) {
         }
         if (currentDeal.addToCrib(socket.id, cards)) {
             var turn = currentDeal.getTopCard();
+            
+            // This is here to make it easier to debug nobs issues.
+            // var turn = deck.getJack();
             notifyAll("fullcrib", turn);
         }
     });

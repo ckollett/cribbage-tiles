@@ -3,6 +3,11 @@ module.exports = {
         var deck = createDeck();
         shuffleDeck(deck);
         return deck;
+    },
+    
+    // This is here just to make it easier to debug nobs issues.
+    getJack : function() {
+        return new card("mug", "J", 10);
     }
 }
 

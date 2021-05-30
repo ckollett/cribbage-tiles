@@ -169,6 +169,9 @@ function shake(elt, afterShake) {
         if (afterShake) {
             afterShake();
         }
+        // Just in case we rejected you incorrectly, if you try again
+        // we'll let it go.
+        currentDeal.peg.canPlay = true;
     }, 1000);
 }
 
@@ -360,7 +363,6 @@ function updateCounterButtonForPeg() {
 }
 
 function updateCounterButtonForNobs(tile) {
-    debugger;
     let nobsShort = getHandCode([tile], false);
     let counterTotal = 2;
     let counterElt = activateCounterButton(counterTotal);
@@ -369,6 +371,7 @@ function updateCounterButtonForNobs(tile) {
 
 function activateCounterButton(points) {
     const counterElt = document.getElementById('counterbutton');
+    removeData(counterElt);
     counterElt.classList.add('active');
     counterElt.onclick = function() {
         scorePoints('player', points);
