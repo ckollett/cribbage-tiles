@@ -78,6 +78,7 @@ function handleOpponentScored(points) {
 }
 
 function handleScore(player, points) {
+    hideMessage();
     appendHistory(player, points, scoreState);
     currentScore.lastTileMove.scored = true;
         

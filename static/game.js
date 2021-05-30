@@ -151,15 +151,24 @@ function checkForMessage() {
             msgElt.innerHTML = "It's a trap!";
             msgElt.classList.add('ackbar');
             msgElt.onclick = function() {
-                msgElt.innerHTML = "";
-                msgElt.classList.remove('ackbar');
-                document.getElementById('messagecontainer').style.display = 'none';
-                msgElt.onclick = null;
+                hideMessage();
+                const counterElt = document.getElementById('counterbutton');
+                if (counterElt.onclick) {
+                    counterElt.onclick();
+                }
             };
             document.getElementById('messagecontainer').style.display = 'block';
         }
     }
     return true;
+}
+
+function hideMessage() {
+    const msgElt = document.getElementById('message');
+    msgElt.innerHTML = "";
+    msgElt.classList.remove('ackbar');
+    document.getElementById('messagecontainer').style.display = 'none';
+    msgElt.onclick = null;    
 }
 
 function shake(elt, afterShake) {
