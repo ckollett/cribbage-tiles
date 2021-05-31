@@ -51,9 +51,15 @@ function scorePoints(player, points) {
         }
         break;
     case 'crib':
-        sendShuffle();
+        if (!isGameOver()) {
+            sendShuffle();
+        }
         break;
     }
+}
+
+function isGameOver() {
+    return currentScore.player.total > 120 || currentScore.opponent.total > 120;
 }
 
 function isScoringAllowed() {
