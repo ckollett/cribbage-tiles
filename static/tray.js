@@ -201,6 +201,16 @@ class CribTray extends PlayOrderTray {
     }
 }
 
+class CribDisplayTray extends PlayOrderTray {
+    getTiles() {
+        let tiles = super.getTiles();
+        tiles.sort((a,b) => a.compareTo(b,true));
+        // Reverse the sort since we're displaying on the right side.
+        tiles.reverse();
+        return tiles;
+    }
+}
+
 class PegTray extends PlayOrderTray {
     
     canPlay = false;

@@ -1,3 +1,4 @@
+var dealerKnown = false;
 class Deal {
     constructor(tiles) {
         const tileObjs = [];
@@ -37,6 +38,23 @@ class Deal {
     }
     
     dealerChanged(oldDealer) {
+        if (!dealerKnown) {
+            dealerKnown = true;
+            // Detect last winner. The oldDealer value will be the player who is
+            // NOT the first dealer, which is the last game winner.
+            var playerName, opponentName; 
+            // Obviously this if/else could be cleaned up a lot.
+            if (oldDealer === "player") {
+                playerName = lastGameWinner;
+                opponentName = lastGameWinner.toLowerCase() === "chris" ? "Jason" : "Chris";
+            } else {
+                opponentName = lastGameWinner;
+                playerName = lastGameWinner.toLowerCase() === "chris" ? "Jason" : "Chris";
+            }
+            document.getElementById("playerName").innerHTML = playerName;
+            document.getElementById("opponentName").innerHTML = opponentName;
+        }
+        
         this.dealer = oldDealer === 'player' ? 'opponent' : 'player';
         const dealerClasses = document.getElementById('dealerlabel').classList;
         dealerClasses.remove('hidden');
@@ -57,7 +75,7 @@ function getTrays(deal) {
     trays.push(new CribTray(deal, 'crib', 1, {'trayXOffset':columnWidth, 'xOffset':columnWidth/12, 'flipped':true}));
     trays.push(new CribSelectionTray(deal, 'crib_selection', 1, {'rightSide':true, 'clickTo':'player_hand'}));
     trays.push(new PegTray(deal, 'peg', 1, {'xOffset':columnWidth/2, 'yOffset':3.5, 'rightSide':true}));
-    trays.push(new PlayOrderTray(deal, 'crib_display', 1, {'rightSide':true, 'reverseZIndex':true}));
+    trays.push(new CribDisplayTray(deal, 'crib_display', 1, {'rightSide':true, 'reverseZIndex':true, 'yOffset':2}));
     
     // Third row: player hand
     trays.push(new SortOrderTray(deal, 'opponent_hand', 2, {'flipped':true, 'zIndex' : 2}));

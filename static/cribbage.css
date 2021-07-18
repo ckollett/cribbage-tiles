@@ -387,6 +387,11 @@ span.subscore {
     float:right;
 }
 
+div.name {
+    text-align:center;
+    font-size:3vh;
+}
+
 div#pegCounter {
     font-size:6vh;
     color:black;

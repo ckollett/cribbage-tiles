@@ -31,8 +31,8 @@ class Tile {
         value.innerHTML = data.num;
     }
     
-    compareTo(otherTile) {
-        const byNum = this.getSortValue() - otherTile.getSortValue();
+    compareTo(otherTile, ignoreOwner) {
+        const byNum = this.getSortValue(ignoreOwner) - otherTile.getSortValue(ignoreOwner);
         if (byNum === 0) {
             return this.getSuit().localeCompare(otherTile.getSuit());
         } else {
@@ -40,9 +40,9 @@ class Tile {
         }
     }
         
-    getSortValue() {
+    getSortValue(ignoreOwner) {
         var sortValue = 0;
-        if (this.owner === 'opponent') {
+        if (!ignoreOwner && this.owner === 'opponent') {
             sortValue += 13;
         }
         
