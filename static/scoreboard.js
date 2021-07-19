@@ -121,6 +121,7 @@ function appendHistory(player, points, scoreType) {
     
     if (playerObj.total == 121) {
         stopGameTimer();
+        setWinner(player);
     }
     
     const lastScore = {
@@ -507,3 +508,45 @@ function updateLastHistoryItem(player, newScore) {
         historyElt.classList.add("miscount");
     }
 }
+
+function setWinner(player) {
+    let winnerName = document.getElementById(player + "Name").innerHTML;
+    let loserScore = Math.min(currentScore.player.total, currentScore.opponent.total);
+    let gameTime = document.getElementById("gameTime").innerHTML;
+    let dateStr = new Date().toLocaleDateString("en-US");
+    
+    const winnerDiv = document.getElementById("winnername");
+    winnerDiv.innerHTML = winnerName;
+    
+    sheetCells = document.getElementById("cribsheetdata").cells;
+    sheetCells[0].innerHTML = dateStr;
+    sheetCells[1].innerHTML = winnerName;
+    sheetCells[2].innerHTML = loserScore;
+    sheetCells[3].innerHTML = "0:" + gameTime;
+    sheetCells[4].innerHTML = "Web App";
+
+    document.getElementById('winner').style.display = 'block';
+}
+
+function copyCribsheet() {
+    const table = document.getElementById('cribsheettable');
+    table.focus();
+    if (document.body.createTextRange) {
+        const range = document.body.createTextRange();
+        range.moveToElementText(table);
+        range.select();
+    } else if (window.getSelection) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(table);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }    
+    document.execCommand('copy');
+    document.getElementById('cribsheettable').classList.add('highlight');
+    setTimeout(function() {
+        document.getElementById('cribsheettable').classList.remove('highlight');
+    }, 200);
+    document.getElementById('copybutton').innerHTML = 'Copied';
+}
+

@@ -137,17 +137,6 @@ img#arrow {
     margin:auto;
 }
 
-div#messagecontainer {
-    position:absolute;
-    left:25%;
-    right:25%;
-    top:22%;
-    bottom:22%;
-    z-index:20;
-    background-color:white;
-    display:none;    
-}
-
 div#message {
     position:absolute;
     left:0;
@@ -164,8 +153,85 @@ div#message.ackbar {
     text-align:center;
     font-size:4.5vh;
     padding-top:1.5vh;
+}
+
+div.messagebox {
+    position:absolute;
+    left:25%;
+    right:25%;
+    top:22%;
+    bottom:22%;
+    z-index:20;
+    background-color:white;
     border: 0.4vh solid black;
     border-radius: 1.4vh;
+    display:none;      
+}
+
+div#winnerheader {
+    font-size:4vh;
+    width:100%;
+    text-align:center;
+    margin-top:1vh;
+}
+
+table#cribsheettable {
+    margin: auto;    
+    margin-top:2vh;
+}
+
+table#cribsheettable.highlight {
+    background-color:black;
+}
+
+tr#cribsheetdata {
+    user-select:all;
+}
+
+tr#cribsheetdata td {
+    padding-left:0.3vh;
+    padding-right:0.3vh;
+    text-align:center;
+}
+
+tr#cribsheetdata td::selection {
+    background:white;
+    color:black;
+}
+
+table#cribsheettable.highlight td {
+    background-color:black;
+    color:white;
+}
+
+table#cribsheettable.highlight td::selection {
+    background:black;
+    color:white;
+}
+
+div#winnerbuttons {
+    position:absolute;
+    bottom:0.6vh;
+    right:0.6vh;
+}
+
+div.winnerbutton {
+    border: 1px solid black;
+    border-radius: 0.6vh;
+    box-sizing: border-box;
+    margin-bottom: 0.3vh;
+    font-size: 2.5vh;
+    width: 14vh;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align:center;
+    display:inline-block;
+    margin-left:0.1vh;
+}
+
+div.winnerbutton:hover {
+    color:white;
+    background-color:black;
 }
 
 .rejected {

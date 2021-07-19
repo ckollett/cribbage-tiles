@@ -152,7 +152,23 @@
           <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();">
             <img src="/static/images/left-arrow.svg" id="arrow" />
           </div>
-          <div id="messagecontainer"><div id="message"></div></div>
+          <div id="messagecontainer" class="messagebox"><div id="message"></div></div>
+          <div id="winner" class="messagebox">
+            <div id="winnerheader">Winner: <span id="winnername"></span></div>
+            <table id="cribsheettable">
+              <tr id="cribsheetdata">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
+            <div id="winnerbuttons">
+                <div class="winnerbutton" id="copybutton" onclick="copyCribsheet();">Copy</div>
+                <div class="winnerbutton" onclick="document.getElementById('winner').style.display='none'">Close</div>
+            </div>
+          </div>
         </div>
 
         <div id="footer">
