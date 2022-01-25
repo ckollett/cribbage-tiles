@@ -38,7 +38,7 @@ class Deal {
     }
     
     dealerChanged(oldDealer) {
-        if (!dealerKnown) {
+        if (!dealerKnown && lastGameWinner) {
             dealerKnown = true;
             // Detect last winner. The oldDealer value will be the player who is
             // NOT the first dealer, which is the last game winner.
