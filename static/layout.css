@@ -117,9 +117,14 @@ div#scoremessage {
 }
 
 div#scoreboardarea {
-    position:relative;
-    height:15vh;
-    width:100%;
+    position: relative;
+    height: 15vh;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
 
 div#scoremessage span {
