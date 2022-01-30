@@ -95,6 +95,5 @@ function sendUpdateHistory(newScore) {
 }
 
 function emitMessage(msg) {
-    debugger;
     socket.emit("message", msg);
 }
