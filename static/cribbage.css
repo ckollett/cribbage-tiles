@@ -407,35 +407,30 @@ div#footer {
     box-sizing:border-box;
 }
 
-div#footer a {
-    padding:2px;
-    margin-left:-2px;
-    margin-top:-2px;
+a#cribsheetlink {
     color:black;
     text-decoration:none;
+    font-size:2vh;
+    text-align:center;
 }
 
-div#footer a:hover {
+a#cribsheetlink:hover {
     background-color:black;
     color:white;
-    border-radius:0.75vh;
 }
 
-span#gameTime {
-    position:absolute;
-    left:48%;
-}
-
-span#lastscore {
-    position:absolute;
-    right:0;
-}
-
-div.scoreSummary {
+.leftContainer {
+    display:block;
     border:0.5vh solid black;
     border-radius:1.5vh;
     padding:0.5vh 1vh 0.5vh 1vh;
     margin-bottom:1vh;
+}
+
+span#gameTime {
+    text-align:center;
+    font-size:3vh;
+    margin-top:3vh;
 }
 
 div.totalSummary {

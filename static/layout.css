@@ -66,24 +66,27 @@ div.leftarea {
     margin-top:1vh;
 }
 
-div#rightscroll {
+div#historyscroll {
     position:absolute;
     width:17.5vh;
     height:89vh;
-    right:-1.5vh;
-    overflow-y:auto;
     margin-top:1vh;
+    right:-1.5vh;
 }
 
-div#rightscroll::-webkit-scrollbar {
+div.rightscroll {
+    overflow-y:auto;
+}
+
+div.rightscroll::-webkit-scrollbar {
     width: 1vh;
 }
 
-div#rightscroll::-webkit-scrollbar-track {
+div.rightscroll::-webkit-scrollbar-track {
     background: white;
 }
 
-div#rightscroll::-webkit-scrollbar-thumb {
+div.rightscroll::-webkit-scrollbar-thumb {
     background:black;
     border-radius:.5vh;
 }
@@ -115,7 +118,7 @@ div#scoremessage {
 
 div#scoreboardarea {
     position:relative;
-    height:18vh;
+    height:15vh;
     width:100%;
 }
 
@@ -135,17 +138,62 @@ div#scoremessage span a:hover {
 
 div.gamearea {
     position:absolute;
-    top:26vh;
+    top:16vh;
     height:60vh;
     width:100%;
 }
 
+div#messages {
+    position:absolute;
+    height:7.5vh;
+    bottom:5vh;
+    width:100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;    
+}
+
+div.messagerow {
+    display:block;
+    margin-left:1vh;
+    margin-right:1vh;
+}
+
+div.message {
+    display:inline-block;
+    border:1px solid black;
+    border-radius: 0.6vh;
+    box-sizing:border-box;
+    margin-bottom:0.3vh;
+    font-size:2vh;    
+    padding-top:0.3vh;
+    padding-bottom:0.3vh;
+    padding-left:0.8vh;
+    padding-right:0.8vh;
+    width:auto;
+}
+
+input#messageinput {
+    font-family: katahdin, sans-serif;
+    font-size:2vh;
+    width:50%;
+}
+
+div.message.playerMessage {
+    float:right;
+    color:white;
+    background-color:black;
+}
+
 div#footer {
     position:absolute;
-    height:3vh;
+    height:4.5vh;
     font-size:2vh;
     bottom:0;
     width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
 
 

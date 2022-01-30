@@ -65,6 +65,10 @@ socket.on("updateHistory", function(newScore) {
     updateLastHistoryItem('opponent', newScore);
 });
 
+socket.on("opponentMessage", function(msg) {
+    addMessage(msg, 'opponent');
+});
+
 /***** Communications back to the server *****/
 function sendCribSelected(crib) {
     socket.emit("cribSelected",crib);
@@ -88,4 +92,9 @@ function sendScore(points) {
 
 function sendUpdateHistory(newScore) {
     socket.emit("updateHistory",newScore);
+}
+
+function emitMessage(msg) {
+    debugger;
+    socket.emit("message", msg);
 }
