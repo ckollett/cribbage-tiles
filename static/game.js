@@ -311,8 +311,11 @@ function startGameTimer() {
 	  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 	  seconds = ("0" + seconds).slice(-2);
 
-	  // Display the result in the element with id="demo"
-	  document.getElementById("gameTime").innerHTML = minutes + ":" + seconds;
+	  // Each digit has its own element now
+      document.getElementById('time1').innerHTML = minutes[0];
+      document.getElementById('time2').innerHTML = minutes[1];
+      document.getElementById('time3').innerHTML = seconds[0];
+      document.getElementById('time4').innerHTML = seconds[1];
 	}, 1000);
 }
 

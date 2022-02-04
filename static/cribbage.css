@@ -407,16 +407,17 @@ div#footer {
     box-sizing:border-box;
 }
 
-a#cribsheetlink {
-    color:black;
-    text-decoration:none;
-    font-size:2vh;
-    text-align:center;
+#cribsheetlink {
+    background-image: url('/static/images/spreadsheet.png');
+    background-size:50%;
+    background-position: 50% 65%;
+    background-repeat:no-repeat;
+    height:8vh;
+    bottom:0;
 }
 
-a#cribsheetlink:hover {
-    background-color:black;
-    color:white;
+#cribsheetlink:hover {
+    background-image: url('/static/images/spreadsheet_hover.png');
 }
 
 .leftContainer {
@@ -427,10 +428,22 @@ a#cribsheetlink:hover {
     margin-bottom:1vh;
 }
 
+.noborder {
+    border:0;
+}
+
 span#gameTime {
     text-align:center;
     font-size:3vh;
     margin-top:3vh;
+}
+
+span.timeDigit {
+    text-align:center;
+    width:2.4vh;
+    border:0;
+    margin:0;
+    display:inline-block;
 }
 
 div.totalSummary {
