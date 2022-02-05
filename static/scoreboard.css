@@ -7,11 +7,7 @@
 }
 
 #scoreboard {
-    position:absolute;
-    top:0px;
-    bottom:0px;
-    left:5vh;
-    right:5vh;
+    width: 88%;
 }
 
 .score {
@@ -225,22 +221,19 @@ div#monsterbutton {
 }
 
 div#counterbutton {
-    display:inline;
-    background-color:white;
-    color:black;
-    text-align:center;
-    height:4vh;
-    width:9%;
-    margin-top:1vh;
-    margin-bottom:1vh;
-    box-sizing:border-box;
-    border:1px solid black;
-    font-size:2.5vh;
-    line-height:4vh;
-    border-radius:0.75vh;
-    position:absolute;
-    right:0;
-}
+display: inline-block;
+    background-color: white;
+    color: black;
+    text-align: center;
+    height: 4vh;
+    width: 9%;
+    margin-top: 1vh;
+    box-sizing: border-box;
+    border: 1px solid black;
+    font-size: 2.5vh;
+    line-height: 4vh;
+    border-radius: 0.75vh;
+ }
 
 /*
 div#counterbutton {
@@ -327,7 +320,7 @@ div#pasthand {
     width:89%;
     min-height:20vh;
     right:0;
-    top:7vh;
+    top:15vh;
     border:0.5vh solid black;
     border-radius:1vh;
     padding:1%;

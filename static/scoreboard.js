@@ -322,9 +322,9 @@ function monster() {
 }
 
 function resetScoreButtons() {
-    const activeNums = document.getElementsByClassName("activenumbers").item(0);
-    activeNums.classList.remove("activenumbers");
-    document.getElementsByClassName("scorenumbers").item(0).classList.add("activenumbers");
+    // const activeNums = document.getElementsByClassName("activenumbers").item(0);
+    // activeNums.classList.remove("activenumbers");
+    // document.getElementsByClassName("scorenumbers").item(0).classList.add("activenumbers");
 }
     
 function resetScoreBoard() {

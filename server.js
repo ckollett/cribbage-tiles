@@ -100,6 +100,10 @@ io.on('connection', function(socket) {
     socket.on("updateHistory", function(newScore) {
         notifyOtherPlayer("updateHistory", newScore);
     });
+    
+    socket.on("message", function(msg) {
+        notifyOtherPlayer("opponentMessage", msg);
+    });
 });
 
 function deal() {

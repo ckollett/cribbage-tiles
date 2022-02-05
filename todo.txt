@@ -1,0 +1,14 @@
+*** Game Start ***
+Require that we know the user's name before continuing. We should have it in local storage, but if not, pop up a dialog. This would only very rarely be annoying.
+
+Require that we say who the first dealer is. Again, we should be able to figure this out using Google Drive (and/or local storage?). If we don't know, what then?
+
+Do not display the board until we know the names and the first dealer.
+
+
+*** Bug fixes ***
+If we fix the game start, we will always know the dealer and we can fix the NOBS button bug (it shows up for both the dealer and the non-dealer)
+
+Whenever the scoring button is active, both players should get noped
+
+Score editing (less important if we fix the noping)

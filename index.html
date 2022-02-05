@@ -13,6 +13,7 @@
     <script src="static/tray.js?202108090303"></script>
     <script src="static/scoreboard.js?202108090303"></script>
     <script src="static/events.js?202108090303"></script>
+    <script src="static/messages.js?202108090303"></script>
     <script src="static/cribsheet.js?202108090303"></script>
     <script src="https://ckollett.github.io/counter.js?202108090303"></script>
   </head>
@@ -27,7 +28,7 @@
       </div>
       
       <div class="sideposition sidearea leftarea">
-        <div class="scoreSummary playerSummary">
+        <div class="leftContainer playerSummary">
           <div id="playerName" class="name"></div>
           <div class="totalSummary" id="playerscoreSummary">0</div>
           <div>Nobs<span class="subscore" id="playerNobs">0</span></div>
@@ -37,7 +38,7 @@
           <div>Crib<span class="subscore" id="playerCrib">0</span></div>
         </div>
         
-        <div class="scoreSummary opponentSummary">
+        <div class="leftContainer opponentSummary">
           <div id="opponentName" class="name"></div>
           <div class="totalSummary"id="opponentscoreSummary">0</div>
           <div>Nobs<span class="subscore" id="opponentNobs">0</span></div>
@@ -46,60 +47,21 @@
           <div>Foot<span class="subscore" id="opponentFoot">0</span></div>
           <div>Crib<span class="subscore" id="opponentCrib">0</span></div>
         </div>
+        
+        <!-- WORK ON THIS -->
+        <span id="gameTime" class="leftContainer">
+          <span id="time1" class="timeDigit">0</span><span id="time2" class="timeDigit">0</span><span>:</span><span id="time3" class="timeDigit">0</span><span id="time4" class="timeDigit">0</span>
+        </span>
+        
+        <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=113638301" target="_blank" id="cribsheetlink" class="leftContainer" onclick="sendCribSheetMessage()"></a>
       </div>
-      <div class="sideposition" id="rightscroll">
+      <div class="sideposition rightscroll" id="historyscroll">
         <div class="sidearea rightarea" id="history">
           <div id="currenthand"></div>
         </div>
       </div>
       
-      <div id="main">
-        <div id="scorebuttons">
-          <div id="counterbutton">Nobs</div>
-          <div id="monsterbutton" onclick="monster();"></div>
-          <div id="scorebuttons1" class="scorenumbers activenumbers">
-            <div class="scorebutton" onclick="score(this)">0</div>
-            <div class="scorebutton" onclick="score(this)">1</div>
-            <div class="scorebutton" onclick="score(this)">2</div>
-            <div class="scorebutton" onclick="score(this)">3</div>
-            <div class="scorebutton" onclick="score(this)">4</div>
-            <div class="scorebutton" onclick="score(this)">5</div>
-            <div class="scorebutton" onclick="score(this)">6</div>
-            <div class="scorebutton" onclick="score(this)">7</div>
-            <div class="scorebutton" onclick="score(this)">8</div>
-            <div class="scorebutton" onclick="score(this)">9</div>
-            <div class="scorebutton" onclick="score(this)">10</div>
-            <div class="scorebutton" onclick="score(this)">11</div>
-            <div class="scorebutton" onclick="score(this)">12</div>
-            <div class="scorebutton" onclick="score(this)">13</div>
-            <div class="scorebutton" onclick="score(this)">14</div>
-          </div>
-          <div id="scorebuttons2" class="scorenumbers">
-            <div class="scorebutton" onclick="score(this)">15</div>
-            <div class="scorebutton" onclick="score(this)">16</div>
-            <div class="scorebutton" onclick="score(this)">17</div>
-            <div class="scorebutton" onclick="score(this)">18</div>
-            <div class="scorebutton" onclick="score(this)">19</div>
-            <div class="scorebutton" onclick="score(this)">20</div>
-            <div class="scorebutton" onclick="score(this)">21</div>
-            <div class="scorebutton" onclick="score(this)">22</div>
-            <div class="scorebutton" onclick="score(this)">23</div>
-            <div class="scorebutton" onclick="score(this)">24</div>
-            <div class="scorebutton" onclick="score(this)">25</div>
-            <div class="scorebutton" onclick="score(this)">26</div>
-            <div class="scorebutton" onclick="score(this)">27</div>
-            <div class="scorebutton" onclick="score(this)">28</div>
-            <div class="scorebutton" onclick="score(this)">29</div>
-          </div>
-          <div id="scorebuttons3" class="scorenumbers">
-            <div class="scorebutton" onclick="score(this)">30</div>
-            <div class="scorebutton" onclick="score(this)">31</div>
-            <div class="scorebutton" onclick="score(this)">32</div>
-            <div class="scorebutton maxscorebutton" onclick="score(this)">33</div>
-            <div style="flex-grow:11;"></div>
-          </div>
-        </div>   
-        
+      <div id="main">        
         <div id="scoreboardarea">
           <div id="scoreboard">
             <div class="score" id="playerscorearea">
@@ -130,6 +92,7 @@
               </div>
             </div>
           </div> <!-- End scoreboard -->
+          <div id="counterbutton">Nobs</div>
         </div><!-- End scoreboardarea -->
 
         <div id="game" class="gamearea"></div>
@@ -171,10 +134,12 @@
           </div>
         </div>
 
+        <div id="messages" class="rightscroll">
+        </div>
+
         <div id="footer">
-          <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=113638301" target="_blank" id="cribsheetlink">The Crib Sheet</a>
-          <span id="gameTime">00:00</span>
-          <span id="lastscore"></span>
+            <span id="lastscore"></span>
+            <input type="text" maxlength="40" id="messageinput" autofocus onblur="this.focus();"></input>
         </div>
         
         <div id="pasthand">
@@ -186,6 +151,7 @@
 
     <script type="text/javascript">
         getLastScore();
+        setupMessages();
         socket.emit('join', '');
     </script>
 
@@ -222,6 +188,10 @@
         <span class="historyScore"></span>
         <span class="historyType"></span>
       </div>
+    </template>
+    
+    <template id="messageTemplate">
+       <div class="messagerow"><div class="message"></div></div>
     </template>
     
   </body>
