@@ -1,4 +1,6 @@
 var dealerKnown = false;
+var lastWinner = null;
+
 class Deal {
     constructor(tiles) {
         const tileObjs = [];
@@ -23,6 +25,10 @@ class Deal {
             this[tray.name] = tray;
         }
         this.deck.addTiles(this.tiles);
+        
+        if (lastWinner) {
+            this.setFirstDeal();
+        }
     }
     
     getTilesInTray(name) {
@@ -37,9 +43,18 @@ class Deal {
         this.tiles.sort((t1,t2) => t1.compareTo(t2));
     }
     
+    setFirstDeal() {
+        const playerName = document.getElementById('playerName').innerHTML;
+        if (playerName === lastGameWinner) {
+            this.setDealer('opponent');
+        } else {
+            this.setDealer('player');
+        }
+        lastWinner = null;
+    }
+    
     dealerChanged(oldDealer) {
-        if (!dealerKnown && lastGameWinner) {
-            dealerKnown = true;
+        if (!dealerKnown) {
             // Detect last winner. The oldDealer value will be the player who is
             // NOT the first dealer, which is the last game winner.
             var playerName, opponentName; 
@@ -51,15 +66,62 @@ class Deal {
                 opponentName = lastGameWinner;
                 playerName = lastGameWinner.toLowerCase() === "chris" ? "Jason" : "Chris";
             }
-            document.getElementById("playerName").innerHTML = playerName;
-            document.getElementById("opponentName").innerHTML = opponentName;
+            setPlayerNames(playerName, opponentName);
         }
         
-        this.dealer = oldDealer === 'player' ? 'opponent' : 'player';
+        const newDealer = oldDealer === 'player' ? 'opponent' : 'player';
+        this.setDealer(newDealer, oldDealer);
+    }
+    
+    setDealer(newDealer, oldDealer) {
+        dealerKnown = true;
+        this.dealer = newDealer;
         const dealerClasses = document.getElementById('dealerlabel').classList;
         dealerClasses.remove('hidden');
-        dealerClasses.remove(oldDealer + 'Deal');
+        if (oldDealer) {
+            dealerClasses.remove(oldDealer + 'Deal');
+        }
         dealerClasses.add(this.dealer + 'Deal');
+    }
+}
+
+function getPlayerNameFromStorage() {
+    const playerName = localStorage.getItem('playerName');
+    if (playerName) {
+        document.getElementById('playerName').innerHTML = playerName;
+    }
+    return playerName;
+}
+
+function setPlayerNames(playerName, opponentName) {
+    dealerKnown = true;
+    document.getElementById("playerName").innerHTML = playerName;
+    document.getElementById("opponentName").innerHTML = opponentName;
+    localStorage.setItem('playerName', playerName);
+}
+
+function setOpponentName(opponentName) {
+    var playerName = document.getElementById("playerName").innerHTML;
+    const hasPlayerName = playerName && !playerName.trim() === '';
+    if (opponentName) {
+        if (!hasPlayerName) {
+            playerName = getOtherName(opponentName);
+        }
+        setPlayerNames(playerName, opponentName);
+    } else if (hasPlayerName) {
+        opponentName = getOtherName(playerName);
+        setPlayerNames(playerName, opponentName);
+    }
+}
+
+function getOtherName(name) {
+    return name == 'Chris' ? 'Jason' : 'Chris';
+}
+
+function detectFirstDeal(lastGameWinner) {
+    lastWinner = lastGameWinner;
+    if (currentDeal) {
+        currentDeal.setFirstDeal();
     }
 }
 
