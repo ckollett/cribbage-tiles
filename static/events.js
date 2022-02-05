@@ -61,6 +61,8 @@ socket.on("showCrib", handleShowCrib);
 
 socket.on("opponentScored", handleOpponentScored);
 
+socket.on("opponentName", setOpponentName);
+
 socket.on("updateHistory", function(newScore) {
     updateLastHistoryItem('opponent', newScore);
 });

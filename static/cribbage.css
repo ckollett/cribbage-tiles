@@ -408,12 +408,14 @@ div#footer {
 }
 
 #cribsheetlink {
-    background-image: url('/static/images/spreadsheet.png');
-    background-size:50%;
-    background-position: 50% 65%;
-    background-repeat:no-repeat;
-    height:8vh;
-    bottom:0;
+    background-image: url(/static/images/spreadsheet.png);
+    background-size: 70%;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 5vh;
+    bottom: 0;
+    display: inline-block;
 }
 
 #cribsheetlink:hover {
@@ -428,6 +430,12 @@ div#footer {
     margin-bottom:1vh;
 }
 
+.centerVertical {
+    height:100%;
+    display:flex;
+    align-items: center;
+}
+
 .noborder {
     border:0;
 }
@@ -440,7 +448,7 @@ span#gameTime {
 
 span.timeDigit {
     text-align:center;
-    width:2.4vh;
+    width:2.3vh;
     border:0;
     margin:0;
     display:inline-block;

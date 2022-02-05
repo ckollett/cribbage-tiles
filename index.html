@@ -52,8 +52,6 @@
         <span id="gameTime" class="leftContainer">
           <span id="time1" class="timeDigit">0</span><span id="time2" class="timeDigit">0</span><span>:</span><span id="time3" class="timeDigit">0</span><span id="time4" class="timeDigit">0</span>
         </span>
-        
-        <a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=113638301" target="_blank" id="cribsheetlink" class="leftContainer" onclick="sendCribSheetMessage()"></a>
       </div>
       <div class="sideposition rightscroll" id="historyscroll">
         <div class="sidearea rightarea" id="history">
@@ -138,7 +136,7 @@
         </div>
 
         <div id="footer">
-            <span id="lastscore"></span>
+            <span class="centerVertical"><a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=113638301" target="_blank" id="cribsheetlink" onclick="sendCribSheetMessage()"></a><span id="lastscore"></span></span>
             <input type="text" maxlength="40" id="messageinput" autofocus onblur="this.focus();"></input>
         </div>
         
@@ -152,7 +150,8 @@
     <script type="text/javascript">
         getLastScore();
         setupMessages();
-        socket.emit('join', '');
+        const playerName = getPlayerNameFromStorage();
+        socket.emit('join', playerName);
     </script>
 
     <template id="tiletemplate">

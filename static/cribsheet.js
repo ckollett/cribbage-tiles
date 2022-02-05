@@ -20,6 +20,8 @@ function showLastScore(scoreData) {
     const msg = "Last game winner: " + lastGameWinner;
     document.getElementById('lastscore').innerHTML = msg;
     
+    detectFirstDeal(lastGameWinner);
+    
     // Update the crib sheet link to go to the first empty row.
     const sheetLink = document.getElementById('cribsheetlink');
     var link = sheetLink.getAttribute('href');
