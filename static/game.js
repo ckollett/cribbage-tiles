@@ -137,7 +137,7 @@ function turn(tile) {
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
-        if (turnTile.getNum() === 'J') {
+        if (currentDeal.dealer === 'player' && turnTile.getNum() === 'J') {
             updateCounterButtonForNobs(turnTile);
         }
     }, 500);
