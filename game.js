@@ -3,9 +3,9 @@ module.exports = {
     game: function() {
         this.players = [];
         
-        this.addPlayer = function(name, id) {
+        this.addPlayer = function(playerInfo, id) {
             if (this.players.length < 2) {
-                var newPlayer = new player(name, id);
+                var newPlayer = new player(playerInfo, id);
                 this.players.push(newPlayer);
                 return true;
             }
@@ -29,8 +29,10 @@ module.exports = {
     }    
 };
 
-function player(name, id) {
-    this.name = name;
+function player(playerInfo, id) {
+    console.log('Player: ' + JSON.stringify(playerInfo));
+    this.name = playerInfo.name;
+    this.firstDeal = playerInfo.firstDeal;
     this.id = id;
     this.score = 0;
     this.hand = null;

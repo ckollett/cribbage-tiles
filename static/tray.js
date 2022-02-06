@@ -236,10 +236,6 @@ class PegTray extends PlayOrderTray {
             this.canPlay = false;
         }
         this.positionPegCounter(tile);
-        
-        if (!currentDeal.dealer) {
-            currentDeal.dealerChanged(tile.owner);
-        }
     }
     
     getTotal() {

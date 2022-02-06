@@ -30,8 +30,8 @@ io.on('connection', function(socket) {
         notifyOtherPlayerById(socket.id, messageId, message);
     }
     
-    socket.on("join", function(name) {
-        if (currentGame.addPlayer(name, socket.id)) {
+    socket.on("join", function(playerInfo) {
+        if (currentGame.addPlayer(playerInfo, socket.id)) {
             checkNumPlayers();
         }            
     });
@@ -87,6 +87,7 @@ io.on('connection', function(socket) {
             notifyOtherPlayerById(crib.player, "showCrib", crib.cards);
         }
     });
+    
     
     socket.on("shuffle", function() {
         currentDeal = new deal();
@@ -162,6 +163,7 @@ function reset() {
 
 function checkNumPlayers() {
     if (currentGame.players.length === 2) {
+        sendPlayerInfo();
         dealCards();
     } else {
         reset();
@@ -176,7 +178,32 @@ function dealCards() {
         const cards = currentDeal.dealHand();
         player.dealTo(cards);
         notifyPlayer(player, "hand", cards);
-        notifyPlayer(opponent, "opponentName", player.name);
+    }
+}
+
+function sendPlayerInfo() {
+    const firstDealer = detectFirstDeal(currentGame.players);
+    for (var i = 0; i < 2; i++) {
+        var player = currentGame.players[i];
+        var opponent = currentGame.players[1-i];
+        playerInfo = {
+            'opponentName' : opponent.name,
+            'firstDeal' : firstDealer
+        };
+        notifyPlayer(player, 'playerInfo', playerInfo);
+    }
+}
+
+function detectFirstDeal(players) {
+    const d1 = players[0].firstDeal;
+    const d2 = players[1].firstDeal;
+    
+    if (d1 && d2) {
+        return d1 == d2 ? d1 : null;
+    } else if (!d1) {
+        return d2;
+    } else {
+        return d1;
     }
 }
 

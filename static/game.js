@@ -252,7 +252,7 @@ function noGame() {
 
 function doReset() {
     setScoreState('Nobs');
-    if (currentDeal) {
+    if (currentDeal && currentDeal.deck) {
         currentDeal.deck.flipped = true;
         for (let turnTile of currentDeal.deck.getTiles()) {
             turnTile.elt.classList.add('flip');
@@ -270,17 +270,12 @@ function doReset() {
             return clear();
         });
     } else {
-		startGameTimer();
         return clear();       
     }
 }
 
-function populateDeck(tiles) {
-    const oldDealer = currentDeal ? currentDeal.dealer : null;
-    currentDeal = new Deal(tiles);
-    if (oldDealer) {
-        currentDeal.dealerChanged(oldDealer);
-    }
+function populateDeck(tiles, dealer) {
+    currentDeal.addTiles(tiles);
     return draw();
 }
 
@@ -403,4 +398,61 @@ function removeData(elt) {
     elt.removeAttribute('data-tiles');
     elt.removeAttribute('data-players');
     elt.removeAttribute('data-go');
+}
+
+function setup() {
+    getLastWinner().then(getPlayerInfo).then(finishSetup);
+}
+
+function getPlayerInfo(lastWinner) {
+    const playerName = localStorage.getItem('playerName');
+    return showPlayerDialog(playerName, lastWinner);
+}
+
+function showPlayerDialog(playerName, lastWinner) {
+    if (playerName) {
+        // If we think we know the player's name, don't allow
+        // them to select the blank option again.
+        const nameSelect = document.getElementById('nameInput');
+        nameSelect.options[0].remove();
+        nameSelect.value = playerName;
+    }
+    
+    if (lastWinner) {
+        const dealerSelect = document.getElementById('dealerInput');
+        dealerSelect.options[0].remove();
+        var dealerIdx = dealerSelect.options[0].value === lastWinner ? 1 : 0;
+        dealerSelect.options[dealerIdx].selected = 'selected';
+    }
+
+    // When the player hits the OK button, send the information to the server.
+    return new Promise(function (resolve) {
+        document.getElementById('okbutton').addEventListener('click', function() {
+            const name = document.getElementById('nameInput').value;
+            const firstDeal = document.getElementById('dealerInput').value;
+            const playerInfo = {
+                'name' : name,
+                'firstDeal' : firstDeal
+            };
+            resolve(playerInfo);
+        });
+    });
+}
+
+function getOtherName(name) {
+    return name == 'Chris' ? 'Jason' : 'Chris';
+}
+
+function finishSetup(playerInfo) {
+    document.getElementById('playerInfo').remove();
+    document.getElementById('playerName').innerHTML = playerInfo.name;
+    
+    // Reveal areas that are hidden until after initiation.
+    const starthidden = document.getElementsByClassName('starthidden');
+    for (hidden of starthidden) {
+        hidden.classList.remove('starthidden');
+    }
+    
+    setupMessages();
+    socket.emit('join', playerInfo);
 }

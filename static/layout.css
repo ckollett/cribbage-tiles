@@ -141,6 +141,10 @@ div#scoremessage span a:hover {
     border-radius: 0.75vh;
 }
 
+.starthidden {
+    display:none;
+}
+
 div.gamearea {
     position:absolute;
     top:16vh;
