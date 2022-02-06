@@ -220,6 +220,13 @@ class PegTray extends PlayOrderTray {
             return false;
         }
         
+        // If the other player can no longer play, don't
+        // let this player make multiple scoring plays 
+        // without scoring each one.
+        if (isScorePending()) {
+            return false;
+        }
+        
         var total = this.getTotal();
         total += tile.getPegValue();
         return total <= 31;

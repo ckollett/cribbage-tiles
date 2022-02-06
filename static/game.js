@@ -386,6 +386,11 @@ function activateCounterButton(points) {
     return counterElt;
 }
 
+function isScorePending() {
+    const counterElt = document.getElementById('counterbutton');
+    return counterElt.classList.contains('active');
+}
+
 function removeData(elt) {
     hideScore();
     elt.removeEventListener('mouseover', showPegScore);
