@@ -26,28 +26,61 @@ var currentDeal = new deal();
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
-    var notifyOtherPlayer = function(messageId, message) {
-        notifyOtherPlayerById(socket.id, messageId, message);
+    const playerName = readNameFromCookie(socket);
+    if (playerName) {
+        console.log(playerName + ' connected');
+        const player = getPlayerByName(playerName);
+        if (player) {
+            console.log('Found player info for ' + playerName);
+            player.id = socket.id;
+            notifyOtherPlayerByName(player.name, 'opponentMessage', player.name + " reconnected!");
+        } else {
+            console.log('No existing player info for ' + playerName);
+        }
+    } else {
+        console.log('Unknown player connected');
     }
     
-    socket.on("join", function(name) {
-        if (currentGame.addPlayer(name, socket.id)) {
+    var notifyOtherPlayer = function(messageId, message) {
+        const thisPlayer = getPlayerForSocket(socket);
+        if (thisPlayer) {
+            notifyOtherPlayerByName(thisPlayer.name, messageId, message);
+        }
+    }
+    
+    socket.on("join", function(playerInfo) {
+        const playerName = readNameFromCookie(socket);
+        if (currentGame.addPlayer(playerInfo, socket.id)) {
             checkNumPlayers();
         }            
     });
     
+    socket.on("quit", function() {
+        const thisPlayer = getPlayerForSocket(socket);
+        if (thisPlayer) {
+            console.log(thisPlayer.name + " quit");
+        }
+        notifyOtherPlayer('quit');
+        currentGame = new game.game();
+    });
+    
     socket.on("disconnect", function() {
-        if (currentGame.removePlayer(socket.id)) {
-            checkNumPlayers();
+        const player = getPlayerForSocket(socket);
+        if (player) {
+            console.log(player.name + ' disconnected');
+        } else {
+            console.log('Unknown player disconnected');
         }
     });
     
     socket.on("cribSelected", function(cards) {
         notifyOtherPlayer('opponentCrib');
+        const thisPlayer = getPlayerForSocket(socket);
         for (let card of cards) {
-            getPlayer(socket.id).hand.removeCard(card);
+            thisPlayer.hand.removeCard(card);
         }
-        if (currentDeal.addToCrib(socket.id, cards)) {
+        
+        if (currentDeal.addToCrib(thisPlayer.name, cards)) {
             var turn = currentDeal.getTopCard();
             
             // This is here to make it easier to debug nobs issues.
@@ -57,13 +90,13 @@ io.on('connection', function(socket) {
     });
     
     socket.on("pegged", function(card) {
-        let player = getPlayer(socket.id);
+        let player = getPlayerForSocket(socket);
         player.hand.removeCard(card);
         currentDeal.playerPegged(card.pegValue);
         let go = currentDeal.isGo();
         let bummer = false;
         if (!go) {
-            let otherPlayer = getOtherPlayer(socket.id);
+            let otherPlayer = getOtherPlayerBySocket(socket);
             if (otherPlayer.hand.isGo(currentDeal.pegRemaining)) {
                 bummer = true;
             }
@@ -72,7 +105,7 @@ io.on('connection', function(socket) {
         let pegData = {
             'card' : card,
             'go' : go,
-            'bummer' : bummer 
+            'bummer' : bummer
         }
         notifyOtherPlayer("opponentPegged", pegData);
         notifyPlayer(player, "afterPeg", pegData);
@@ -84,9 +117,10 @@ io.on('connection', function(socket) {
     
     socket.on("cribRequested", function() {
         for (let crib of currentDeal.crib) {
-            notifyOtherPlayerById(crib.player, "showCrib", crib.cards);
+            notifyOtherPlayerByName(crib.player, "showCrib", crib.cards);
         }
     });
+    
     
     socket.on("shuffle", function() {
         currentDeal = new deal();
@@ -112,8 +146,8 @@ function deal() {
     this.pegRemaining = 31;
 	this.isGo = false;
     
-    this.addToCrib = function(id,cards) {
-        this.crib.push({"player":id,"cards":cards});
+    this.addToCrib = function(name,cards) {
+        this.crib.push({"player":name,"cards":cards});
         return this.crib.length === 2;
     }
     
@@ -162,6 +196,7 @@ function reset() {
 
 function checkNumPlayers() {
     if (currentGame.players.length === 2) {
+        sendPlayerInfo();
         dealCards();
     } else {
         reset();
@@ -176,13 +211,43 @@ function dealCards() {
         const cards = currentDeal.dealHand();
         player.dealTo(cards);
         notifyPlayer(player, "hand", cards);
-        notifyPlayer(opponent, "opponentName", player.name);
     }
 }
 
-function getPlayer(id) {
+function sendPlayerInfo() {
+    const firstDealer = detectFirstDeal(currentGame.players);
+    for (var i = 0; i < 2; i++) {
+        var player = currentGame.players[i];
+        var opponent = currentGame.players[1-i];
+        playerInfo = {
+            'opponentName' : opponent.name,
+            'firstDeal' : firstDealer
+        };
+        notifyPlayer(player, 'playerInfo', playerInfo);
+    }
+}
+
+function detectFirstDeal(players) {
+    const d1 = players[0].firstDeal;
+    const d2 = players[1].firstDeal;
+    
+    if (d1 && d2) {
+        return d1 == d2 ? d1 : null;
+    } else if (!d1) {
+        return d2;
+    } else {
+        return d1;
+    }
+}
+
+function getPlayerForSocket(socket) {
+    const name = readNameFromCookie(socket);
+    return getPlayerByName(name);
+}
+
+function getPlayerByName(name) {
     for (let player of currentGame.players) {
-        if (player.id === id) {
+        if (player.name === name) {
             return player;
         }
     }
@@ -193,14 +258,21 @@ function notifyPlayer(player, messageId, message) {
     io.to(player.id).emit(messageId, message);
 }
 
-function notifyOtherPlayerById(id, messageId, message) {
-    let otherPlayer = getOtherPlayer(id);
-    notifyPlayer(otherPlayer, messageId, message);
+function notifyOtherPlayerByName(name, messageId, message) {
+    let otherPlayer = getOtherPlayerByName(name);
+    if (otherPlayer) {
+        notifyPlayer(otherPlayer, messageId, message);
+    }
 }
 
-function getOtherPlayer(id) {
+function getOtherPlayerBySocket(socket) {
+    const thisPlayer = getPlayerForSocket(socket);
+    return getOtherPlayerByName(thisPlayer.name);
+}
+
+function getOtherPlayerByName(name) {
     for (let player of currentGame.players) {
-        if (player.id !== id) {
+        if (player.name !== name) {
             return player;
         }
     }
@@ -208,4 +280,14 @@ function getOtherPlayer(id) {
 
 function notifyAll(messageId, message) {
     io.sockets.emit(messageId, message);
+}
+
+function readNameFromCookie(socket) {
+    const cookieValue = socket.handshake.headers.cookie;
+    if (cookieValue) {
+        const namePart = cookieValue.split('; ').find(row => row.startsWith('cribbageplayer'));
+        return namePart ? namePart.split('=')[1] : null;
+    } else {
+        return null;
+    }
 }

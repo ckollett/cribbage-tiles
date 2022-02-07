@@ -168,6 +168,32 @@ div.messagebox {
     display:none;      
 }
 
+div#playerInfo {
+    left:-5vh;
+    top:0;
+    bottom:0;
+    right:0;
+    font-size:6vh;
+    padding:5vh;
+    
+    display:flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.playerInfoSelect {
+    font-family: katahdin, sans-serif;
+    font-size: 6vh;
+    border:0;
+    outline:none;
+}
+
+.playerInfoSelect:focus {
+    border:0;
+    outline:none;
+}
+
 div#winnerheader {
     font-size:4vh;
     width:100%;

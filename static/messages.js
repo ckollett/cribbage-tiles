@@ -1,6 +1,8 @@
 function setupMessages() {
     const messages = document.getElementById('messageinput');
     messages.addEventListener('keyup', handleMessageEvent);
+    messages.focus();
+    messages.onblur = messages.focus;
 }
 
 function handleMessageEvent(e) {

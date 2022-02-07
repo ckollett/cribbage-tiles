@@ -104,7 +104,7 @@
             </div>
           </div>
   
-          <div id="deck" class="tilecontainer flip">
+          <div id="deck" class="tilecontainer flip starthidden">
             <div class="tilesides">
               <div class="tile tilefront"></div>
               <div class="tile tileback"></div>
@@ -130,6 +130,29 @@
                 <div class="winnerbutton" onclick="document.getElementById('winner').style.display='none'">Close</div>
             </div>
           </div>
+          
+          <div id="playerInfo">
+            <div style="display:grid;grid-template-columns: auto auto;column-gap:5vh;">
+              <div>Name </div>
+              <div>
+                <select id="nameInput" class="playerInfoSelect">
+                  <option></option>
+                  <option>Chris</option>
+                  <option>Jason</option>
+                </select>
+              </div>
+              <div>Dealer</div>
+              <div>
+                <select id="dealerInput" class="playerInfoSelect">
+                  <option></option>
+                  <option>Chris</option>
+                  <option>Jason</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="winnerbutton" id="okbutton">OK</div>
+          </div>
         </div>
 
         <div id="messages" class="rightscroll">
@@ -137,7 +160,7 @@
 
         <div id="footer">
             <span class="centerVertical"><a href="https://docs.google.com/spreadsheets/d/1gCBMVv-61otx1OEZQKz4_sPqXpFQSbWcJC6Vx1FlfhE/edit#gid=113638301" target="_blank" id="cribsheetlink" onclick="sendCribSheetMessage()"></a><span id="lastscore"></span></span>
-            <input type="text" maxlength="40" id="messageinput" autofocus onblur="this.focus();"></input>
+            <input type="text" maxlength="40" id="messageinput"></input>
         </div>
         
         <div id="pasthand">
@@ -148,10 +171,7 @@
     </div> <!-- End outer -->
 
     <script type="text/javascript">
-        getLastScore();
-        setupMessages();
-        const playerName = getPlayerNameFromStorage();
-        socket.emit('join', playerName);
+        setup();
     </script>
 
     <template id="tiletemplate">

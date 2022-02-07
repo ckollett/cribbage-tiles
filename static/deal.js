@@ -1,8 +1,19 @@
-var dealerKnown = false;
-var lastWinner = null;
-
 class Deal {
-    constructor(tiles) {
+    constructor(dealer) {
+        this.dealer = dealer;
+        const dealerClasses = document.getElementById('dealerlabel').classList;
+        dealerClasses.remove('hidden');
+        dealerClasses.remove('playerDeal');
+        dealerClasses.remove('opponentDeal');
+        dealerClasses.add(dealer + 'Deal');
+    }
+    
+    nextDeal() {
+        const nextDealer = this.dealer === 'player' ? 'opponent' : 'player';
+        currentDeal = new Deal(nextDealer);
+    }
+    
+    addTiles(tiles) {
         const tileObjs = [];
         for (let tile of tiles) {
             tileObjs.push(new Tile(tile,'player'));
@@ -25,10 +36,6 @@ class Deal {
             this[tray.name] = tray;
         }
         this.deck.addTiles(this.tiles);
-        
-        if (lastWinner) {
-            this.setFirstDeal();
-        }
     }
     
     getTilesInTray(name) {
@@ -41,47 +48,6 @@ class Deal {
     
     sort() {
         this.tiles.sort((t1,t2) => t1.compareTo(t2));
-    }
-    
-    setFirstDeal() {
-        const playerName = document.getElementById('playerName').innerHTML;
-        if (playerName === lastGameWinner) {
-            this.setDealer('opponent');
-        } else {
-            this.setDealer('player');
-        }
-        lastWinner = null;
-    }
-    
-    dealerChanged(oldDealer) {
-        if (!dealerKnown) {
-            // Detect last winner. The oldDealer value will be the player who is
-            // NOT the first dealer, which is the last game winner.
-            var playerName, opponentName; 
-            // Obviously this if/else could be cleaned up a lot.
-            if (oldDealer === "player") {
-                playerName = lastGameWinner;
-                opponentName = lastGameWinner.toLowerCase() === "chris" ? "Jason" : "Chris";
-            } else {
-                opponentName = lastGameWinner;
-                playerName = lastGameWinner.toLowerCase() === "chris" ? "Jason" : "Chris";
-            }
-            setPlayerNames(playerName, opponentName);
-        }
-        
-        const newDealer = oldDealer === 'player' ? 'opponent' : 'player';
-        this.setDealer(newDealer, oldDealer);
-    }
-    
-    setDealer(newDealer, oldDealer) {
-        dealerKnown = true;
-        this.dealer = newDealer;
-        const dealerClasses = document.getElementById('dealerlabel').classList;
-        dealerClasses.remove('hidden');
-        if (oldDealer) {
-            dealerClasses.remove(oldDealer + 'Deal');
-        }
-        dealerClasses.add(this.dealer + 'Deal');
     }
 }
 
@@ -96,32 +62,20 @@ function getPlayerNameFromStorage() {
 function setPlayerNames(playerName, opponentName) {
     dealerKnown = true;
     document.getElementById("playerName").innerHTML = playerName;
-    document.getElementById("opponentName").innerHTML = opponentName;
     localStorage.setItem('playerName', playerName);
 }
 
-function setOpponentName(opponentName) {
-    var playerName = document.getElementById("playerName").innerHTML;
-    const hasPlayerName = playerName && !playerName.trim() === '';
-    if (opponentName) {
-        if (!hasPlayerName) {
-            playerName = getOtherName(opponentName);
-        }
-        setPlayerNames(playerName, opponentName);
-    } else if (hasPlayerName) {
-        opponentName = getOtherName(playerName);
-        setPlayerNames(playerName, opponentName);
-    }
-}
-
-function getOtherName(name) {
-    return name == 'Chris' ? 'Jason' : 'Chris';
-}
-
-function detectFirstDeal(lastGameWinner) {
-    lastWinner = lastGameWinner;
-    if (currentDeal) {
-        currentDeal.setFirstDeal();
+function handlePlayerInfo(playerInfo) {
+    document.getElementById("opponentName").innerHTML = playerInfo.opponentName;
+    
+    if (playerInfo.firstDeal) {
+        const dealer = playerInfo.opponentName === playerInfo.firstDeal ? 'opponent' : 'player';
+        currentDeal = new Deal(dealer);
+        startGameTimer();
+    } else {
+        const msgElt = document.getElementById('message');
+        msgElt.innerHTML = "Pick a Dealer";
+        document.getElementById('messagecontainer').style.display = 'block';    
     }
 }
 

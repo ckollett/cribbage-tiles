@@ -61,7 +61,7 @@ socket.on("showCrib", handleShowCrib);
 
 socket.on("opponentScored", handleOpponentScored);
 
-socket.on("opponentName", setOpponentName);
+socket.on("playerInfo", handlePlayerInfo);
 
 socket.on("updateHistory", function(newScore) {
     updateLastHistoryItem('opponent', newScore);
@@ -69,6 +69,12 @@ socket.on("updateHistory", function(newScore) {
 
 socket.on("opponentMessage", function(msg) {
     addMessage(msg, 'opponent');
+});
+
+socket.on("quit", function() {
+    if (currentDeal) {
+        location.reload();
+    }
 });
 
 /***** Communications back to the server *****/

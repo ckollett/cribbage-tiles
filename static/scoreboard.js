@@ -80,7 +80,9 @@ function isScoringAllowed() {
 
 function handleOpponentScored(points) {
     handleScore('opponent', points);
-    currentDeal.peg.canPlay = (scoreState === 'Peg' || scoreState === 'Nobs');
+    if (scoreState === 'Peg' || scoreState === 'Nobs') {
+        currentDeal.peg.canPlay = true;
+    }
 }
 
 function handleScore(player, points) {
@@ -93,12 +95,6 @@ function handleScore(player, points) {
     addToHistory();
     
     switch (scoreState.toLowerCase()) {
-    case 'nobs':
-        if (!currentDeal.dealer) {
-            const oldDealer = player === 'opponent' ? 'player' : 'opponent';
-            currentDeal.dealerChanged(oldDealer);
-        }
-        break;
     case 'hand':
         setScoreState('Foot');
         break;
@@ -512,7 +508,7 @@ function updateLastHistoryItem(player, newScore) {
 function setWinner(player) {
     let winnerName = document.getElementById(player + "Name").innerHTML;
     let loserScore = Math.min(currentScore.player.total, currentScore.opponent.total);
-    let gameTime = document.getElementById("gameTime").textContent.trim();
+    let gameTime = document.getElementById("gameTime").textContent;
     let dateStr = new Date().toLocaleDateString("en-US");
     
     const winnerDiv = document.getElementById("winnername");
