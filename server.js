@@ -28,11 +28,17 @@ var currentDeal = new deal();
 io.on('connection', function(socket) {
     const playerName = readNameFromCookie(socket);
     if (playerName) {
+        console.log(playerName + ' connected');
         const player = getPlayerByName(playerName);
         if (player) {
+            console.log('Found player info for ' + playerName);
             player.id = socket.id;
             notifyOtherPlayerByName(player.name, 'opponentMessage', player.name + " reconnected!");
+        } else {
+            console.log('No existing player info for ' + playerName);
         }
+    } else {
+        console.log('Unknown player connected');
     }
     
     var notifyOtherPlayer = function(messageId, message) {
@@ -44,13 +50,16 @@ io.on('connection', function(socket) {
     
     socket.on("join", function(playerInfo) {
         const playerName = readNameFromCookie(socket);
-        
         if (currentGame.addPlayer(playerInfo, socket.id)) {
             checkNumPlayers();
         }            
     });
     
     socket.on("quit", function() {
+        const thisPlayer = getPlayerForSocket(socket);
+        if (thisPlayer) {
+            console.log(thisPlayer.name + " quit");
+        }
         notifyOtherPlayer('quit');
         currentGame = new game.game();
     });
@@ -58,9 +67,10 @@ io.on('connection', function(socket) {
     socket.on("disconnect", function() {
         const player = getPlayerForSocket(socket);
         if (player) {
-            notifyOtherPlayer('opponentMessage', player.name + " disconnected. Waiting for reconnect.");
+            console.log(player.name + ' disconnected');
+        } else {
+            console.log('Unknown player disconnected');
         }
-        // Try keeping the game open for the other player.
     });
     
     socket.on("cribSelected", function(cards) {
@@ -275,9 +285,8 @@ function notifyAll(messageId, message) {
 function readNameFromCookie(socket) {
     const cookieValue = socket.handshake.headers.cookie;
     if (cookieValue) {
-        return cookieValue.split('; ')
-               .find(row => row.startsWith('cribbageplayer'))
-               .split('=')[1];
+        const namePart = cookieValue.split('; ').find(row => row.startsWith('cribbageplayer'));
+        return namePart ? namePart.split('=')[1] : null;
     } else {
         return null;
     }

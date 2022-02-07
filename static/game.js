@@ -275,6 +275,9 @@ function doReset() {
 }
 
 function populateDeck(tiles, dealer) {
+    if (currentDeal.tiles) {
+        currentDeal.nextDeal();
+    }
     currentDeal.addTiles(tiles);
     return draw();
 }
