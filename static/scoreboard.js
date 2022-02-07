@@ -80,7 +80,9 @@ function isScoringAllowed() {
 
 function handleOpponentScored(points) {
     handleScore('opponent', points);
-    currentDeal.peg.canPlay = (scoreState === 'Peg' || scoreState === 'Nobs');
+    if (scoreState === 'Peg' || scoreState === 'Nobs') {
+        currentDeal.peg.canPlay = true;
+    }
 }
 
 function handleScore(player, points) {

@@ -406,6 +406,8 @@ function removeData(elt) {
 }
 
 function setup() {
+    // If this browser is associated with a game, quit it.
+    socket.emit('quit');
     getLastWinner().then(getPlayerInfo).then(finishSetup);
 }
 
@@ -459,5 +461,10 @@ function finishSetup(playerInfo) {
     }
     
     setupMessages();
+    window.addEventListener('unload', function(e) {
+        socket.emit('quit');
+    });
+    
+    document.cookie = 'cribbageplayer=' + playerInfo.name;
     socket.emit('join', playerInfo);
 }

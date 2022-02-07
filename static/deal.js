@@ -72,7 +72,6 @@ function handlePlayerInfo(playerInfo) {
         const dealer = playerInfo.opponentName === playerInfo.firstDeal ? 'opponent' : 'player';
         currentDeal = new Deal(dealer);
         startGameTimer();
-        finishSetup(playerInfo);
     } else {
         const msgElt = document.getElementById('message');
         msgElt.innerHTML = "Pick a Dealer";

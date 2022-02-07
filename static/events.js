@@ -71,6 +71,12 @@ socket.on("opponentMessage", function(msg) {
     addMessage(msg, 'opponent');
 });
 
+socket.on("quit", function() {
+    if (currentDeal) {
+        location.reload();
+    }
+});
+
 /***** Communications back to the server *****/
 function sendCribSelected(crib) {
     socket.emit("cribSelected",crib);

@@ -12,10 +12,10 @@ module.exports = {
             return false;
         }
         
-        this.removePlayer = function(id) {
+        this.removePlayer = function(name) {
             for (var i = 0; i < this.players.length; i++) {
                 var player = this.players[i];
-                if (player.id === id) {
+                if (player.name === name) {
                     this.players.splice(i,1);
                     return true;
                 }
@@ -30,7 +30,6 @@ module.exports = {
 };
 
 function player(playerInfo, id) {
-    console.log('Player: ' + JSON.stringify(playerInfo));
     this.name = playerInfo.name;
     this.firstDeal = playerInfo.firstDeal;
     this.id = id;
