@@ -1,9 +1,12 @@
 module.exports = {
     
     game: function() {
+        console.log('Creating new game');
+        
         this.players = [];
         
         this.addPlayer = function(playerInfo, id) {
+            console.log('Existing game. Adding ' + playerInfo.name);
             if (this.players.length < 2) {
                 var newPlayer = new player(playerInfo, id);
                 this.players.push(newPlayer);

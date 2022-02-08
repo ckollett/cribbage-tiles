@@ -51,17 +51,20 @@ io.on('connection', function(socket) {
     socket.on("join", function(playerInfo) {
         const playerName = readNameFromCookie(socket);
         if (currentGame.addPlayer(playerInfo, socket.id)) {
+            console.log('Added ' + playerName);
             checkNumPlayers();
-        }            
+        } else {
+            console.log('addPlayer returned false');
+        }
     });
     
     socket.on("quit", function() {
         const thisPlayer = getPlayerForSocket(socket);
         if (thisPlayer) {
             console.log(thisPlayer.name + " quit");
+            notifyOtherPlayer('quit');
+            currentGame = new game.game();
         }
-        notifyOtherPlayer('quit');
-        currentGame = new game.game();
     });
     
     socket.on("disconnect", function() {
@@ -195,7 +198,9 @@ function reset() {
 }
 
 function checkNumPlayers() {
+    console.log('In checkNumPlayers. Found ' + currentGame.players.length);
     if (currentGame.players.length === 2) {
+        console.log('Starting a game');
         sendPlayerInfo();
         dealCards();
     } else {

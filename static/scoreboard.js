@@ -508,7 +508,7 @@ function updateLastHistoryItem(player, newScore) {
 function setWinner(player) {
     let winnerName = document.getElementById(player + "Name").innerHTML;
     let loserScore = Math.min(currentScore.player.total, currentScore.opponent.total);
-    let gameTime = document.getElementById("gameTime").textContent;
+    let gameTime = document.getElementById("gameTime").textContent.trim();
     let dateStr = new Date().toLocaleDateString("en-US");
     
     const winnerDiv = document.getElementById("winnername");
