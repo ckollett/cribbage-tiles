@@ -137,8 +137,12 @@ function turn(tile) {
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
-        if (currentDeal.dealer === 'player' && turnTile.getNum() === 'J') {
-            updateCounterButtonForNobs(turnTile);
+        if (turnTile.getNum() === 'J') {
+            if (currentDeal.dealer === 'player') {
+                updateCounterButtonForNobs(turnTile);
+            }
+        } else {
+            currentDeal.peg.canPlay = true;
         }
     }, 500);
 }

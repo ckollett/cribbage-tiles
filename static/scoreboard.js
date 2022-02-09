@@ -55,6 +55,10 @@ function scorePoints(player, points) {
             sendShuffle();
         }
         break;
+    case 'nobs':
+        const counterElt = document.getElementById('counterbutton');
+        counterElt.removeEventListener('mouseover', showNobsScore);
+        break;
     }
 }
 
@@ -105,7 +109,7 @@ function handleScore(player, points) {
                 setScoreState('Hand');
             }        
         }
-        break;
+        break;    
     }
 }
 
