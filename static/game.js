@@ -178,9 +178,6 @@ function shake(elt, afterShake) {
         if (afterShake) {
             afterShake();
         }
-        // Just in case we rejected you incorrectly, if you try again
-        // we'll let it go.
-        currentDeal.peg.canPlay = true;
     }, 1000);
 }
 
