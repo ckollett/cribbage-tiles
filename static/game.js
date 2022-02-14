@@ -137,8 +137,12 @@ function turn(tile) {
     currentDeal.deck.addTile(turnTile);
     window.setTimeout(function() {
         turnTile.elt.classList.remove('flip');
-        if (currentDeal.dealer === 'player' && turnTile.getNum() === 'J') {
-            updateCounterButtonForNobs(turnTile);
+        if (turnTile.getNum() === 'J') {
+            if (currentDeal.dealer === 'player') {
+                updateCounterButtonForNobs(turnTile);
+            }
+        } else {
+            currentDeal.peg.canPlay = true;
         }
     }, 500);
 }
@@ -159,6 +163,13 @@ function checkForMessage() {
             };
             document.getElementById('messagecontainer').style.display = 'block';
         }
+    } else if (pegged.length === 1 && pegged[0].getPegValue() === 1) {
+        if (currentDeal.opponent_played.getTiles().length === 0) {
+            chaos();
+            if (pegged[0].owner === 'player') {
+                sendMessage('Chaos!');
+            }
+        }
     }
     return true;
 }
@@ -178,6 +189,14 @@ function shake(elt, afterShake) {
         if (afterShake) {
             afterShake();
         }
+    }, 1000);
+}
+
+function chaos() {
+    const gameElt = document.getElementById('game');
+    gameElt.classList.add('chaos');
+    setTimeout(function() {
+        gameElt.classList.remove('chaos');
     }, 1000);
 }
 

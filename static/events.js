@@ -16,7 +16,7 @@ socket.on("hand", function(tiles) {
 socket.on("opponentCrib", moveOpponentCrib);
 
 socket.on("fullcrib", function(turnTile) {
-    currentDeal.peg.canPlay = (!currentDeal.dealer || currentDeal.dealer === 'opponent');    
+    // currentDeal.peg.canPlay = (!currentDeal.dealer || currentDeal.dealer === 'opponent');    
     currentDeal.player_hand.setClickTo('peg');
     turn(turnTile);
 });
