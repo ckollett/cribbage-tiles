@@ -7,15 +7,16 @@
     <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
     <link rel="stylesheet" type="text/css" href="static/scoreboard.css" />
     <script src="/socket.io/socket.io.js"></script>
-    <script src="static/tile.js?202108090303"></script>
-    <script src="static/game.js?202108090303"></script>
-    <script src="static/deal.js?202108090303"></script>
-    <script src="static/tray.js?202108090303"></script>
-    <script src="static/scoreboard.js?202108090303"></script>
-    <script src="static/events.js?202108090303"></script>
-    <script src="static/messages.js?202108090303"></script>
-    <script src="static/cribsheet.js?202108090303"></script>
-    <script src="https://ckollett.github.io/counter.js?202108090303"></script>
+    <script src="static/tile.js?20220215"></script>
+    <script src="static/game.js?20220215"></script>
+    <script src="static/deal.js?20220215"></script>
+    <script src="static/tray.js?20220215"></script>
+    <script src="static/scoreboard.js?20220215"></script>
+    <script src="static/events.js?20220215"></script>
+    <script src="static/messages.js?20220215"></script>
+    <script src="static/cribsheet.js?20220215"></script>
+    <script src="https://ckollett.github.io/counter.js?20220215"></script>
+    <script src="https://ckollett.github.io/outs.js?20220215"></script>
   </head>
   <body>
     <div id="outer">
@@ -109,6 +110,12 @@
               <div class="tile tilefront"></div>
               <div class="tile tileback"></div>
             </div>
+          </div>
+          <div class="tilecontainer" id="outs" style="display:none;">
+             <div>Min</div><div id="outsmin"></div>
+             <div>Max</div><div id="outsmax"></div>
+             <div>Avg</div><div id="outsavg"></div>
+             <div>Med</div><div id="outsmed"></div>
           </div>
           <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();">
             <img src="/static/images/left-arrow.svg" id="arrow" />

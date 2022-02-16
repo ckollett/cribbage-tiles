@@ -162,11 +162,32 @@ class CribSelectionTray extends SortOrderTray {
         const selected = this.getTiles();
         // TODO: Move this if/else block?
         if (selected.length === 2) {
+            showOuts();
             arrow.classList.remove('hidden');
         } else {
+            hideOuts();
             arrow.classList.add('hidden');
         }
     }
+}
+
+function showOuts() {
+    const hand = currentDeal.player_hand.getTiles();
+    const trayShort = getHandCode(hand, false);
+    const counterTiles = getHandFromShortHand(trayShort);
+    const outs = new Outs(counterTiles);
+    
+    document.getElementById('outsmin').innerHTML = outs.getMin();
+    document.getElementById('outsmax').innerHTML = outs.getMax();
+    document.getElementById('outsavg').innerHTML = outs.getAverage().toFixed(2);
+    document.getElementById('outsmed').innerHTML = outs.getMedian();
+    
+    document.getElementById('outs').style.display = 'grid';
+    console.log('Average: ' + outs.getAverage());
+}
+
+function hideOuts() {
+    document.getElementById('outs').style.display = 'none';
 }
 
 class PlayOrderTray extends Tray {
