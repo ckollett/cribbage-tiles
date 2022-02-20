@@ -77,6 +77,11 @@ function handlePlayerInfo(playerInfo) {
         msgElt.innerHTML = "Pick a Dealer";
         document.getElementById('messagecontainer').style.display = 'block';    
     }
+    
+    // Once the game is started, add a confirmation if the player tries to navigate away.
+    window.onbeforeunload = function() {
+        return "Really leave atomic cribbage?";
+    }
 }
 
 function getTrays(deal) {
