@@ -10,6 +10,7 @@ function getLastWinner() {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
               const winner = xhr.response.values[1];
+              updateCribSheetLink(winner.length+1);
               resolve(winner[winner.length-1]);
           } catch (e) {
               resolve(null);
@@ -25,4 +26,12 @@ function getLastWinner() {
       xhr.open('GET', url, true);
       xhr.send('');    
   });
+}
+
+function updateCribSheetLink(rowNum) {
+    // Update the crib sheet link to go to the first empty row.
+    const sheetLink = document.getElementById('cribsheetlink');
+    var link = sheetLink.getAttribute('href');
+    link += '&range=A' + rowNum;
+    sheetLink.setAttribute('href', link);              
 }
