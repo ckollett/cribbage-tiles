@@ -49,9 +49,9 @@ io.on('connection', function(socket) {
     }
     
     socket.on("join", function(playerInfo) {
-        const playerName = readNameFromCookie(socket);
         if (currentGame.addPlayer(playerInfo, socket.id)) {
-            console.log('Added ' + playerName);
+            console.log('Added ' + playerInfo.name + ' with socket ID [' + socket.id + ']');
+            console.log('    getPlayerForSocket returned: ' + getPlayerForSocket(socket));
             checkNumPlayers();
         } else {
             console.log('addPlayer returned false');
@@ -78,6 +78,7 @@ io.on('connection', function(socket) {
     
     socket.on("cribSelected", function(cards) {
         notifyOtherPlayer('opponentCrib');
+        console.log('In cribSelected. Socket ID: [' + socket.id + ']');
         const thisPlayer = getPlayerForSocket(socket);
         for (let card of cards) {
             thisPlayer.hand.removeCard(card);
@@ -225,6 +226,7 @@ function sendPlayerInfo() {
         var player = currentGame.players[i];
         var opponent = currentGame.players[1-i];
         playerInfo = {
+            'playerName' : player.name,
             'opponentName' : opponent.name,
             'firstDeal' : firstDealer
         };
@@ -246,16 +248,23 @@ function detectFirstDeal(players) {
 }
 
 function getPlayerForSocket(socket) {
+    console.log('In getPlayerForSocket. Socket id: [' + socket.id + ']')
     const name = readNameFromCookie(socket);
+    console.log('Found player name [' + name + ']');
     return getPlayerByName(name);
 }
 
 function getPlayerByName(name) {
+    console.log('Looking for player named [' + name + ']')
+    console.trace();
     for (let player of currentGame.players) {
+        console.log('    Checking existing player named [' + player.name + ']');
         if (player.name === name) {
+            console.log('    Success!');
             return player;
         }
     }
+    console.log('    No player named [' + name + '] found');
     return null;
 }
 
@@ -288,11 +297,19 @@ function notifyAll(messageId, message) {
 }
 
 function readNameFromCookie(socket) {
+    console.log('In readNameFromCookie');
     const cookieValue = socket.handshake.headers.cookie;
+    let name = null;
     if (cookieValue) {
         const namePart = cookieValue.split('; ').find(row => row.startsWith('cribbageplayer'));
-        return namePart ? namePart.split('=')[1] : null;
+        if (namePart) {
+            name = namePart.split('=')[1];
+            console.log('    Found name from cookie: ' + name);
+        } else {
+            console.log('    Cookies do not contain cribbageplayer information');
+        }
     } else {
-        return null;
+        console.log('    No cookies found');
     }
+    return name;
 }

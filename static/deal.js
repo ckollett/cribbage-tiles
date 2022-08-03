@@ -66,6 +66,7 @@ function setPlayerNames(playerName, opponentName) {
 }
 
 function handlePlayerInfo(playerInfo) {
+    document.cookie = 'cribbageplayer=' + playerInfo.playerName;
     document.getElementById("opponentName").innerHTML = playerInfo.opponentName;
     
     if (playerInfo.firstDeal) {
