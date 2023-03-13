@@ -11,8 +11,15 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });// Starts the server.
 
-app.get('/test.html', function(request, response) {
-  response.sendFile(path.join(__dirname, 'test.html'));
+// For debugging/investigations, you can make a request to /tiles
+// to see a single deal of two hands and a turn.
+app.get('/tiles', function(request, response) {
+    const newDeal = new deal();
+    console.log(newDeal);
+    const hand1 = newDeal.dealHand();
+    const hand2 = newDeal.dealHand();
+    const turn = newDeal.getTopCard();
+    response.send(JSON.stringify([hand1,hand2,turn]));
 });
 
 server.listen(5000, function() {
