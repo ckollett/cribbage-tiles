@@ -14,8 +14,7 @@ module.exports = {
 function createDeck() {
     var deck = [];
     var suits = ['mug','tent','campfire','sleepingbag'];
-    for (var i = 0; i < suits.length; i++) {
-        var suit = suits[i];
+    for (let suit of suits) {
         for (var j = 1; j <= 13; j++) {
             deck.push(new card(suit, j));
         }
