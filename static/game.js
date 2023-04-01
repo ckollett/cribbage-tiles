@@ -16,8 +16,8 @@ function renderTile(tile, templateStr) {
     const tileElt = template.content.cloneNode(true).firstElementChild;
     
     if (tile.num !== 0) {
-        const tileFront = tileElt.querySelector('.tilefront');   
-        tileFront.classList.add(tile.suit);
+        const tileSuit = tileElt.querySelector('.tilesuit');   
+        tileSuit.classList.add(tile.suit);
         const tileValue = tileElt.querySelector('.value');
         tileValue.innerHTML = tile.num ? tile.num : tile.value;
     }

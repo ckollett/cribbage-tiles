@@ -24,10 +24,10 @@ class Tile {
     update(data) {
         this.data = data;
             
-        const front = this.elt.getElementsByClassName("tilefront").item(0);
-        front.classList.add(data.suit);
+        const suit = this.elt.getElementsByClassName("tilesuit").item(0);
+        suit.classList.add(data.suit);
     
-        const value = front.getElementsByClassName("value").item(0);
+        const value = this.elt.getElementsByClassName("value").item(0);
         value.innerHTML = data.num;
     }
     

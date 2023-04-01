@@ -37,7 +37,7 @@ div#header {
     width:100%;
     height:10vh;
     top:0;
-    color:black;
+    color:var(--foreground);
     text-align:center;
     font-size:7vh;
     line-height:10vh;
@@ -83,11 +83,11 @@ div.rightscroll::-webkit-scrollbar {
 }
 
 div.rightscroll::-webkit-scrollbar-track {
-    background: white;
+    background: var(--background);
 }
 
 div.rightscroll::-webkit-scrollbar-thumb {
-    background:black;
+    background:var(--foreground);
     border-radius:.5vh;
 }
 
@@ -136,8 +136,8 @@ div#scoremessage span a {
 }
 
 div#scoremessage span a:hover {
-    background-color: black;
-    color: white;
+    background-color: var(--foreground);
+    color: var(--background);
     border-radius: 0.75vh;
 }
 
@@ -171,7 +171,7 @@ div.messagerow {
 
 div.message {
     display:inline-block;
-    border:1px solid black;
+    border:1px solid var(--foreground);
     border-radius: 0.6vh;
     box-sizing:border-box;
     margin-bottom:0.3vh;
@@ -191,8 +191,8 @@ input#messageinput {
 
 div.message.playerMessage {
     float:right;
-    color:white;
-    background-color:black;
+    color:var(--background);
+    background-color:var(--foreground);
 }
 
 div#footer {

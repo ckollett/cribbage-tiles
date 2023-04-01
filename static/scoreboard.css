@@ -1,9 +1,9 @@
 .playerbg {
-  background-color:black;
+  background-color:var(--foreground);
 }
 
 .opponentbg {
-  background-color:white;
+  background-color:var(--background);
 }
 
 #scoreboard {
@@ -13,7 +13,7 @@
 .score {
   position:relative;
   display:block;
-  color: white;
+  color: var(--background);
   height:47%;
   left:0px;
 }
@@ -39,7 +39,7 @@
   height:100%;
   margin-left:-5vh;
   left:0;
-  color:white;
+  color:var(--background);
   width:10vh;
   text-align:center;
   line-height:4vh;  
@@ -47,11 +47,11 @@
 
 #opponentscoreboard {
   position:relative;
-  color:black;
-  background-color: white;
+  color:var(--foreground);
+  background-color: var(--background);
   margin-left:-5vh;
   left:0;
-  color:white;
+  color:var(--background);
   width:10vh;
   text-align:center;
   line-height:4vh;  
@@ -59,13 +59,13 @@
 
 #playerscoreboard .total {
   bottom:1vh;
-  background-color: black;
+  background-color: var(--foreground);
 }
 
 #opponentscoreboard .total {
     top:1vh;
-    color: black;
-    background-color:white;
+    color: var(--foreground);
+    background-color:var(--background);
 }
 
 .total {
@@ -80,7 +80,7 @@
   padding-left: 1%;
   padding-right: 1%;
   border-radius: 0.8vh;
-  border:0.5vh solid black;
+  border:0.5vh solid var(--foreground);
   box-sizing:border-box;
 }
 
@@ -114,19 +114,19 @@ table.subtotals td {
   border-left: 0.75vh solid transparent;
   border-right: 0.75vh solid transparent;
   left: -0.75vh;
-  border-bottom: 0.75vh solid white;
+  border-bottom: 0.75vh solid var(--background);
   border-top: 0.25vh solid transparent;
   top: 0.5vh;
 }
 
 #playertriangle {
   position:absolute;
-  border-top: 1vh solid black;
+  border-top: 1vh solid var(--foreground);
   bottom:0;
 }
 
 #opponenttriangle {
-  border-bottom: 1vh solid black;
+  border-bottom: 1vh solid var(--foreground);
   top:0;
 }
 
@@ -151,7 +151,7 @@ table.subtotals td {
   position:absolute;
   border:0px;
   top:-1.5vh;
-  color:black;
+  color:var(--foreground);
   left:75%;
   text-align:center;
   margin-left:-10px;
@@ -176,22 +176,22 @@ div.scorebutton {
     flex-grow:1;
     flex-basis:0;
     display:inline;
-    background-color:white;
-    color:black;
+    background-color:var(--background);
+    color:var(--foreground);
     text-align:center;
     height:4vh;
     margin-top:1vh;
     margin-bottom:1vh;
     box-sizing:border-box;
-    border:1px solid black;
+    border:1px solid var(--foreground);
     border-left-width:0;
     font-size:2.5vh;
     line-height:4vh;
 }
 
 div.scorebutton:hover {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 div.scorebutton:first-child {
@@ -222,14 +222,14 @@ div#monsterbutton {
 
 div#counterbutton {
 display: inline-block;
-    background-color: white;
-    color: black;
+    background-color: var(--background);
+    color: var(--foreground);
     text-align: center;
     height: 4vh;
     width: 9%;
     margin-top: 1vh;
     box-sizing: border-box;
-    border: 1px solid black;
+    border: 1px solid var(--foreground);
     font-size: 2.5vh;
     line-height: 4vh;
     border-radius: 0.75vh;
@@ -254,8 +254,8 @@ div#counterbutton {
 */
 
 div#counterbutton.active {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 
@@ -267,7 +267,7 @@ div#monsterbutton:hover {
 }
 
 .edithistory {
-    color:black;
+    color:var(--foreground);
     text-shadow:
       -1px -1px 0 #ffffff,  
        1px -1px 0 #ffffff,
@@ -277,15 +277,15 @@ div#monsterbutton:hover {
 
 table#pasttable {
     border-collapse:collapse;
-    border: 1px solid black;
+    border: 1px solid var(--foreground);
     width:90%;
     margin:auto;
     margin-bottom:3vh;
 }
 
 table#pasttable tr.pastheader td {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 table#pasttable th {
@@ -307,11 +307,11 @@ table#pasttable td.pastscore {
 }
 
 table#pasttable tr {
-    border-bottom:1px solid black;
+    border-bottom:1px solid var(--foreground);
 }
 
 table#pasttable tr.pasttotal {
-    border-top:2px solid black;
+    border-top:2px solid var(--foreground);
 }
 
 /* It is confusing that pasthand is used as both a class and an ID, for different parts of the board. */
@@ -321,10 +321,10 @@ div#pasthand {
     min-height:20vh;
     right:0;
     top:15vh;
-    border:0.5vh solid black;
+    border:0.5vh solid var(--foreground);
     border-radius:1vh;
     padding:1%;
-    background-color:white;
+    background-color:var(--background);
     z-index:50;
     display:none;
     text-align:center;
