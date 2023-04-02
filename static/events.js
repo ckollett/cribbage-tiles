@@ -71,6 +71,10 @@ socket.on("opponentMessage", function(msg) {
     addMessage(msg, 'opponent');
 });
 
+socket.on("toggleDark", function(msg) {
+    toggleDark(false);
+});
+
 socket.on("quit", function() {
     if (currentDeal) {
         location.reload();

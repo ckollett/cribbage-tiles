@@ -187,12 +187,14 @@ input#messageinput {
     font-family: katahdin, sans-serif;
     font-size:2vh;
     width:50%;
+    background-color:var(--background);
+    color:var(--foreground);
 }
 
 div.message.playerMessage {
     float:right;
-    color:var(--background);
-    background-color:var(--foreground);
+    background-color:var(--background);
+    color:var(--foreground);
 }
 
 div#footer {

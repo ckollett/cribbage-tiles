@@ -132,6 +132,10 @@ io.on('connection', function(socket) {
         }
     });
     
+    socket.on("toggleDark", function() {
+        notifyOtherPlayer("toggleDark");
+    });
+    
     
     socket.on("shuffle", function() {
         currentDeal = new deal();

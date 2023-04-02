@@ -1,6 +1,6 @@
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: #ffffff;
+  --foreground: #000000;
 }
 
 body {
@@ -13,12 +13,8 @@ select {
     background-color: var(--background);
 }
 
-img {
-    filter:invert(100%);
-}
-
-div.tilefront {
-  mix-blend-mode: exclusion;
+body.inverted img {
+    filter: invert(100%);
 }
 
 /* ***** Tile ***** */
@@ -40,18 +36,40 @@ div.value {
     top:2%;
 }
 
-div.tent {
-    -webkit-mask-image: url('/static/images/tent.svg');
+/*
+div.tent::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/tent.svg');
 }
-div.mug {
-    -webkit-mask-image: url('/static/images/mug.svg');
+div.mug::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/mug.svg');
 }
-div.campfire {
-    -webkit-mask-image: url('/static/images/campfire.svg');
+div.campfire::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/campfire.svg');
 }
-div.sleepingbag {
-    -webkit-mask-image: url('/static/images/sleepingbag.svg');
+div.sleepingbag::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/sleepingbag.svg');
 }
+*/
 
 div#deck {
     top:35%;
@@ -94,26 +112,34 @@ div.tilefront {
 /*    z-index:10; */
 }
 
+
 div.tilesuit {
-    /* Use foreground here since we're applying a mask */
-    background-color: var(--foreground);
-    -webkit-mask-size:85%;
-    -webkit-mask-position: 50% 65%;
-    -webkit-mask-repeat: no-repeat;
     position: absolute;
     top:0;
     left:0;
     right:0;
     bottom:0;
+    display:flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+div.tilesuit img {
+    width: 85%;
+    margin-top: 1vh;    
 }
 
 div.tileback {
     transform: rotateY(-180deg);
     z-index:5;
     border-color:#999999;
-    background: url('/static/images/mountains_2.svg');    
-    background-size:75%;
-    background-position:50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.backicon {
+    width:75%;
 }
 
 div.tile {

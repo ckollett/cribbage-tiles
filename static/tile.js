@@ -23,12 +23,7 @@ class Tile {
     
     update(data) {
         this.data = data;
-            
-        const suit = this.elt.getElementsByClassName("tilesuit").item(0);
-        suit.classList.add(data.suit);
-    
-        const value = this.elt.getElementsByClassName("value").item(0);
-        value.innerHTML = data.num;
+        populateTile(this.elt, data.suit, data.num);
     }
     
     compareTo(otherTile, ignoreOwner) {

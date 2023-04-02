@@ -16,13 +16,20 @@ function renderTile(tile, templateStr) {
     const tileElt = template.content.cloneNode(true).firstElementChild;
     
     if (tile.num !== 0) {
-        const tileSuit = tileElt.querySelector('.tilesuit');   
-        tileSuit.classList.add(tile.suit);
-        const tileValue = tileElt.querySelector('.value');
-        tileValue.innerHTML = tile.num ? tile.num : tile.value;
+        const value = tile.num ? tile.num : tile.value;
+        populateTile(tileElt, tile.suit, value);
     }
     
     return tileElt;
+}
+
+function populateTile(tileElt, suit, value) {
+    const tileSuit = tileElt.querySelector('.tilesuit');   
+    tileSuit.classList.add(suit);
+    const tileImg = tileElt.querySelector('.suitimg');
+    tileImg.setAttribute('src', '/static/images/' + suit + '.svg');
+    const tileValue = tileElt.querySelector('.value');
+    tileValue.innerHTML = value;
 }
 
 function clear() {
@@ -486,4 +493,22 @@ function finishSetup(playerInfo) {
     
     document.cookie = 'cribbageplayer=' + playerInfo.name;
     socket.emit('join', playerInfo);
+}
+
+let isDark = false;
+
+function toggleDark(notify) {
+    let root = document.documentElement;
+    let fg = isDark ? '#000000' : '#ffffff';
+    let bg = isDark ? '#ffffff' : '#000000';
+    isDark = !isDark;
+    root.style.setProperty('--foreground', fg);
+    root.style.setProperty('--background', bg);
+    
+    document.body.classList.toggle('inverted');
+    
+    notify = notify || arguments.length == 0;
+    if (notify) {
+        socket.emit("toggleDark","");
+    }
 }
