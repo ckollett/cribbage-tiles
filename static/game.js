@@ -498,13 +498,6 @@ function finishSetup(playerInfo) {
 let isDark = false;
 
 function toggleDark(notify) {
-    let root = document.documentElement;
-    let fg = isDark ? '#000000' : '#ffffff';
-    let bg = isDark ? '#ffffff' : '#000000';
-    isDark = !isDark;
-    root.style.setProperty('--foreground', fg);
-    root.style.setProperty('--background', bg);
-    
     document.body.classList.toggle('inverted');
     
     notify = notify || arguments.length == 0;

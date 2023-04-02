@@ -4,17 +4,24 @@
 }
 
 body {
+    --background: #ffffff;
+    --foreground: #000000;
     color: var(--foreground);
     background-color: var(--background);
+}
+
+body.inverted {
+    --background: #000000;
+    --foreground: #ffffff;
+}
+
+body.inverted img {
+    filter: invert(100%);
 }
 
 select {
     color: var(--foreground);
     background-color: var(--background);
-}
-
-body.inverted img {
-    filter: invert(100%);
 }
 
 /* ***** Tile ***** */
