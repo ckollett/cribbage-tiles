@@ -298,6 +298,7 @@ table#pasttable td {
 }
 
 table#pasttable td.pastname {
+    text-align: left;
     width:70%;
 }
 
@@ -313,6 +314,19 @@ table#pasttable tr {
 table#pasttable tr.pasttotal {
     border-top:2px solid var(--foreground);
 }
+
+table#pasttable tr.outtotal {
+    border-top:2px solid black;
+}
+
+table#pasttable tr.outdetail td {
+    font-size: smaller;
+}
+
+table#pasttable tr.outdetail td.pastname {
+    padding-left: 10px;
+}
+
 
 /* It is confusing that pasthand is used as both a class and an ID, for different parts of the board. */
 div#pasthand {

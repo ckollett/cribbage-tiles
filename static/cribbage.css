@@ -576,6 +576,10 @@ div.playerSummary {
     color:var(--background);
 }
 
+div.outs {
+    margin-top:2vh;
+}
+
 span.subscore {
     float:right;
 }

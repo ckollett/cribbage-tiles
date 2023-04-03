@@ -492,6 +492,7 @@ function finishSetup(playerInfo) {
     });
     
     document.cookie = 'cribbageplayer=' + playerInfo.name;
+    console.log('Added cookies');
     socket.emit('join', playerInfo);
 }
 
