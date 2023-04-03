@@ -5,7 +5,8 @@ const currentScore = {
         'hand' : 0,
         'foot' : 0,
         'crib' : 0,
-        'nobs' : 0
+        'nobs' : 0,
+        'outs' : 0
     },
     'opponent' : {
         'total' : 0,
@@ -13,7 +14,8 @@ const currentScore = {
         'hand' : 0,
         'foot' : 0,
         'crib' : 0,
-        'nobs' : 0
+        'nobs' : 0,
+        'outs' : 0
     },
     'history' : [],
     'lastTileMove' : null
@@ -384,8 +386,11 @@ function showHandScore(evt) {
     const shortHand = evt.currentTarget.getAttribute("data-hand");
     const hand = getHandFromShortHand(shortHand);
     const score = scoreHand(hand);
-    document.getElementById('pastscore').innerHTML = getOutputAsTable(score);
     
+    let scoreOutput = getOutputAsTable(score, false, hand);
+    document.getElementById('pastscore').innerHTML = scoreOutput;
+    
+        
     // For display, put the turn first.
     hand.unshift(hand.pop());
     const pastTilesElt = document.getElementById('pasttiles');

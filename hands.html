@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/static/images/mug.svg" />
+    <link rel="stylesheet" type="text/css" href="static/layout.css" />
+    <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
+    <link rel="stylesheet" type="text/css" href="static/scoreboard.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="static/tile.js?202108090303"></script>
+    <script src="static/game.js?202108090303"></script>
+    <script src="static/deal.js?202108090303"></script>
+    <script src="static/tray.js?202108090303"></script>
+    <script src="static/scoreboard.js?202108090303"></script>
+    <script src="static/events.js?202108090303"></script>
+    <script src="static/messages.js?202108090303"></script>
+    <script src="static/cribsheet.js?202108090303"></script>
+    <script src="https://ckollett.github.io/counter.js?202108090303"></script>
+    <script src="https://ckollett.github.io/outs.js?202108090303"></script>
+    <style>
+      div#simpleHands {
+        width:100%;
+      }
+      div.simpletray {
+        width:37vw;
+        height: 7vw;
+        position:relative;
+        display:inline-block;
+      }
+      div.turntray {
+        width:6vw;
+        height: 7vw;
+        position:relative;
+        display:inline-block;
+      }
+      
+      div.tilesize {
+        width:5.5vw;
+        height:7vw;
+        margin-right:0.2vw;
+        position:relative;
+        display:inline-block;
+      }
+    </style>
+    <script>
+      function dealOneHand() {
+        fetch('/tiles').then(function(tileJson) {
+            let newRow = document.createElement('div');
+            let tray1 = document.createElement('div');
+            tray1.classList.add('simpletray');
+            let tray2 = document.createElement('div');
+            tray2.classList.add('simpletray');
+            let turntray = document.createElement('div');
+            turntray.classList.add('turntray');
+            
+            newRow.appendChild(tray1);
+            newRow.appendChild(tray2);
+            newRow.appendChild(turntray);
+            document.getElementById('simpleHands').appendChild(newRow);
+
+            tileJson.json().then(function(tiles) {
+                let hand1 = tiles[0];
+                hand1.sort(compareTiles);
+                for (let tile of hand1) {
+                    let tileElt = renderTile(tile, '#simpletile');
+                    tray1.appendChild(tileElt);
+                }
+                let hand2 = tiles[1];
+                hand2.sort(compareTiles);
+                for (let tile of hand2) {
+                    let tileElt = renderTile(tile, '#simpletile');
+                    tray2.appendChild(tileElt);
+                }           
+
+                let turnElt = renderTile(tiles[2], '#simpletile');
+                turntray.appendChild(turnElt);
+            });
+            window.scrollTo(0, document.body.scrollHeight);            
+        });
+      }
+      
+      function compareTiles(tile1, tile2) {
+          const byNum = tile1.rawNum - tile2.rawNum;
+          if (byNum === 0) {
+              return tile1.suit.localeCompare(tile2.suit);
+          } else {
+              return byNum;
+          }
+      }      
+    </script>
+  </head>
+  <body>
+    <div id="simpleHands">
+    </div>
+    <div><button onclick="dealOneHand();">Deal</button></div>
+   <template id="simpletile">
+    <div class="tilesize tilesides">
+      <div class="tile tilefront">
+        <div class="value"></div>
+      </div>
+    </div>   
+   </template>
+  </body>
+</html>

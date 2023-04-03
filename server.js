@@ -1,3 +1,9 @@
+var game = require("./game");
+var deck = require("./deck");
+var currentGame = new game.game();
+var currentDeal = new deal();
+
+
 // Dependencies
 var express = require('express');
 var http = require('http');
@@ -11,8 +17,10 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });// Starts the server.
 
-// For debugging/investigations, you can make a request to /tiles
-// to see a single deal of two hands and a turn.
+app.get('/hands.html', function(request, response) {
+    response.sendFile(path.join(__dirname, 'hands.html'));
+});
+
 app.get('/tiles', function(request, response) {
     const newDeal = new deal();
     console.log(newDeal);
@@ -20,20 +28,20 @@ app.get('/tiles', function(request, response) {
     const hand2 = newDeal.dealHand();
     const turn = newDeal.getTopCard();
     response.send(JSON.stringify([hand1,hand2,turn]));
-});
+})
+
+app.get('/tiledata', function(request, response) {
+    const data = getTileData(100000);
+    response.send(JSON.stringify(data));
+})
 
 server.listen(5000, function() {
   console.log('Ready for cribbage on port 5000');
 });
 
-var game = require("./game");
-var deck = require("./deck");
-var currentGame = new game.game();
-var currentDeal = new deal();
-
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
-    const playerName = readNameFromCookie(socket);
+    const playerName = getPlayerName(socket);
     if (playerName) {
         console.log(playerName + ' connected');
         const player = getPlayerByName(playerName);
@@ -256,14 +264,15 @@ function detectFirstDeal(players) {
 
 function getPlayerForSocket(socket) {
     console.log('In getPlayerForSocket. Socket id: [' + socket.id + ']')
-    const name = readNameFromCookie(socket);
+    // This is pretty backwards, but whatever.
+    const name = getPlayerName(socket);
     console.log('Found player name [' + name + ']');
     return getPlayerByName(name);
 }
 
 function getPlayerByName(name) {
+    // Move this to game.js?
     console.log('Looking for player named [' + name + ']')
-    console.trace();
     for (let player of currentGame.players) {
         console.log('    Checking existing player named [' + player.name + ']');
         if (player.name === name) {
@@ -303,8 +312,17 @@ function notifyAll(messageId, message) {
     io.sockets.emit(messageId, message);
 }
 
-function readNameFromCookie(socket) {
-    console.log('In readNameFromCookie');
+function getPlayerName(socket) {
+    // First try getting the player using the socket ID.
+    if (currentGame) {
+        const player = currentGame.getPlayerById(socket.id);
+        if (player && player.name) {
+            console.log('Found player [' + player.name + '] using socket ID');
+            return player.name;
+        }
+    }
+    
+    console.log('No player found using socket ID. Trying cookies.');
     const cookieValue = socket.handshake.headers.cookie;
     let name = null;
     if (cookieValue) {
@@ -320,3 +338,25 @@ function readNameFromCookie(socket) {
     }
     return name;
 }
+
+function getTileData(numDeals) {
+    const data1 = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const data2 = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+    
+    numDeals = numDeals ? numDeals : 1000;
+    for (let i = 0; i < numDeals; i++) {
+        const newDeal = new deal();
+        const hand1 = newDeal.dealHand();
+        const hand2 = newDeal.dealHand();
+        
+        for (let tile of hand1) {
+            data1[tile.rawNum-1]++;
+        }
+        
+        for (let tile of hand2) {
+            data2[tile.rawNum-1]++;
+        }
+    }
+    return [data1,data2];
+}
+

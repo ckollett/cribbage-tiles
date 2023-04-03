@@ -509,6 +509,10 @@ div.playerSummary {
     color:white;
 }
 
+div.outs {
+    margin-top:2vh;
+}
+
 span.subscore {
     float:right;
 }

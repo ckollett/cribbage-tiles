@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>Cribbage</title>
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/static/images/mug.svg" />
+    <link rel="stylesheet" type="text/css" href="static/layout.css" />
+    <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
+    <link rel="stylesheet" type="text/css" href="static/scoreboard.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="static/tile.js?202108090303"></script>
+    <script src="static/game.js?202108090303"></script>
+    <script src="static/deal.js?202108090303"></script>
+    <script src="static/tray.js?202108090303"></script>
+    <script src="static/scoreboard.js?202108090303"></script>
+    <script src="static/events.js?202108090303"></script>
+    <script src="static/messages.js?202108090303"></script>
+    <script src="static/cribsheet.js?202108090303"></script>
+    <script src="https://ckollett.github.io/counter.js?202108090303"></script>
+    <script src="https://ckollett.github.io/outs.js?202108090303"></script>
+    <script type="text/javascript">
+      function getHand() {
+        fetch('/tiles').then(function(response) {
+            response.json().then(tilesDealt);
+        });
+      }
+      
+      function tilesDealt(tiles) {
+        const hand1 = tiles[0];
+        const hand2 = tiles[1];
+        const turn = tiles[2];
+        
+        for (let tile of hand1) {
+            const tileObj = new Tile(tile,'player');
+            document.getElementById("test").appendChild(tileObj.elt);
+        }
+      }
+    </script>
+  </head>
+  <body>
+  
+    <div id="main">
+    <div id="test" class="gamearea"></div>
+    </div>
+    <template id="tiletemplate">
+      <div class="tilecontainer" onclick="tileClicked(this)";>
+        <div class="tilesides">
+          <div class="tile tilefront">
+            <div class="value"></div>
+          </div>
+          <div class="tile tileback"></div>
+        </div>
+      </div>
+    </template>  
+  </body>
+</html>

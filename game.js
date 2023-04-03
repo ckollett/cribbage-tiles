@@ -26,6 +26,15 @@ module.exports = {
             return false;
         }
         
+        this.getPlayerById =function(id) {
+            for (let player of this.players) {
+                if (player.id === id) {
+                    return player;
+                }
+            }
+            return null;
+        }
+        
         this.isActive = function() {
             return this.players.length === 2;
         }

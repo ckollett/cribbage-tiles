@@ -24,6 +24,7 @@ function createDeck() {
 
 function card(suit, rawNum) {
     this.suit = suit;
+    this.rawNum = rawNum;
     switch (rawNum) {
         case 11 : this.num = "J"; break;
         case 12 : this.num = "Q"; break;
