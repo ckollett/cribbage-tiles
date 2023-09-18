@@ -1,8 +1,6 @@
 module.exports = {
     
     game: function() {
-        console.log('Creating new game');
-        
         this.players = [];
         
         this.addPlayer = function(playerInfo, id) {

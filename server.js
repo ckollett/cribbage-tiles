@@ -23,16 +23,10 @@ app.get('/hands.html', function(request, response) {
 
 app.get('/tiles', function(request, response) {
     const newDeal = new deal();
-    console.log(newDeal);
     const hand1 = newDeal.dealHand();
     const hand2 = newDeal.dealHand();
     const turn = newDeal.getTopCard();
     response.send(JSON.stringify([hand1,hand2,turn]));
-})
-
-app.get('/tiledata', function(request, response) {
-    const data = getTileData(100000);
-    response.send(JSON.stringify(data));
 })
 
 server.listen(5000, function() {
@@ -46,14 +40,9 @@ io.on('connection', function(socket) {
         console.log(playerName + ' connected');
         const player = getPlayerByName(playerName);
         if (player) {
-            console.log('Found player info for ' + playerName);
             player.id = socket.id;
             notifyOtherPlayerByName(player.name, 'opponentMessage', player.name + " reconnected!");
-        } else {
-            console.log('No existing player info for ' + playerName);
         }
-    } else {
-        console.log('Unknown player connected');
     }
     
     var notifyOtherPlayer = function(messageId, message) {
@@ -65,11 +54,7 @@ io.on('connection', function(socket) {
     
     socket.on("join", function(playerInfo) {
         if (currentGame.addPlayer(playerInfo, socket.id)) {
-            console.log('Added ' + playerInfo.name + ' with socket ID [' + socket.id + ']');
-            console.log('    getPlayerForSocket returned: ' + getPlayerForSocket(socket));
             checkNumPlayers();
-        } else {
-            console.log('addPlayer returned false');
         }
     });
     
@@ -93,14 +78,13 @@ io.on('connection', function(socket) {
     
     socket.on("cribSelected", function(cards) {
         notifyOtherPlayer('opponentCrib');
-        console.log('In cribSelected. Socket ID: [' + socket.id + ']');
         const thisPlayer = getPlayerForSocket(socket);
         for (let card of cards) {
             thisPlayer.hand.removeCard(card);
         }
         
         if (currentDeal.addToCrib(thisPlayer.name, cards)) {
-            var turn = currentDeal.getTopCard();
+            var turn = currentDeal.turn();
             
             // This is here to make it easier to debug nobs issues.
             // var turn = deck.getJack();
@@ -166,8 +150,20 @@ io.on('connection', function(socket) {
 function deal() {
     this.cards = deck.shuffle();
     this.crib = [];
+    this.turn = null;
     this.pegRemaining = 31;
-	this.isGo = false;
+    
+    this.createHands = function() {
+        let hand1 = [];
+        let hand2 = [];
+        for (let i = 0; i < 6; i++) {
+            hand1.push(this.cards[2*i]);
+            hand2.push(this.cards[2*i+1]);
+        }
+        this.hands = [hand1, hand2];
+    }
+
+    this.createHands();
     
     this.addToCrib = function(name,cards) {
         this.crib.push({"player":name,"cards":cards});
@@ -179,7 +175,8 @@ function deal() {
     }
         
     this.dealHand = function() {
-        return this.cards.splice(0,6);
+        let cards = this.hands.shift();
+        return cards.slice();
     }
     
     this.playerPegged = function(pegValue) {
@@ -208,6 +205,11 @@ function deal() {
 
     this.getCrib = function() {
         return this.crib;
+    }
+    
+    this.turn = function() {
+        this.turn = this.getTopCard();
+        return this.turn;
     }
     
     return this;
@@ -267,24 +269,18 @@ function detectFirstDeal(players) {
 }
 
 function getPlayerForSocket(socket) {
-    console.log('In getPlayerForSocket. Socket id: [' + socket.id + ']')
     // This is pretty backwards, but whatever.
     const name = getPlayerName(socket);
-    console.log('Found player name [' + name + ']');
     return getPlayerByName(name);
 }
 
 function getPlayerByName(name) {
     // Move this to game.js?
-    console.log('Looking for player named [' + name + ']')
     for (let player of currentGame.players) {
-        console.log('    Checking existing player named [' + player.name + ']');
         if (player.name === name) {
-            console.log('    Success!');
             return player;
         }
     }
-    console.log('    No player named [' + name + '] found');
     return null;
 }
 
@@ -321,46 +317,17 @@ function getPlayerName(socket) {
     if (currentGame) {
         const player = currentGame.getPlayerById(socket.id);
         if (player && player.name) {
-            console.log('Found player [' + player.name + '] using socket ID');
             return player.name;
         }
     }
     
-    console.log('No player found using socket ID. Trying cookies.');
     const cookieValue = socket.handshake.headers.cookie;
     let name = null;
     if (cookieValue) {
         const namePart = cookieValue.split('; ').find(row => row.startsWith('cribbageplayer'));
         if (namePart) {
             name = namePart.split('=')[1];
-            console.log('    Found name from cookie: ' + name);
-        } else {
-            console.log('    Cookies do not contain cribbageplayer information');
         }
-    } else {
-        console.log('    No cookies found');
     }
     return name;
 }
-
-function getTileData(numDeals) {
-    const data1 = [0,0,0,0,0,0,0,0,0,0,0,0,0];
-    const data2 = [0,0,0,0,0,0,0,0,0,0,0,0,0];
-    
-    numDeals = numDeals ? numDeals : 1000;
-    for (let i = 0; i < numDeals; i++) {
-        const newDeal = new deal();
-        const hand1 = newDeal.dealHand();
-        const hand2 = newDeal.dealHand();
-        
-        for (let tile of hand1) {
-            data1[tile.rawNum-1]++;
-        }
-        
-        for (let tile of hand2) {
-            data2[tile.rawNum-1]++;
-        }
-    }
-    return [data1,data2];
-}
-
