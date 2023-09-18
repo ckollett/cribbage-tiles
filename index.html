@@ -110,7 +110,9 @@
           <div id="deck" class="tilecontainer flip starthidden">
             <div class="tilesides">
               <div class="tile tilefront"></div>
-              <div class="tile tileback"></div>
+              <div class="tile tileback">
+                <img class="backicon" src="/static/images/mountains_2.svg"/>
+              </div>
             </div>
           </div>
           <div class="tilecontainer hidden" id="cribarrow" onclick="commitCrib();">
@@ -181,9 +183,12 @@
       <div class="tilecontainer flip" onclick="tileClicked(this)";>
         <div class="tilesides">
           <div class="tile tilefront">
+            <div class="tilesuit"><img class="suitimg" /></div>
             <div class="value"></div>
           </div>
-          <div class="tile tileback"></div>
+          <div class="tile tileback">
+            <img class="backicon" src="/static/images/mountains_2.svg"/>
+          </div>
         </div>
       </div>
     </template>
@@ -192,6 +197,7 @@
       <div class="pasthandtile">
         <div class="tilesides">
           <div class="tile tilefront">
+            <div class="tilesuit"><img class="suitimg" /></div>
             <div class="value">10</div>
           </div>
         </div>

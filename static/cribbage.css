@@ -1,3 +1,29 @@
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+body {
+    --background: #ffffff;
+    --foreground: #000000;
+    color: var(--foreground);
+    background-color: var(--background);
+}
+
+body.inverted {
+    --background: #000000;
+    --foreground: #ffffff;
+}
+
+body.inverted img {
+    filter: invert(100%);
+}
+
+select {
+    color: var(--foreground);
+    background-color: var(--background);
+}
+
 /* ***** Tile ***** */
 div.content {
     position:absolute;
@@ -11,24 +37,46 @@ div.value {
     color: transparent;
 	font-size: 3.7vh;
 	-webkit-text-stroke-width: .35vh;
-    -webkit-text-stroke-color: black;
+    -webkit-text-stroke-color: var(--foreground);
     position:absolute;
     right:4%;
     top:2%;
 }
 
-div.tent {
-    background: url('/static/images/tent.svg');
+/*
+div.tent::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/tent.svg');
 }
-div.mug {
-    background: url('/static/images/mug.svg');
+div.mug::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/mug.svg');
 }
-div.campfire {
-    background: url('/static/images/campfire.svg');
+div.campfire::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/campfire.svg');
 }
-div.sleepingbag {
-    background: url('/static/images/sleepingbag.svg');
+div.sleepingbag::before {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    content: url('/static/images/sleepingbag.svg');
 }
+*/
 
 div#deck {
     top:35%;
@@ -61,25 +109,44 @@ div.tilesides {
     transform-style:preserve-3d;
     background-color:transparent;
     box-sizing:border-box;
-    border:0.4vh solid black;
+    border:0.4vh solid var(--foreground);
     border-radius:1.4vh;
-    background-color:white;
+    background-color:var(--background);
 }
 
 div.tilefront {
     transform: rotateY(0deg);
 /*    z-index:10; */
-    background-size:85%;
-    background-position: 50% 65%;
+}
+
+
+div.tilesuit {
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    display:flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+div.tilesuit img {
+    width: 85%;
+    margin-top: 1vh;    
 }
 
 div.tileback {
     transform: rotateY(-180deg);
     z-index:5;
     border-color:#999999;
-    background: url('/static/images/mountains_2.svg');    
-    background-size:75%;
-    background-position:50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.backicon {
+    width:75%;
 }
 
 div.tile {
@@ -89,7 +156,7 @@ div.tile {
     width:100%;
     height:100%;
     opacity:1;
-    background-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
     backface-visibility: hidden;
 }
 
@@ -162,8 +229,8 @@ div.messagebox {
     top:22%;
     bottom:22%;
     z-index:20;
-    background-color:white;
-    border: 0.4vh solid black;
+    background-color:var(--background);
+    border: 0.4vh solid var(--foreground);
     border-radius: 1.4vh;
     display:none;      
 }
@@ -207,7 +274,7 @@ table#cribsheettable {
 }
 
 table#cribsheettable.highlight {
-    background-color:black;
+    background-color:var(--foreground);
 }
 
 tr#cribsheetdata {
@@ -221,18 +288,18 @@ tr#cribsheetdata td {
 }
 
 tr#cribsheetdata td::selection {
-    background:white;
-    color:black;
+    background:var(--background);
+    color:var(--foreground);
 }
 
 table#cribsheettable.highlight td {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 table#cribsheettable.highlight td::selection {
-    background:black;
-    color:white;
+    background:var(--foreground);
+    color:var(--background);
 }
 
 div#winnerbuttons {
@@ -242,7 +309,7 @@ div#winnerbuttons {
 }
 
 div.winnerbutton {
-    border: 1px solid black;
+    border: 1px solid var(--foreground);
     border-radius: 0.6vh;
     box-sizing: border-box;
     margin-bottom: 0.3vh;
@@ -256,8 +323,8 @@ div.winnerbutton {
 }
 
 div.winnerbutton:hover {
-    color:white;
-    background-color:black;
+    color:var(--background);
+    background-color:var(--foreground);
 }
 
 .rejected {
@@ -320,21 +387,21 @@ div.labelside {
     opacity:1;
     backface-visibility: hidden;
     box-sizing:border-box;
-    border:0.4vh solid black;
+    border:0.4vh solid var(--foreground);
     border-radius: .9vh;
 }
 
 div#playerdealer {
     transform: rotateX(0);
-    background-color: black;
-    color:white;
+    background-color: var(--foreground);
+    color:var(--background);
     z-index:2;
 }
 
 div#opponentdealer {
     transform: rotateX(180deg);
-    background-color:white;
-    color:black;
+    background-color:var(--background);
+    color:var(--foreground);
 }
 
 div.leftlabel {
@@ -382,7 +449,7 @@ div.historyHandSummary {
 }
 
 span.handSummarySide {
-    border:1px solid black;
+    border:1px solid var(--foreground);
     border-radius: 0.6vh;
     box-sizing:border-box;
     margin-bottom:0.3vh;
@@ -397,19 +464,19 @@ span.handSummarySide {
 }
 
 span.playerHandSummary {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
     border-radius: 0.6vh 0 0 0.6vh;
 }
 
 span.opponentHandSummary {
-    background-color:white;
-    color:black;
+    background-color:var(--background);
+    color:var(--foreground);
     border-radius: 0 0.6vh 0.6vh 0;
 }
 
 div.historyItem {
-    border:1px solid black;
+    border:1px solid var(--foreground);
     border-radius: 0.6vh;
     box-sizing:border-box;
     margin-bottom:0.3vh;
@@ -421,8 +488,8 @@ div.historyItem {
 }
 
 div.historyItem.historyplayer {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 div.historyItem > span {
@@ -435,7 +502,7 @@ div.historyItem.miscount::before {
     position:absolute;
     content : '!';
     left:2px;
-    color:black;
+    color:var(--foreground);
 }
 
 span.historyScore {
@@ -447,7 +514,7 @@ span.historyType {
 }
 
 div#footer {
-    color:black;
+    color:var(--foreground);
     box-sizing:border-box;
 }
 
@@ -468,7 +535,7 @@ div#footer {
 
 .leftContainer {
     display:block;
-    border:0.5vh solid black;
+    border:0.5vh solid var(--foreground);
     border-radius:1.5vh;
     padding:0.5vh 1vh 0.5vh 1vh;
     margin-bottom:1vh;
@@ -505,8 +572,8 @@ div.totalSummary {
 }
 
 div.playerSummary {
-    background-color:black;
-    color:white;
+    background-color:var(--foreground);
+    color:var(--background);
 }
 
 div.outs {
@@ -524,7 +591,7 @@ div.name {
 
 div#pegCounter {
     font-size:6vh;
-    color:black;
+    color:var(--foreground);
     text-align:center;
     width:6.8%;
     position:absolute;
@@ -533,8 +600,8 @@ div#pegCounter {
 }
 
 div#pegCounter.go {
-    color:white;
+    color:var(--background);
 	-webkit-text-stroke-width: .35vh;
-    -webkit-text-stroke-color: black;
+    -webkit-text-stroke-color: var(--foreground);
 }
 

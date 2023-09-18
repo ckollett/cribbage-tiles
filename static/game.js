@@ -16,13 +16,20 @@ function renderTile(tile, templateStr) {
     const tileElt = template.content.cloneNode(true).firstElementChild;
     
     if (tile.num !== 0) {
-        const tileFront = tileElt.querySelector('.tilefront');   
-        tileFront.classList.add(tile.suit);
-        const tileValue = tileElt.querySelector('.value');
-        tileValue.innerHTML = tile.num ? tile.num : tile.value;
+        const value = tile.num ? tile.num : tile.value;
+        populateTile(tileElt, tile.suit, value);
     }
     
     return tileElt;
+}
+
+function populateTile(tileElt, suit, value) {
+    const tileSuit = tileElt.querySelector('.tilesuit');   
+    tileSuit.classList.add(suit);
+    const tileImg = tileElt.querySelector('.suitimg');
+    tileImg.setAttribute('src', '/static/images/' + suit + '.svg');
+    const tileValue = tileElt.querySelector('.value');
+    tileValue.innerHTML = value;
 }
 
 function clear() {
@@ -487,4 +494,15 @@ function finishSetup(playerInfo) {
     document.cookie = 'cribbageplayer=' + playerInfo.name;
     console.log('Added cookies');
     socket.emit('join', playerInfo);
+}
+
+let isDark = false;
+
+function toggleDark(notify) {
+    document.body.classList.toggle('inverted');
+    
+    notify = notify || arguments.length == 0;
+    if (notify) {
+        socket.emit("toggleDark","");
+    }
 }
