@@ -434,7 +434,17 @@ function removeData(elt) {
 function setup() {
     // If this browser is associated with a game, quit it.
     socket.emit('quit');
+    getCurrentPlayerFromCookie();
     getLastWinner().then(getPlayerInfo).then(finishSetup);
+}
+
+function getCurrentPlayerFromCookie() {
+    const cookies = document.cookie;
+    const playerRow = cookies.split("; ").find((row) => row.startsWith("cribbageplayer="));
+    if (playerRow) {
+        const name = playerRow.substring("cribbageplayer=".length);
+        document.getElementById('nameInput').value = name;
+    }
 }
 
 function getPlayerInfo(lastWinner) {

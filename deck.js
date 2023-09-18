@@ -1,7 +1,9 @@
 module.exports = {
     shuffle : function() {
         var deck = createDeck();
-        shuffleDeck(deck);
+        for (let i = 0; i < 5; i++) {
+            shuffleDeck(deck);
+        }
         return deck;
     },
     

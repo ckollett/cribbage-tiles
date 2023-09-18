@@ -69,6 +69,9 @@ socket.on("updateHistory", function(newScore) {
 
 socket.on("opponentMessage", function(msg) {
     addMessage(msg, 'opponent');
+    if (msg && msg.toLowerCase() === 'dark') {
+        toggleDark();
+    }
 });
 
 socket.on("toggleDark", function(msg) {
