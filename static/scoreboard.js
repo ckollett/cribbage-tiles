@@ -234,10 +234,12 @@ function addTileData(containerElt, player, scoreType, expPoints) {
         case 'hand' :
             trayTiles = currentDeal.getTilesInTray(player + '_played');
             addHandData(containerElt, trayTiles, expPoints);
+            containerElt.addEventListener('click', linkToCounter)
             break;
         case 'crib' :
             trayTiles = currentDeal.getTilesInTray('crib_display');
             addHandData(containerElt, trayTiles, expPoints);
+            containerElt.addEventListener('click', linkToCounter)
             break;
         case 'peg' :
             // Use getTray('peg').getTiles() to get the tiles in play order.
@@ -379,6 +381,12 @@ function showNobsScore(evt) {
     let tileElt = renderTile(tile, '#pasthandtiletemplate');
     pastTilesElt.appendChild(tileElt);
     document.getElementById('pasthand').style.display = 'block';
+}
+
+function linkToCounter(evt) {
+    const shortHand = evt.currentTarget.getAttribute("data-hand");
+    const url = 'https://ckollett.github.io/counter.html#' + shortHand;
+    window.open(url);
 }
 
 function showHandScore(evt) {
