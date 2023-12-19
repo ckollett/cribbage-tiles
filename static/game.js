@@ -148,7 +148,7 @@ function turn(tile) {
             if (currentDeal.dealer === 'player') {
                 updateCounterButtonForNobs(turnTile);
             }
-        } else {
+        } else if (currentDeal.dealer !== 'player') {
             currentDeal.peg.canPlay = true;
         }
     }, 500);
