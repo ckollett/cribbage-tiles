@@ -435,7 +435,11 @@ function setup() {
     // If this browser is associated with a game, quit it.
     socket.emit('quit');
     getCurrentPlayerFromCookie();
-    getLastWinner().then(getPlayerInfo).then(finishSetup);
+    // For now, do not pass a last winner to getPlayerInfo.
+    // If we come up with a way of determining the last winner,
+    // we can update this line to pass the last winner name
+    // to getPlayerInfo. The last winner name is just "Chris" or "Jason"
+    getPlayerInfo().then(finishSetup);
 }
 
 function getCurrentPlayerFromCookie() {
