@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <title>Cribbage</title>
+  <head>
+    <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
+    <script src="/socket.io/socket.io.js"></script>	
+	<script type="text/javascript" src="shared/tiles.js"></script>
+	<script type="text/javascript" src="static/ui.js"></script>
+  </head>
+  <body>
+    <div id="widthcontainer">
+        <div id="header">
+          <img src="static/images/tent.svg">
+          <img src="static/images/sleepingbag.svg">
+          <span id="title">Atomic Cribbage</span>
+          <img src="static/images/campfire.svg">
+          <img src="static/images/mug.svg">
+        </div>
+        
+            
+         <div id="scoreboardarea">
+          <div id="scoreboard">
+            <div class="score" id="playerscorearea">
+              <div id="playerpegarea" class="pegarea">
+                <div class="scoreboard_top" id="scoreboard_self">
+                  <div class="total" id="slider_score_self">0</div>
+                  <span class="triangle" id="playertriangle"></span>
+                </div>
+              </div>
+            </div>
+      
+            <div id="track">
+              <span id="centerline"></span>
+              <span class="cornerline" style="left:0"></span>
+              <span class="cornerline" style="left:25%">&nbsp;</span>
+              <span class="cornerline" style="left:50%">&nbsp;</span>
+              <span class="skunkline">S</span>
+              <span class="cornerline" style="left:100%">&nbsp;</span>
+            </div>
+      
+            <div class="score" id="opponentscorearea">
+              <div id="opponentpegarea" class="pegarea">
+                <div id="scoreboard_opponent" class="scoreboard_top">
+                  <div id="slider_score_opponent" class="total">0</div>
+                  <span class="triangle" id="opponenttriangle"><span class="innertriangle"></span></span>
+                </div>
+                
+              </div>
+            </div>
+          </div> <!-- End scoreboard -->
+          <button id="scorebutton" disabled="true" onclick="countScore()" onmouseleave="hideScore()" class="rounded">Score</button>
+        </div>   
+
+        <div id="join">
+          <div id="joinHeader">Start a New Game</div>
+          <div id="chooseDealer">Dealer: 
+            <button id="deal1" class="rounded dealbutton" onclick="joinGame(true);">Me</button>
+            <button id="deal2" class="rounded dealbutton" onclick="joinGame(false);">Them</button>
+          </div>
+        </div>
+        
+        
+        
+        <div id="layout">
+
+            <div id="leftcolumn" class="sidearea">
+              <div id="left_scoreboard_self" class="scoreboard rounded self">
+                <div id="score_self_total" class="total_score">0</div>
+                <div class="scoreparts">
+                  <div class="scorelabel">Nobs</div><div id="score_self_nobs" class="scorevalue">0</div>
+                  <div class="scorelabel">Peg</div><div id="score_self_peg" class="scorevalue">0</div>
+                  <div class="scorelabel">Hand</div><div id="score_self_hand" class="scorevalue">0</div>
+                  <div class="scorelabel">Foot</div><div id="score_self_foot" class="scorevalue">0</div>
+                  <div class="scorelabel">Crib</div><div id="score_self_crib" class="scorevalue">0</div>
+                </div>
+              </div>
+              <div id="left_scoreboard_opponent" class="scoreboard rounded opponent">
+                <div id="score_opponent_total" class="total_score">0</div>
+                <div class="scoreparts">
+                  <div class="scorelabel">Nobs</div><div id="score_opponent_nobs" class="scorevalue">0</div>
+                  <div class="scorelabel">Peg</div><div id="score_opponent_peg" class="scorevalue">0</div>
+                  <div class="scorelabel">Hand</div><div id="score_opponent_hand" class="scorevalue">0</div>
+                  <div class="scorelabel">Foot</div><div id="score_opponent_foot" class="scorevalue">0</div>
+                  <div class="scorelabel">Crib</div><div id="score_opponent_crib" class="scorevalue">0</div>
+                </div>
+              </div>
+            </div>
+            
+            <div id="leftbuffer" class="leftbuffer">
+                <div id="dealerlabel">
+                  <div id="dealer_self">Dealer</div>
+                  <div id="dealer_opponent">Dealer</div>
+                </div>
+            </div>
+            
+            <div class="gamearea" id="tiledisplay">
+              <!-- Draw the deck -->
+              <div id="deckbackground" class="tileposition row_middle">
+                <div class="tilesides deckbackground"><div class="tile tileback"></div></div>
+              </div>
+              
+              <!-- The arrow used to move tiles into the crib -->
+              <div class="tileposition side_right hidden tileidx_2 row_middle" id="cribarrow" onclick="throwToCrib();">
+                <img src="/static/images/left-arrow.svg" id="arrow" style="width:75%">
+              </div>
+              <div id="overlay">
+                <div id="blur"></div>
+                <div id="scoreSummary" class="rounded"></div>
+              </div>
+            </div>
+
+            <div id="rightcolumn" class="sidearea">
+               <div id="currentscores"></div>
+               <div id="history"></div>
+            </div>
+        </div>
+        <div id="pegcount"></div>    
+    </div>
+    <template id="tiletemplate">
+      <div class="tileposition">
+        <div class="tilesides">
+          <div class="tile tilefront">
+            <div class="value"></div>
+          </div>
+          <div class="tile tileback"></div>
+        </div>
+      </div>
+    </template>    
+  </body>
+</html>

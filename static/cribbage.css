@@ -1,152 +1,209 @@
+/* *** TODO: *** */
+/* Base everything on vw instead of vh */
+/*   Can we assume that the screen is ~1.6 times wider than high? */
+/*   If so, does that mean that we can take vh values and divide by 1.6? */
+
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  --tile-width: 13.6vh;
+  --tile-space: 14.4vh;
+}
+
+@font-face {
+  font-family: 'katahdin';
+  src: url('fonts/katahdin-round.regular.otf');
 }
 
 body {
-    --background: #ffffff;
-    --foreground: #000000;
-    color: var(--foreground);
-    background-color: var(--background);
+    font-family: katahdin, sans-serif;
+    margin:0;
+    box-sizing:border-box;
 }
 
-body.inverted {
-    --background: #000000;
-    --foreground: #ffffff;
+div {
+	user-select: none;
 }
 
-body.inverted img {
-    filter: invert(100%);
+.hidden {
+    display:none;
 }
 
-select {
-    color: var(--foreground);
-    background-color: var(--background);
+#widthcontainer {
+    width: 155vh;
+    margin: 0 auto;
 }
 
-/* ***** Tile ***** */
-div.content {
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
+#header {
+    margin: 0 auto;
+    width:155vh;
+    height: 10vh;
+    text-align:center;
+    font-size:7vh;
+    line-height:10vh;
 }
 
-div.value {
-    color: transparent;
-	font-size: 3.7vh;
-	-webkit-text-stroke-width: .35vh;
-    -webkit-text-stroke-color: var(--foreground);
-    position:absolute;
-    right:4%;
-    top:2%;
+div#header img {
+    width: 7vh;
+    transform: translateY(0.75vh);
 }
 
+#layout {
+    display:none;
+    width: 100%;
+    height: 60vh;
+}
+
+#layout.active {
+    display:flex;
+}
+
+div.sidearea {
+    width: 25vh;
+    height: 100%;
+}
+
+/* Some adjustments to account for scrolling */
+div#rightcolumn {
+    position:relative;
+    max-height: 100%;
+    overflow-y: scroll;
+    right: -2.5vh;
+    padding-right: 1.5vh;
+}
+
+div#rightcolumn::-webkit-scrollbar {
+    width: 1vh;
+}
+
+div#rightcolumn::-webkit-scrollbar-track {
+    background: white;
+}
+
+div#rightcolumn::-webkit-scrollbar-thumb {
+    background:black;
+    border-radius:.5vh;
+}
+
+.leftbuffer {
+    min-width:5vh;
+    max-width:5vh;
+    height:100%;
+}
+
+.gamearea {
+    position:relative;
+    width:100vh;
+    height:100%;
+    min-width:100vh;
+}
+
+
+div.suit_tent div.tilefront {
+    background-image: url('images/tent.svg');
+}
+div.suit_mug div.tilefront {
+    background-image: url('images/mug.svg');
+}
+div.suit_campfire div.tilefront {
+    background-image: url('images/campfire.svg');
+}
+div.suit_sleepingbag div.tilefront {
+    background-image: url('images/sleepingbag.svg');
+}
+
+div.inline_tile {
+    width: 5.2vh;
+    height: 100%;
+    background-position: right 50%;
+    background-size: 40%;
+    background-repeat: no-repeat;
+    float:right;
+}
+
+div.inline_tile div {
+    width: 55%;
+    text-align: right;
+}
+
+div.inline_tile.suit_tent {
+    background-image: url('images/tent.svg');
+}
+
+div.inline_tile.suit_mug {
+    background-image: url('images/mug.svg');
+}
+
+div.inline_tile.suit_campfire {
+    background-image: url('images/campfire.svg');
+}
+
+div.inline_tile.suit_sleepingbag {
+    background-image: url('images/sleepingbag.svg');
+}
+
+/* *** TODO *** */
 /*
-div.tent::before {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    content: url('/static/images/tent.svg');
-}
-div.mug::before {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    content: url('/static/images/mug.svg');
-}
-div.campfire::before {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    content: url('/static/images/campfire.svg');
-}
-div.sleepingbag::before {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    content: url('/static/images/sleepingbag.svg');
-}
+  There are three tile sizes:
+  * Full size for the game play
+  * Small for the scoring summary
+  * Mini for inline display, etc.
+  How best to represent these in CSS?
+  It's convenient for the full and small sizes to share a bunch of
+  structure in the HTML and CSS. The mini tiles are pretty different
 */
 
-div#deck {
-    top:35%;
-    left:0;
-    z-index:-10;
-}
-
-div#deck div.tilesides {
-    box-shadow: 0.5vh 0.5vh;
-}    
-
-div.tilecontainer {
+/* Basic tile size and position */
+div.tileposition {
     perspective: 1000px;
-    position:absolute;
-    width:13.6%;
-    height:30%;
     border:0;
-    transition: left 0.5s ease,top 0.5s ease;
-    top:35%;
-    left:0;
+    display:flex;
+    justify-content:center; 
+    align-items:center;
 }
 
-div.tilesides {
+div.gamearea div.tileposition {
+    width:var(--tile-width);
+    height:18vh;
     position:absolute;
+    transition: left 0.5s ease,top 0.5s ease;
+}
+
+/* The tilesides div handles the general display of the tile
+   This includes which side is showing and minor adjustments
+   to the position for the pegging tray.
+*/
+div.tilesides {
+    position:relative;
     top:0;
     left:0;
     width:100%;
     height:100%;
-    transition: transform 0.5s;
+	transform: rotateY(0deg);
+	/* Transitions: 
+	   transform handles the flip
+	   top keeps the tile from jumping up immediately when pegging.
+	*/
+    transition: transform 0.5s, top 0.5s ease;
     transform-style:preserve-3d;
     background-color:transparent;
     box-sizing:border-box;
-    border:0.4vh solid var(--foreground);
+    border:0.4vh solid black;
     border-radius:1.4vh;
-    background-color:var(--background);
+    background-color:white;
 }
 
 div.tilefront {
     transform: rotateY(0deg);
-/*    z-index:10; */
-}
-
-
-div.tilesuit {
-    position: absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    display:flex;
-    justify-content: center;
-    align-items: center;    
-}
-
-div.tilesuit img {
-    width: 85%;
-    margin-top: 1vh;    
+    background-size:85%;
+    background-position: 50% 65%;
 }
 
 div.tileback {
     transform: rotateY(-180deg);
     z-index:5;
     border-color:#999999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-img.backicon {
-    width:75%;
+    background: url('images/mountains_2.svg');    
+    background-size:75%;
+    background-position:50%;
 }
 
 div.tile {
@@ -156,452 +213,842 @@ div.tile {
     width:100%;
     height:100%;
     opacity:1;
-    -webkit-mask-repeat: no-repeat;
+    background-repeat: no-repeat;
     backface-visibility: hidden;
 }
 
-div.tilecontainer.flip div.tilesides {
-    transform: rotateY(-180deg);
-}
-
-/* front pane, placed above back */
-div.front {
-	z-index: 10;
-	/* for firefox 31 */
-	transform: rotateY(0deg);
-}
-
-/* back, initially hidden pane */
-div.back {
-	transform: rotateY(180deg);
-}
-
-div#cribarrow {
+div.value {
     position:absolute;
-    /* 100 - 2*column - tile width = 100-28-13 = 59*/
-    left:57.6%;
-    top:35.71%;
-    opacity:1;
-    transition: opacity 0s linear;
-    transition-delay:0.5s;
+    right:4%;
+    top:2%;
 }
 
-div#cribarrow.hidden {
-    display:block;
-    opacity:0;
-    transition: opacity 0s linear;
-    transition-delay:0s;
+div.gamearea div.value {
+    color: transparent;
+	font-size: 3.7vh;
+	-webkit-text-stroke-width: .35vh;
+    -webkit-text-stroke-color: black;
 }
 
-img#arrow {
-    position:absolute;
-    max-height:70%;
-    max-width:70%;
+/* ***** Position tiles vertically ***** */
+.row_self {
     top:0;
+}
+
+.row_opponent {
+    top:70%;
+}
+
+.row_middle {
+    top:35%;
+}
+
+/* TODO: Is it true that anytime a tile is face up in
+         the middle row that it gets this top offset?
+         If so, can we simplify this and .tray_pegged? */
+.tray_cribreveal .player_self {
+	top:-8%;
+}
+
+.tray_cribreveal .player_opponent {
+	top:8%;
+}
+
+/* ***** z-index for tiles. ***** */
+/* Mostly needed for the pegging tray and the deck, where
+   tiles overlap or are stacked on top of one another */
+div.tileposition.tileidx_0 {
+    z-index: 1;
+}
+div.tileposition.tileidx_1 {
+    z-index: 2;
+}
+div.tileposition.tileidx_2 {
+    z-index: 3;
+}
+div.tileposition.tileidx_3 {
+    z-index: 4;
+}
+div.tileposition.tileidx_4 {
+    z-index: 5;
+}
+div.tileposition.tileidx_5 {
+    z-index: 6;
+}
+div.tileposition.tileidx_6 {
+    z-index: 7;
+}
+div.tileposition.tileidx_7 {
+    z-index: 8;
+}
+div.tileposition.tileidx_8 {
+    z-index: 9;
+}
+div.tileposition.tileidx_9 {
+    z-index: 10;
+}
+div.tileposition.tileidx_10 {
+    z-index: 11;
+}
+div.tileposition.tileidx_11 {
+    z-index: 12;
+}
+div.tileposition.tileidx_12 {
+    z-index: 13;
+}
+
+/* ***** Horizontal positioning of tiles ***** */
+
+/* ***** Tiles in a tray on the left side (6 tiles max) ***** */
+.side_left.tileidx_0 {
     left:0;
-    bottom:0;
-    right:0;
-    margin:auto;
 }
 
-div#message {
+.side_left.tileidx_1 {
+    left:var(--tile-space);
+}
+
+.side_left.tileidx_2 {
+    left:calc(2 * var(--tile-space));
+}
+
+.side_left.tileidx_3 {
+    left:calc(3 * var(--tile-space));
+}
+
+.side_left.tileidx_4 {
+    left:calc(4 * var(--tile-space));
+}
+
+.side_left.tileidx_5 {
+    left:calc(5 * var(--tile-space));
+}
+
+/* ***** But the left side of the middle row is a little different ***** */
+
+/* ***** The deck is to the left and all the tiles are in the same spot ***** */
+.tray_deck {
+    left: 0;
+}
+
+.tray_deck > .tilesides {
+	transform: rotateY(-180deg);
+}
+
+.deckbackground {
+    box-shadow: -0.5vh 0.5vh;
+	transform: rotateY(-180deg);
+}
+
+/* ***** Opponent tiles stay flipped until they are pegged. ***** */
+.tray_unplayed > .tilesides.player_opponent {
+	transform: rotateY(-180deg);
+}
+
+/* ***** In the crib the tiles overlay and are to the right of the deck ***** */
+.tray_crib > .tilesides {
+	transform: rotateY(-180deg);
+}
+
+.tray_crib.tileidx_0 {
+    left:var(--tile-space);
+}
+
+.tray_crib.tileidx_1 {
+    left:calc(1.1 * var(--tile-space));
+}
+
+.tray_crib.tileidx_2 {
+    left:calc(1.2 * var(--tile-space));
+}
+
+.tray_crib.tileidx_3 {
+    left:calc(1.3 * var(--tile-space));
+}
+
+/* ***** Tiles in a tray on the right side (4 tiles max) ***** */
+/*       Note that we always modify the left CSS property      */
+/*       so that our animations work correctly                 */
+.side_right.tileidx_0 {
+    left:calc(100% - var(--tile-width));
+}
+
+.side_right.tileidx_1 {
+    left:calc(100% - var(--tile-width) - var(--tile-space));
+}
+
+.side_right.tileidx_2 {
+    left:calc(100% - var(--tile-width) - 2 * var(--tile-space));
+}
+
+.side_right.tileidx_3 {
+    left:calc(100% - var(--tile-width) - 3 * var(--tile-space));
+}
+
+
+/* ***** The tray containing the pegged tiles is special ***** */
+.tray_pegged.tileidx_0 {
+    left:calc(100% - var(--tile-width));
+}
+
+.tray_pegged.tileidx_1 {
+    left:calc(100% - var(--tile-width) - 0.5 * var(--tile-space));
+}
+
+.tray_pegged.tileidx_2 {
+    left:calc(100% - var(--tile-width) - var(--tile-space));
+}
+
+.tray_pegged.tileidx_3 {
+    left:calc(100% - var(--tile-width) - 1.5 * var(--tile-space));
+}
+
+.tray_pegged.tileidx_4 {
+    left:calc(100% - var(--tile-width) - 2 * var(--tile-space));
+}
+
+.tray_pegged.tileidx_5 {
+    left:calc(100% - var(--tile-width) - 2.5 * var(--tile-space));
+}
+
+.tray_pegged.tileidx_6 {
+    left:calc(100% - var(--tile-width) - 3 * var(--tile-space));
+}
+
+.tray_pegged.tileidx_7 {
+    left:calc(100% - var(--tile-width) - 3.5 * var(--tile-space));
+}
+
+/* **** Up and down offsets while pegging **** */
+.tray_pegged .player_self {
+    top:-8%;
+}
+
+.tray_pegged .player_opponent {
+    top:8%;
+}
+
+/* ***** Pegging Count ***** */
+div#pegcount {
+    display:none;
+    font-size: 2.8vh;
+}
+
+div#pegcount.go {
+    -webkit-text-stroke-width: .2vh;
+    -webkit-text-stroke-color: black;
+    color: white;
+}
+
+div.tileposition div#pegcount {
+    display: block;
     position:absolute;
-    left:0;
-    right:0;
-    top:0;
-    bottom:0;
+    left:1vh;
 }
 
-div#message.ackbar {
-    background: url('/static/images/death-star.svg');    
-    background-size:50%;
-    background-position:50% 70%;
-    background-repeat: no-repeat;
-    text-align:center;
-    font-size:4.5vh;
-    padding-top:1.5vh;
+div.tileposition[data-player="self"] div#pegcount {
+    top:92%;
 }
 
-div.messagebox {
-    position:absolute;
-    left:25%;
-    right:25%;
-    top:22%;
-    bottom:22%;
-    z-index:20;
-    background-color:var(--background);
-    border: 0.4vh solid var(--foreground);
-    border-radius: 1.4vh;
-    display:none;      
+div.tileposition[data-player="opponent"] div#pegcount {
+    bottom:92%;
 }
 
-div#playerInfo {
-    left:-5vh;
-    top:0;
-    bottom:0;
-    right:0;
-    font-size:6vh;
-    padding:5vh;
-    
-    display:flex;
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
+/* ***** The deck is also special ***** */
+.tray_deck.tileposition {
+	left: 0;
 }
 
-.playerInfoSelect {
-    font-family: katahdin, sans-serif;
-    font-size: 6vh;
-    border:0;
-    outline:none;
+/* ***** Bring tiles to the front when they're moving. ***** */
+div.tileposition.moving.tileidx_0 {
+	z-index: 21;
+}
+div.tileposition.moving.tileidx_1 {
+	z-index: 22;
+}
+div.tileposition.moving.tileidx_2 {
+	z-index: 23;
+}
+div.tileposition.moving.tileidx_3 {
+	z-index: 24;
+}
+div.tileposition.moving.tileidx_4 {
+	z-index: 25;
+}
+div.tileposition.moving.tileidx_5 {
+	z-index: 26;
+}
+div.tileposition.moving.tileidx_6 {
+	z-index: 27;
+}
+div.tileposition.moving.tileidx_7 {
+	z-index: 28;
+}
+div.tileposition.moving.tileidx_8 {
+	z-index: 29;
+}
+div.tileposition.moving.tileidx_9 {
+	z-index: 30;
+}
+div.tileposition.moving.tileidx_10 {
+	z-index: 31;
+}
+div.tileposition.moving.tileidx_11 {
+	z-index: 32;
+}
+div.tileposition.moving.tileidx_12 {
+	z-index: 33;
 }
 
-.playerInfoSelect:focus {
-    border:0;
-    outline:none;
-}
-
-div#winnerheader {
-    font-size:4vh;
-    width:100%;
-    text-align:center;
-    margin-top:1vh;
-}
-
-table#cribsheettable {
-    margin: auto;    
-    margin-top:2vh;
-}
-
-table#cribsheettable.highlight {
-    background-color:var(--foreground);
-}
-
-tr#cribsheetdata {
-    user-select:all;
-}
-
-tr#cribsheetdata td {
-    padding-left:0.3vh;
-    padding-right:0.3vh;
-    text-align:center;
-}
-
-tr#cribsheetdata td::selection {
-    background:var(--background);
-    color:var(--foreground);
-}
-
-table#cribsheettable.highlight td {
-    background-color:var(--foreground);
-    color:var(--background);
-}
-
-table#cribsheettable.highlight td::selection {
-    background:var(--foreground);
-    color:var(--background);
-}
-
-div#winnerbuttons {
-    position:absolute;
-    bottom:0.6vh;
-    right:0.6vh;
-}
-
-div.winnerbutton {
-    border: 1px solid var(--foreground);
-    border-radius: 0.6vh;
-    box-sizing: border-box;
-    margin-bottom: 0.3vh;
-    font-size: 2.5vh;
-    width: 14vh;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    text-align:center;
-    display:inline-block;
-    margin-left:0.1vh;
-}
-
-div.winnerbutton:hover {
-    color:var(--background);
-    background-color:var(--foreground);
-}
-
-.rejected {
-    animation:shake 1s;
+/* ***** Random other effects and whatnot ***** */
+.nope {
+    animation:shake 0.6s;
 }
 
 @keyframes shake {
     0% { transform: rotate(0deg); }
-   30% { transform: rotate(-5deg); }
-   70% { transform: rotate(5deg); }
+   30% { transform: rotate(-3deg); }
+   70% { transform: rotate(3deg); }
   100% { transform: rotate(0deg); }
 }
 
-.chaos {
-    animation: chaos 1s;
-    animation-timing-function: ease-in-out;
+img#arrow {
+    width:75%
 }
 
-@keyframes chaos {
-    0% { transform: skew(0deg, 0deg); scale(1); }
-   10% { transform: skew(10deg, 10deg) scale(0.85); }
-   20% { transform: skew(-5deg, 25deg) scale(0.85); }
-   30% { transform: skew(10deg, 15deg) scale(0.85); }
-   40% { transform: skew(15deg, 25deg) scale(0.85); }
-   50% { transform: skew(-5deg, 5deg) scale(0.85); }
-   60% { transform: skew(10deg, -5deg) scale(0.85); }
-   70% { transform: skew(10deg, 20deg) scale(0.85); }
-   80% { transform: skew(-5deg, 5deg) scale(0.85); }
-  100% { transform: skew(0deg, 0deg) scale(1); }
-}
-
-div.label {
-    position:absolute;
-    text-align:center;
-    height: 4vh;
-    font-size: 3vh;
-    line-height: 3.5vh;    
-    /* Tiles take up 30% of the height of the playing area,
-       which is 60vh high */
-    width: 18vh;
-}
-
-div#dealersides {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    transform-style:preserve-3d;
-    background-color:transparent;
-    transition: transform 0.5s ease;
-}
-
-div.labelside {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    opacity:1;
-    backface-visibility: hidden;
-    box-sizing:border-box;
-    border:0.4vh solid var(--foreground);
-    border-radius: .9vh;
-}
-
-div#playerdealer {
-    transform: rotateX(0);
-    background-color: var(--foreground);
-    color:var(--background);
-    z-index:2;
-}
-
-div#opponentdealer {
-    transform: rotateX(180deg);
-    background-color:var(--background);
-    color:var(--foreground);
-}
-
-div.leftlabel {
-    transform: rotate(-90deg);
-    transform-origin: bottom left;
-    left: -0.5vh;
-    transition: bottom 1s ease;
-}
-
-div.playerDeal {
-    bottom:70%;
-}
-
-div.opponentDeal {
-    bottom:0;
-}
-
-div.opponentDeal div#dealersides {
-    transform:rotateX(180deg);
-}
-
-div.hidden {
+div.tileposition.hidden {
     display:none;
 }
 
-div#currenthand {
+.self {
+    background-color: black;
+    color: white;
+}
+
+.opponent {
+    background-color: white;
+    color: black;
+}
+
+/* ***** Other page elements ***** */
+
+/* *** Scoring on the left side *** */
+div.scoreboard {
+    width: 18vh;
+    text-align: center;
+    margin-bottom: 2vh;
+    margin-left: 0;
+}
+
+div.total_score {
+    font-size: 6.5vh;
+    margin-top: 1.3vh;
+}
+
+/* *** Scoring on the right side *** */
+div#history {
     width:100%;
+    interpolate-size: allow-keywords;
 }
 
-
-div.pasthand {
-    width:100%;
-    overflow-y:hidden;
-    max-height:1000px;
-    transition: max-height 0.5s ease;
+div.pastscores {
+    max-height: 1000px;
+    transition: height 0.5s ease;
+    overflow-y: hidden;
+    height:auto;
 }
 
-div#history.collapsed > div.pasthand {
-    max-height:0;
+div#history.collapsed div.pastscores {
+    height: 0px;
 }
 
-div.historyHandSummary {
-    width:100%;
-    display:flex;
+.rounded {
+    border: 0.3vh solid black;
+    border-radius: 0.8vh;
+    box-sizing: border-box;
 }
 
-span.handSummarySide {
-    border:1px solid var(--foreground);
-    border-radius: 0.6vh;
-    box-sizing:border-box;
-    margin-bottom:0.3vh;
-    font-size:2.5vh;    
-    flex-grow:1;
-    flex-basis:0;
+button {
+    font-family: 'katahdin';
+    color: #aaaaaa;
+    background-color:white;
+}
+
+button:enabled {
+    color: black;
+}
+
+button:hover:enabled {
+    color: white;
+    background-color: black;
+}
+
+button#joinButton {
+    margin-top: 4vh;
+    font-size: 4vh;
+}
+
+button.dealbutton {
+    font-size: 4vh;
+}
+
+div.scoreitem {
+    margin-right: 0;
+    margin-left: auto;
+    width: 15vh;
+    font-size: 2.5vh;
+    text-align: center;
+    margin-bottom: 0.3vh;
+    padding: 0.2vh 1vh 0.2vh 1vh;
+}
+
+div.scoreitem div {
     display:inline-block;
-    height:100%;
-    text-align:center;
-    padding-top:2px;
-    padding-bottom:2px;
+    text-align: center;
 }
 
-span.playerHandSummary {
-    background-color:var(--foreground);
-    color:var(--background);
+div.scoreitem div.itempoints {
+    width: 30%;
+}
+
+div.scoreitem div.scoretype {
+    width: 55%;
+}
+
+div.scorecheck {
+    display: flex;
+    width: 18vh;
+    margin-bottom: 0.3vh;
+    margin-right: 0;
+    margin-left: auto;
+}
+
+span.scorecheckitem {
+    border: 0;
+    box-sizing: border-box;
+    font-size: 2.5vh;
+    flex-grow: 1;
+    flex-basis: 0;
+    display: inline-block;
+    height: 100%;
+    text-align: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+span.scorecheckitem.self {
     border-radius: 0.6vh 0 0 0.6vh;
 }
 
-span.opponentHandSummary {
-    background-color:var(--background);
-    color:var(--foreground);
+span.scorecheckitem.opponent {
     border-radius: 0 0.6vh 0.6vh 0;
 }
 
-div.historyItem {
-    border:1px solid var(--foreground);
-    border-radius: 0.6vh;
-    box-sizing:border-box;
-    margin-bottom:0.3vh;
-    font-size:2.5vh;    
-    width:14vh;
-    margin-left:2vh;
-    padding-top:2px;
-    padding-bottom:2px;
-}
-
-div.historyItem.historyplayer {
-    background-color:var(--foreground);
-    color:var(--background);
-}
-
-div.historyItem > span {
-    display:inline-block;
-    text-align:center;
-    box-sizing:border-box;
-}
-
-div.historyItem.miscount::before {
-    position:absolute;
-    content : '!';
-    left:2px;
-    color:var(--foreground);
-}
-
-span.historyScore {
-    width:30%;
-}
-
-span.historyType {
-    width:60%;
-}
-
-div#footer {
-    color:var(--foreground);
-    box-sizing:border-box;
-}
-
-#cribsheetlink {
-    background-image: url(/static/images/spreadsheet.png);
-    background-size: 70%;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    height: 100%;
-    width: 5vh;
-    bottom: 0;
-    display: inline-block;
-}
-
-#cribsheetlink:hover {
-    background-image: url('/static/images/spreadsheet_hover.png');
-}
-
-.leftContainer {
-    display:block;
-    border:0.5vh solid var(--foreground);
-    border-radius:1.5vh;
-    padding:0.5vh 1vh 0.5vh 1vh;
-    margin-bottom:1vh;
-}
-
-.centerVertical {
-    height:100%;
+div.scoreparts {
     display:flex;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content:space-between;
+    padding: 1vh;
 }
 
-.noborder {
-    border:0;
+div.scoreparts div {
+    flex: 0 25%;
 }
 
-span#gameTime {
-    text-align:center;
-    font-size:3vh;
-    margin-top:3vh;
+div.scorelabel {
+     font-size: 2.5vh;
 }
 
-span.timeDigit {
-    text-align:center;
-    width:2.3vh;
-    border:0;
-    margin:0;
-    display:inline-block;
+div.scorevalue {
+    text-align: right;
+    font-size: 2.5vh;
 }
 
-div.totalSummary {
-    font-size:6vh;
-    text-align:center;
+/* ***** Dealer indicator ***** */
+div#dealerlabel {
+    position:relative;
+    text-align: center;
+    width: 4vh;
+    height: 30%;
+    transform-style:preserve-3d;
+    transition: transform 0.5s, top 0.5s;
+    display:none;
+}
+
+div#dealerlabel.row_self {
+    transform: rotateY(0deg);
+    display: block;
+}
+
+div#dealerlabel.row_opponent {
+    transform: rotateY(180deg);
+    display:block;
+}
+
+div#dealerlabel div {
+    opacity: 1;
+    position:absolute;
+    box-sizing:border-box;
+    border:0.4vh solid black;
+    border-radius:1vh;
+    font-size: 2.5vh;
+    line-height: 3.5vh;
+    height:100%;
     width:100%;
+    backface-visibility: hidden;
 }
 
-div.playerSummary {
-    background-color:var(--foreground);
-    color:var(--background);
+div#dealer_self {
+    writing-mode: vertical-rl;
+    transform: rotate(-180deg);
+    color: white;
+    background-color:black;
 }
 
-div.outs {
+div#dealer_opponent {
+    writing-mode: vertical-rl;
+    color: black;
+    background-color:white;
+    transform: rotateX(-180deg);
+}
+
+/* ********** Join form ********** */
+div#join {
+    width: 100%;
+    border: 0.4vh solid black;
+    border-radius: 1.4vh;
+    text-align: center;
+    font-size: 5vh;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    margin-top: 10vh;
+}
+
+div#joinHeader {
+    margin-bottom:4vh;
+}
+
+div#join input {
+    font-family: 'katahdin';
+    font-size: 5vh;
+}
+
+#playerName {
+    width: 35vh;
+    text-align: center;
+}
+
+input[type='checkbox'] {
+    -webkit-appearance:none;
+    width:4vh;
+    height:4vh;
+    background:white;
+    border-radius:5px;
+    border:2px solid black;
+    position:relative;
+    bottom: -0.5vh;
+}
+input[type='checkbox']:checked {
+    background: black;
+}
+
+/* ***** Scoring track at top ***** */
+div#scoreboardarea {
+    position: relative;
+    margin-right: 0;
+    margin-left: auto;
+    height: 15vh;
+    width: 150vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+#scoreboard {
+    width: 88%;
+}
+
+#track {
+  position:relative;
+  left:0px;
+  height:1px;
+  z-index:-1;
+  font-size:2vh;
+}
+
+.score {
+    position: relative;
+    display: block;
+    color: white;
+    height: 47%;
+    left: 0px;
+}
+
+.pegarea {
+    transition: left 1.5s ease-in-out;
+    display: inline-block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+#scoreboard_self {
+    position: relative;
+    height: 100%;
+    margin-left: -5vh;
+    left: 0;
+    color: white;
+    width: 10vh;
+    text-align: center;
+    line-height: 4vh;
+}
+
+#scoreboard_opponent {
+  position:relative;
+  color:black;
+  background-color: white;
+  margin-left:-5vh;
+  left:0;
+  color:white;
+  width:10vh;
+  text-align:center;
+  line-height:4vh;  
+}
+
+#scoreboard_self .total {
+  bottom:1vh;
+  background-color: black;
+}
+
+#scoreboard_opponent .total {
+    top:1vh;
+    color: black;
+    background-color:white;
+}
+
+
+.total {
+    position: absolute;
+    font-size: 3.5vh;
+    line-height: 4vh;
+    height: 5vh;
+    width: 100%;
+    margin-left: -5vh;
+    display: inline-block;
+    text-align: center;
+    padding-left: 1%;
+    padding-right: 1%;
+    border-radius: 0.8vh;
+    border: 0.5vh solid black;
+    box-sizing: border-box;
+}
+
+.scoreboard_top {
+    transition: left 1.5s ease-in-out;
+    position: absolute;
+    bottom: 0;
+}
+
+.triangle {
+  transition: left 1.5s ease-in-out;
+  position:absolute;
+  bottom:0;
+  width: 0; 
+  height: 0; 
+  border-left: 1vh solid transparent;
+  border-right: 1vh solid transparent;
+  margin-left:-1vh;
+}
+
+.innertriangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 0.75vh solid transparent;
+  border-right: 0.75vh solid transparent;
+  left: -0.75vh;
+  border-bottom: 0.75vh solid white;
+  border-top: 0.25vh solid transparent;
+  top: 0.5vh;
+}
+
+#playertriangle {
+  position:absolute;
+  border-top: 1vh solid black;
+  bottom:0;
+}
+
+#opponenttriangle {
+  border-bottom: 1vh solid black;
+  top:0;
+}
+
+
+#centerline {
+  position:absolute;
+  width:100%;
+  top:0;
+  border-top:1px solid #666666;
+}
+
+.cornerline {
+  position:absolute;
+  border-left:1px solid #666666;
+  width:1px;
+  height:3vh;
+  top:-1.25vh;
+  color:#666666;
+}
+
+.skunkline {
+  position:absolute;
+  border:0px;
+  top:-1.5vh;
+  color:black;
+  left:75%;
+  text-align:center;
+  margin-left:-10px;
+  width:20px;
+  font-size:3vh;
+}
+
+div.scorenumbers {
+    margin-left:6%;
+    margin-right:10%;
+    flex-grow:1;
+    flex-basis:0;
+    display:none;
+    align-items:center;
+}
+
+div.scorenumbers.activenumbers {
+    display:flex;
+}
+
+button#scorebutton {
+    font-size:2.5vh;
+    height: 5vh;
+    width: 15vh;
+}
+
+/* ***** Scoring summary ***** */
+
+/* TODO: Position this near the element that
+         was hovered over */
+div#scoreSummary {
+    position: absolute;
+    top: 2vh;
+    right: 2vh;
+    background-color: white;
+    border: 0.5vh solid black;
+    padding: 3vh;
+    z-index: 100;
+}
+
+div#overlay {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display:none;
+}
+
+div#overlay.showsummary {
+    display:block;
+}
+
+div#blur {
+    position:absolute;
+    background-color:white;
+    opacity: 70%;
+    z-index:99;
+    width: 105vh;
+    height: 100%;
+    right:0;
+}
+
+div.summarytiles {
+    position: relative;
+    height: 18vh;
+    display:flex;
+}
+
+div.summarytiles div.tileposition.turn {
+    margin-left: 2.4vh;
+}
+
+div.summarytiles div.tileposition.turn::after {
+    content:'Turn';
+    position: absolute;
+    top: 100%;
+    font-size: 2vh;
+    margin-top: 0.2vh;
+}
+
+div.summarytiles div.tileposition.turn.bingo::after {
+    content:'Bingo!';
+    color: white;
+    background-color: black;
+    padding: 0vh 0.6vh 0vh 0.6vh;
+    border-radius: 0.5vh;
+}
+
+/* These tiles are about 3/4 the size of the 
+   tiles in the play area */
+div.summarytiles div.tileposition {
+    position: relative;
+    margin-right: 0.8vh;
+    width: 10.2vh;
+    height: 13.5vh;
+}
+
+div.summarytiles div.value {
+    font-size: 2.8vh;
+    color: black;
+	-webkit-text-stroke-width: 0;
+}
+
+table.scoresummary {
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 80%;
+    min-width: 50vh;
+}
+
+table.scoresummary th {
+    background-color: black;
+    color: white;
+    font-size: 3vh;
+}
+
+table.scoresummary tr {
+    border-bottom: 0.2vh solid black;
+}
+
+table.scoresummary .summary_name {
+    width: 80%;
+    text-align:left;
+}
+
+table.scoresummary .summary_points {
+    width: 20%;
+    text-align:right;
+}
+
+table.scoresummary td,th {
+    padding-left: 0.5vh;
+    padding-right: 0.5vh;
+}
+
+table.scoresummary td {
+    font-size:2.3vh;
+}
+
+table#outs {
     margin-top:2vh;
 }
-
-span.subscore {
-    float:right;
-}
-
-div.name {
-    text-align:center;
-    font-size:3vh;
-}
-
-div#pegCounter {
-    font-size:6vh;
-    color:var(--foreground);
-    text-align:center;
-    width:6.8%;
-    position:absolute;
-    height:5%;
-    font-size: 3.7vh
-}
-
-div#pegCounter.go {
-    color:var(--background);
-	-webkit-text-stroke-width: .35vh;
-    -webkit-text-stroke-color: var(--foreground);
-}
-
