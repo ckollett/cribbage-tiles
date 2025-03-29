@@ -1,16 +1,18 @@
-var game = require("./game");
-var tiles = require("./tiles");
-var scoring = require("./scoring");
+const port = 4556;
+
+const game = require("./game");
+const tiles = require("./tiles");
+const scoring = require("./scoring");
 
 // Dependencies
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var socketIO = require('socket.io');
-var app = express();
-var server = http.Server(app);
-var io = socketIO(server);
-app.set('port', 4556);
+const express = require('express');
+const http = require('http');
+const path = require('path');
+const socketIO = require('socket.io');
+const app = express();
+const server = http.Server(app);
+const io = socketIO(server);
+app.set('port', port);
 
 game.registerListener(function(player, evt) {
     io.to(players[player].socket).emit('gameEvent', evt);
@@ -32,14 +34,17 @@ app.get('/reset', function(request, response) {
     game.newGame();
     response.sendFile(path.join(__dirname, 'ui.html'));
 });
+app.get('/game', function(request, response) {
+    const fullGame = game.getFullGame();
+    response.send(JSON.stringify(fullGame));
+});
 // app.get('/pendingScore', function(request, response) {
 //     response.send(JSON.stringify(game.getPendingScore()));
 
 // });
 
-
-server.listen(5000, function() {
-  console.log('Ready for cribbage on port 5000');
+server.listen(port, function() {
+  console.log('Ready for cribbage on port ' + port);
 });
 
 /* *** Set up messaging with the browser *** */

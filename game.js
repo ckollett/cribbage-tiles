@@ -11,18 +11,18 @@ let listener;
 // it's better if this file holds the instance
 // of game, though, rather than server.js.
 module.exports = {
-	registerListener: function(newListener) {
-		listener = newListener;
-	},
-	
-	newGame: function() {
-		game = new Game();
-		return game;
-	},
-	
-	deal: function(player) {
-		game.nextDeal(player);
-	},
+    registerListener: function(newListener) {
+        listener = newListener;
+    },
+    
+    newGame: function() {
+        game = new Game();
+        return game;
+    },
+    
+    deal: function(player) {
+        game.nextDeal(player);
+    },
     
     handleTileEvent: handleTileEvent,
     
@@ -41,39 +41,43 @@ module.exports = {
     
     getScoringStats: function() {
         return game.getScoringStats();
+    },
+    
+    getFullGame: function() {
+        return game.fullGame();
     }
 };
 
 function handleTileEvent(player, ids) {
-	const deal = game.currentDeal();
-	if (deal.phase.pendingScore) {
-		throw new Error('Cannot play tiles while score is pending!');
-	}
+    const deal = game.currentDeal();
+    if (deal.phase.pendingScore) {
+        throw new Error('Cannot play tiles while score is pending!');
+    }
     
     const tiles = deal.resolveTiles(ids);
-	deal.phase.handleTilesEvent(player, tiles);
+    deal.phase.handleTilesEvent(player, tiles);
 }
 
 /* ********** Game class ********** */
 class Game {
-	deals = [];
+    deals = [];
     #scores = [];
-	
+    
     nextDeal(dealer) {
-		const currentScore = this.currentScore();
+        const currentScore = this.currentScore();
         this.deals.push(new Deal(dealer, currentScore));
 
-		for (let i = 0; i < 2; i++) {
-			const playerTiles = this.currentDeal().getTiles({player: i});
-			const evt = new DealEvent(playerTiles, dealer);
-			evt.send(i);
-		}
+        for (let i = 0; i < 2; i++) {
+            const playerTiles = this.currentDeal().getTiles({player: i});
+            const evt = new DealEvent(playerTiles, dealer);
+            evt.send(i);
+        }
     }
 
-	currentDeal() {
-		return this.deals[this.deals.length-1];
-	}
-	
+    currentDeal() {
+        return this.deals[this.deals.length-1];
+    }
+    
     // TODO: If we keep track of the pending
     // score here, too, we can set its ID while
     // it is still pending.
@@ -87,8 +91,8 @@ class Game {
         return this.#scores[id];
     }
     
-	currentScore() {
-		const scores = [];
+    currentScore() {
+        const scores = [];
         for (let i = 0; i < 2; i++) {
             scores.push({
                 total:0,
@@ -109,7 +113,7 @@ class Game {
             playerScores[type] += points;
         });
         return scores;
-	}
+    }
     
     getScoringStats() {
         const stats = [new ScoringStats(), new ScoringStats()];
@@ -119,6 +123,15 @@ class Game {
             stats[s.player].addOuts(s.outs);
         });
         return stats;
+    }
+    
+    fullGame() {
+        const deals = [];
+        for (let deal of this.deals) {
+            const tiles = deal.getTiles({});
+            deals.push(tiles);
+        }
+        return deals;
     }
 }
 
@@ -156,7 +169,7 @@ class Deal {
     
     constructor(dealer, startingScore = [0, 0]) {
         this.dealer = dealer;
-		this.startingScore = startingScore;
+        this.startingScore = startingScore;
         
         // Deal the tiles.
         const tiles = getShuffledDeck().slice(0, 13);
@@ -168,25 +181,25 @@ class Deal {
             tiles[i].player = 1;
             tiles[i].state = 'unplayed';
         }
-		
+        
         tiles[12].tray = 'deck';
         tiles[12].state = 'unturned';
         this.#tiles = tiles;
 
         this.phase = new SelectCribPhase(this);
-	}
-	
-	getTiles({player = -1, state = ''}) {
-		let tiles = this.#tiles;
-		if (player !== -1) {
-			tiles = tiles.filter(t => t.player === player);
-			tiles.sort((a,b) => a.compareTo(b))			
-		}
-		if (state != '') {
-			tiles = tiles.filter(t => t.state === state);
-		}
-		return tiles;
-	}
+    }
+    
+    getTiles({player = -1, state = ''}) {
+        let tiles = this.#tiles;
+        if (player !== -1) {
+            tiles = tiles.filter(t => t.player === player);
+            tiles.sort((a,b) => a.compareTo(b))         
+        }
+        if (state != '') {
+            tiles = tiles.filter(t => t.state === state);
+        }
+        return tiles;
+    }
     
     getTurn() {
         return this.#tiles.at(-1);
@@ -195,7 +208,7 @@ class Deal {
     getTileById(id) {
         return this.#tiles.find(tile => tile.getId() === id);
     }
-	
+    
     // Get tiles from this deal out of the deck. 
     // If the input is an array, returns an array.
     // If the input is scalar, returns a scalar.
@@ -207,21 +220,21 @@ class Deal {
         return this.getTileById(ids);
     }
     
-	countPendingScore() {
-		const score = this.phase.pendingScore;
-		if (!score) {
-			throw new Error('No pending score to count');
-		}
-		game.addScore(score);
-		delete(this.phase.pendingScore);
-		
+    countPendingScore() {
+        const score = this.phase.pendingScore;
+        if (!score) {
+            throw new Error('No pending score to count');
+        }
+        game.addScore(score);
+        delete(this.phase.pendingScore);
+        
         // If it's game over I think we can bail
         // out immediately.
         if (!this.checkGameOver()) {
             this.phase.handleScore();
         }
-		new SendScoreEvent(score).send();
-	}
+        new SendScoreEvent(score).send();
+    }
     
     checkGameOver() {
         const score = game.currentScore();
@@ -235,11 +248,31 @@ class Deal {
 }
 
 function getShuffledDeck() {
-    
-	// Create all of the tiles.
+    // Create all of the tiles.
     const tiles = [];
 
-    // Temp: create a hand with a bingo, then turn the bingo.
+    if (false) {
+        createTestDeal(tiles);
+        return tiles;
+    }
+
+    // Suits are campfire, mug, sleeping bag, tent
+    const suits = ['c', 'm', 's', 't'];
+    for (let suit of suits) {
+        for (let i = 1; i <= 13; i++) {
+            tiles.push(t.newTile(suit, i));
+        }
+    }
+  
+    // Shuffle the tiles
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    return tiles;
+}
+
+function createTestDeal(tiles) {
     tiles.push(t.newTile('c', 5));
     tiles.push(t.newTile('m', 5));
     tiles.push(t.newTile('s', 5));
@@ -251,55 +284,36 @@ function getShuffledDeck() {
     }
     
     tiles.push(t.newTile('t', 5));
-    
-    return tiles;
-
-    /*
-    // Suits are campfire, mug, sleeping bag, tent
-    const suits = ['c', 'm', 's', 't'];
-    for (let suit of suits) {
-        for (let i = 1; i <= 13; i++) {
-            tiles.push(t.newTile(suit, i));
-        }
-    }
-  
-    // Shuffle the tiles
-	for (let i = tiles.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
-    }
-    return tiles;
-    */
 }
 
 /* ********** Score class ********** */
 class Score {
-	constructor(player, type, tiles, scores, outs) {
-		this.player = player;
+    constructor(player, type, tiles, scores, outs) {
+        this.player = player;
         this.type = type;
         this.tiles = tiles.slice();
-		this.scores = scores.map(function(scorePart) {
-			return {
-				'points' : scorePart.getScore(),
-				'name' : scorePart.getName()
-			};
-		});
-		
+        this.scores = scores.map(function(scorePart) {
+            return {
+                'points' : scorePart.getScore(),
+                'name' : scorePart.getName()
+            };
+        });
+        
         const points = this.scores.reduce((sum, next) => sum + next.points, 0);
         this.points = points;
         this.outs = outs;
-	}
+    }
 }
 
 /* ********** GamePhase abstract class ********** */
 class GamePhase {
-	constructor(deal) {
-		this.deal = deal;
-	}
-	
+    constructor(deal) {
+        this.deal = deal;
+    }
+    
     getName() {return ""}
     getProperties() {return {}}
-	
+    
     handleTilesEvent(player, tiles) {}
     
     setPendingScore(player, type, tiles, scores, outs) {
@@ -309,10 +323,10 @@ class GamePhase {
 
 /* ********** GamePhase implementations ********** */
 class SelectCribPhase extends GamePhase {
-	constructor(deal) {
-		super(deal);
-	}
-	
+    constructor(deal) {
+        super(deal);
+    }
+    
     getName() {
         return 'cribselect';
     }
@@ -322,10 +336,10 @@ class SelectCribPhase extends GamePhase {
     }
     
     handleTilesEvent(player, tiles) {
-		if (!tiles || tiles === null) {
-			throw new Error('Crib selection event must specify tiles');
-		}
-		
+        if (!tiles || tiles === null) {
+            throw new Error('Crib selection event must specify tiles');
+        }
+        
         this.throwToCrib(tiles);
         let evt = new MoveTilesEvent('cribselect', tiles);
         evt.send([1-player]);
@@ -356,7 +370,7 @@ class SelectCribPhase extends GamePhase {
             }
         });
     }
-	
+    
     checkCribFull() {
         const crib = this.deal.getTiles({state: 'crib'});
         if (crib.length === 4) {
@@ -380,12 +394,12 @@ class SelectCribPhase extends GamePhase {
             evt.send();
         }
     }
-	
-	handleScore() {
-		// Scoring in this state is only possible when a Jack is turned,
-		// so after scoring the next state will always be pegging.
-		this.deal.phase = new PeggingPhase(this.deal);
-	}
+    
+    handleScore() {
+        // Scoring in this state is only possible when a Jack is turned,
+        // so after scoring the next state will always be pegging.
+        this.deal.phase = new PeggingPhase(this.deal);
+    }
 }
 
 class PeggingPhase extends GamePhase {
@@ -411,35 +425,37 @@ class PeggingPhase extends GamePhase {
     
     handleTilesEvent(player, tiles) {
         const tile = this.validatePeggingEvent(player, tiles);
-		const deal = this.deal;
+        const deal = this.deal;
         this.numPlayed++;
         
         this.peggedTiles.push(tile);
         tile.state = 'pegged';
+        tile.pegIdx = this.numPlayed;
         const score = s.scorePeggingTiles(this.peggedTiles);
 
         // Start by assuming that neither player is at go (or bummer).
         this.go = false;
-		if (this.checkForGo(1-player)) {
+        if (this.checkForGo(1-player)) {
             // We need to display the go indicator if the other player can no longer play.
             this.go = true;
-			if (this.checkForGo(player)) {
-				// It's a go for everyone. 
-				score.push(s.go(this.getCount()));
+            if (this.checkForGo(player)) {
+                // It's a go for everyone. 
+                score.push(s.go(this.getCount()));
                 
-				//It's the other player's turn unless they're out of cards.
-				const otherPlayerUnplayed = this.deal.getTiles({player: 1-player, state: 'unplayed'});
-				if (otherPlayerUnplayed.length > 0) {
-					this.currentTurn = 1-player;
-				}
-			}
-		} else {
+                //It's the other player's turn unless they're out of cards.
+                const otherPlayerUnplayed = this.deal.getTiles({player: 1-player, state: 'unplayed'});
+                if (otherPlayerUnplayed.length > 0) {
+                    this.currentTurn = 1-player;
+                }
+            }
+        } else {
             // The other player can still play. Just flip the turn to them.
-			this.currentTurn = 1-player;
-		}
-		
+            this.currentTurn = 1-player;
+        }
+        
         if (score.length > 0) {
             this.setPendingScore(player, 'Peg', this.peggedTiles, score);
+            tile.pegScore = this.pendingScore.points;
         }
         
         // Notify the other player
@@ -450,7 +466,7 @@ class PeggingPhase extends GamePhase {
         // * They scored
         new MoveTilesEvent('peg', []).send(player);
     }
-	
+    
     validatePeggingEvent(player, tiles) {
         if (player != this.currentTurn) {
             throw new Error('It is not player [' + player + ']\'s turn to peg!');
@@ -479,31 +495,31 @@ class PeggingPhase extends GamePhase {
     checkForGo(player) {
         const unplayed = this.deal.getTiles({player: player, state: 'unplayed'});
         // The unplayed tiles will be sorted, so we only have to check if the
-		// first (smallest) one can be played to see if it's go.
+        // first (smallest) one can be played to see if it's go.
         return (unplayed.length === 0 || unplayed[0].getCountValue() + this.getCount() > 31);
     }
-	
-	handleScore() {
+    
+    handleScore() {
         // If we just scored a Go, clear the tray.
-		if (this.checkForGo(0) && this.checkForGo(1)) {
-			this.clearTray();
+        if (this.checkForGo(0) && this.checkForGo(1)) {
+            this.clearTray();
             this.go = false;
-		}
-		
-		const unplayed = this.deal.getTiles({state: 'unplayed'});
-		if (unplayed.length === 0) {
-			// We're done pegging. Time to count hands.
+        }
+        
+        const unplayed = this.deal.getTiles({state: 'unplayed'});
+        if (unplayed.length === 0) {
+            // We're done pegging. Time to count hands.
             const nonDealer = 1 - this.deal.dealer;
-			this.deal.phase = new CountHandPhase(this.deal, nonDealer);
-		}
-	}
-	
-	clearTray() {
-		const pegged = this.peggedTiles;
-		pegged.forEach(t => t.state = 'played');
-		this.peggedTiles = [];
-		new MoveTilesEvent('clearPeg', []).send();
-	}
+            this.deal.phase = new CountHandPhase(this.deal, nonDealer);
+        }
+    }
+    
+    clearTray() {
+        const pegged = this.peggedTiles;
+        pegged.forEach(t => t.state = 'played');
+        this.peggedTiles = [];
+        new MoveTilesEvent('clearPeg', []).send();
+    }
 }
 
 class CountHandPhase extends GamePhase {
@@ -547,9 +563,9 @@ class CountHandPhase extends GamePhase {
         return 'counthands';
     }
     
-	handleTilesEvent(player, tiles) {
-		throw new Error('Cannot play tiles while hands are being counted.');
-	}
+    handleTilesEvent(player, tiles) {
+        throw new Error('Cannot play tiles while hands are being counted.');
+    }
     
     handleScore() {
         let nextPhase;
@@ -568,70 +584,70 @@ class CountHandPhase extends GamePhase {
 }
 
 class GameOver extends GamePhase {
-	constructor(deal, winner) {
-		super(deal);
-		this.winner = winner;
-	}
-	
-	getName() {
-		return "gameover";
-	}
-	
-	getProperties() {
-		return {
-			winner: this.winner
-		};
-	}
-	
-	handleTilesEvent(player, tiles) {
-		throw new Error('Cannot play tiles after game has ended');
-	}
-	
-	handleScore() {}
+    constructor(deal, winner) {
+        super(deal);
+        this.winner = winner;
+    }
+    
+    getName() {
+        return "gameover";
+    }
+    
+    getProperties() {
+        return {
+            winner: this.winner
+        };
+    }
+    
+    handleTilesEvent(player, tiles) {
+        throw new Error('Cannot play tiles after game has ended');
+    }
+    
+    handleScore() {}
 }
 
 /* ********** EVENTS ********** */
 class GameEvent {
-	constructor(eventName) {
-		this.name = eventName;
-	}
-	
-	getEventData() {
-		const phase = game.currentDeal().phase;
+    constructor(eventName) {
+        this.name = eventName;
+    }
+    
+    getEventData() {
+        const phase = game.currentDeal().phase;
         const eventData = {
-			name: this.name,
+            name: this.name,
             phase: {
                 name: phase.getName(),
                 data: phase.getProperties()
             }
-		};
+        };
         this.addData(eventData);
         return eventData;
-	}
-	
+    }
+    
     addData(data) {}
     
-	send(players = [0,1]) {
-		if (!Array.isArray(players)) {
-			players = [players];
-		}
-		
-		for (let player of players) {
-			const evtData = this.getEventData();
-			const pendingScore = game.currentDeal().phase.pendingScore;
-			if (pendingScore) {
-				evtData.pendingScore = pendingScore.player;
-			}
-			
-			listener(player, evtData);
-		}
-	}
-	
+    send(players = [0,1]) {
+        if (!Array.isArray(players)) {
+            players = [players];
+        }
+        
+        for (let player of players) {
+            const evtData = this.getEventData();
+            const pendingScore = game.currentDeal().phase.pendingScore;
+            if (pendingScore) {
+                evtData.pendingScore = pendingScore.player;
+            }
+            
+            listener(player, evtData);
+        }
+    }
+    
 }
 
 class MoveTilesEvent extends GameEvent {
     constructor(name, tiles) {
-		super(name);
+        super(name);
         if (!Array.isArray(tiles)) {
             tiles = [tiles];
         }
@@ -639,7 +655,7 @@ class MoveTilesEvent extends GameEvent {
     }
     
     addData(data) {
-		data.tiles = this.tiles.map(t => t.getId());
+        data.tiles = this.tiles.map(t => t.getId());
     }
 }
 
@@ -657,12 +673,12 @@ class DealEvent extends MoveTilesEvent {
 
 class SendScoreEvent extends GameEvent {
     constructor(score) {
-		super('score');
+        super('score');
         this.score = score;
     }
-	
-	addData(data) {
-		data.score = this.score;
-		data.gameScore = game.currentScore();
-	}
+    
+    addData(data) {
+        data.score = this.score;
+        data.gameScore = game.currentScore();
+    }
 }

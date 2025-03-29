@@ -114,7 +114,7 @@ socket.on('gameEvent', function(data) {
 // tiles on top. We'll use "self" styles for the top row
 // and "opponent" styles for the bottom row.
 function getPlayerName(num) {
-	return num == thisPlayer ? 'self' : 'opponent';
+    return num == thisPlayer ? 'self' : 'opponent';
 }
 
 /* ********** Trays ********** */
@@ -125,39 +125,39 @@ class Tray {
     // a new tray we need to update the old tray, as well.
     #sourceTrays = new Set();
     
-	constructor({baseName, side, player, sort, maxTiles = 13}) {
-		this.baseName = baseName;
-		this.side = side;
-		this.player = player;
-		this.sortFunc = sort;
+    constructor({baseName, side, player, sort, maxTiles = 13}) {
+        this.baseName = baseName;
+        this.side = side;
+        this.player = player;
+        this.sortFunc = sort;
 
         const trayClass = 'tray_' + this.baseName;
         const row = this.player ? this.player : 'middle';
-		this.trayClasses = [trayClass, 'row_' + row];
-		if (this.side) {
-			this.trayClasses.push('side_' + this.side);
-		}
+        this.trayClasses = [trayClass, 'row_' + row];
+        if (this.side) {
+            this.trayClasses.push('side_' + this.side);
+        }
         this.maxTiles = maxTiles;
-	}
-	
-	getId() {
-		return this.player ? this.baseName + '_' + this.player : this.baseName;
-	}
-	
-	addTile(tileElement) {
+    }
+    
+    getId() {
+        return this.player ? this.baseName + '_' + this.player : this.baseName;
+    }
+    
+    addTile(tileElement) {
         if (this.numTiles() >= this.maxTiles) {
             return false;
         }
         
-		const oldTray = getTray(tileElement.dataset.tray);
+        const oldTray = getTray(tileElement.dataset.tray);
         if (oldTray) {
             this.#sourceTrays.add(oldTray);
         }
-		tileElement.dataset.tray = this.getId();
-		tileElement.dataset.moving = "1";
-		tileElement.dataset.addedIdx = this.numTiles();
+        tileElement.dataset.tray = this.getId();
+        tileElement.dataset.moving = "1";
+        tileElement.dataset.addedIdx = this.numTiles();
         return true;
-	}
+    }
     
     #getTilesUnsorted() {
         // Use the data attribute rather than the classname so that
@@ -168,15 +168,15 @@ class Tray {
     numTiles() {
         return this.#getTilesUnsorted().length;
     }
-	
-	getTileElements() {
-		const tileElts = Array.from(this.#getTilesUnsorted());
-		if (this.sortFunc) {
-			tileElts.sort(this.sortFunc);
-		}
-		return tileElts;
-	}
-	
+    
+    getTileElements() {
+        const tileElts = Array.from(this.#getTilesUnsorted());
+        if (this.sortFunc) {
+            tileElts.sort(this.sortFunc);
+        }
+        return tileElts;
+    }
+    
     #updateSourceTrays() {
         const sourceTrays = Array.from(this.#sourceTrays);
         this.#sourceTrays.clear();
@@ -185,59 +185,59 @@ class Tray {
     
     // Move all of the same time, and return a promise that should resolve
     // when the tiles have finished moving.
-	moveTilesNow() {
+    moveTilesNow() {
         this.#updateSourceTrays();
-		const elements = this.getTileElements();
-		const that = this;
-		elements.forEach((elt, idx) => that.#moveTile(elt, idx));
-	}
-	
-	#moveTile(tileElt, idx) {
+        const elements = this.getTileElements();
+        const that = this;
+        elements.forEach((elt, idx) => that.#moveTile(elt, idx));
+    }
+    
+    #moveTile(tileElt, idx) {
         this.beforeTileMove(tileElt);
-		tileElt.className = 'tileposition';
-		tileElt.classList.add(...this.trayClasses);
-		tileElt.classList.add('tileidx_' + idx);
-		if (tileElt.dataset.moving == 1) {
-			// Keep the tile in front of other tiles while it's moving.
-			tileElt.classList.add('moving');
-			tileElt.dataset.moving = '';
+        tileElt.className = 'tileposition';
+        tileElt.classList.add(...this.trayClasses);
+        tileElt.classList.add('tileidx_' + idx);
+        if (tileElt.dataset.moving == 1) {
+            // Keep the tile in front of other tiles while it's moving.
+            tileElt.classList.add('moving');
+            tileElt.dataset.moving = '';
             const that = this;
-			setTimeout(() => {
-				tileElt.classList.remove('moving');
+            setTimeout(() => {
+                tileElt.classList.remove('moving');
                 that.afterTileMove(tileElt);
-			}, animationTime);
-		}
-	}
-	
+            }, animationTime);
+        }
+    }
+    
     beforeTileMove(tileElt) {}
     afterTileMove(tileElt) {}
     
-	moveTilesSequentially(delay = 0) {
+    moveTilesSequentially(delay = 0) {
         this.#updateSourceTrays();
-		const tileElts = this.getTileElements();
-		if (tileElts.length === 0) {
-			return Promise.resolve();
-		}
-		
-		this.toMove = tileElts;
-		const promise = new Promise(resolve => {
-			this.#moveTileInSequence(0, delay, resolve);
-		});
-		return promise;
-	}
-	
-	#moveTileInSequence(idx, delay, resolve) {
-		const tileElt = this.toMove.shift();
-		this.#moveTile(tileElt, idx);
-		
-		let next;
-		if (this.toMove.length > 0) {
+        const tileElts = this.getTileElements();
+        if (tileElts.length === 0) {
+            return Promise.resolve();
+        }
+        
+        this.toMove = tileElts;
+        const promise = new Promise(resolve => {
+            this.#moveTileInSequence(0, delay, resolve);
+        });
+        return promise;
+    }
+    
+    #moveTileInSequence(idx, delay, resolve) {
+        const tileElt = this.toMove.shift();
+        this.#moveTile(tileElt, idx);
+        
+        let next;
+        if (this.toMove.length > 0) {
             setTimeout(() => this.#moveTileInSequence(idx+1, delay, resolve), delay);
-		} else {
+        } else {
             // After moving the last tile, wait until the animation is finished.
             setTimeout(resolve, animationTime);
-		}
-	}
+        }
+    }
 }
 
 // The pegging tray is special because we add affordances to show the current count.
@@ -274,90 +274,90 @@ function hidePegCount() {
 
 // Tray sorting. The t1 and t2 arguments are tile HTML elements.
 function sortAscending(t1, t2) {
-	return t1.dataset.sort - t2.dataset.sort;
+    return t1.dataset.sort - t2.dataset.sort;
 }
 
 function sortDescending(t1, t2) {
-	return sortAscending(t2, t1);
+    return sortAscending(t2, t1);
 }
 
 function sortByAdded(t1, t2) {
-	return t1.dataset.addedIdx - t2.dataset.addedIdx;
+    return t1.dataset.addedIdx - t2.dataset.addedIdx;
 }
 
 const trays = [
-	new Tray({baseName: 'deck', sort: sortByAdded}),
+    new Tray({baseName: 'deck', sort: sortByAdded}),
     new Tray({baseName: 'turn'}),
     // This is a little awkward. Not sure how to make it better.
-	new PeggingTray(),
-	new Tray({baseName: 'unplayed', side: 'left', sort: sortAscending, player: 'self'}),
-	new Tray({baseName: 'unplayed', side: 'left', player: 'opponent'}),
-	new Tray({baseName: 'cribselect', side: 'right', sort: sortDescending, maxTiles: 2}),
-	new Tray({baseName: 'crib', sort: sortByAdded}),
-	new Tray({baseName: 'played', side: 'right', sort: sortDescending, player: 'self'}),
-	new Tray({baseName: 'played', side: 'right', sort: sortDescending, player: 'opponent'}),
-	new Tray({baseName: 'cribreveal', side: 'right', sort: sortDescending})
+    new PeggingTray(),
+    new Tray({baseName: 'unplayed', side: 'left', sort: sortAscending, player: 'self'}),
+    new Tray({baseName: 'unplayed', side: 'left', player: 'opponent'}),
+    new Tray({baseName: 'cribselect', side: 'right', sort: sortDescending, maxTiles: 2}),
+    new Tray({baseName: 'crib', sort: sortByAdded}),
+    new Tray({baseName: 'played', side: 'right', sort: sortDescending, player: 'self'}),
+    new Tray({baseName: 'played', side: 'right', sort: sortDescending, player: 'opponent'}),
+    new Tray({baseName: 'cribreveal', side: 'right', sort: sortDescending})
 ];
 
 function findTray(baseName, player) {
-	if (player === 0 || player === 1) {
-		player = getPlayerName(player);
-	}
-	
-	const tray = getTray(baseName + '_' + player);
-	return tray ? tray : getTray(baseName);
+    if (player === 0 || player === 1) {
+        player = getPlayerName(player);
+    }
+    
+    const tray = getTray(baseName + '_' + player);
+    return tray ? tray : getTray(baseName);
 }
 
 function getTray(trayId) {
-	return trays.find(t => t.getId() == trayId);
+    return trays.find(t => t.getId() == trayId);
 }
 
 function populateDeck() {
-	const deckTray = getTray('deck');
+    const deckTray = getTray('deck');
 
-	for (let i = 0; i < 13; i++) {
+    for (let i = 0; i < 13; i++) {
         const tileElement = createBlankTileElement();
-		// We want the tiles at the "top" of the deck to have the lowest
-		// sort value. That way the opponent's tiles will be dealt in order
-		// and the animation will look right.
-		tileElement.dataset.sort = 100 - i;
-		const tileArea = document.getElementById('tiledisplay');
-		tileArea.appendChild(tileElement);
-		deckTray.addTile(tileElement);
-	}
-	deckTray.moveTilesNow();
+        // We want the tiles at the "top" of the deck to have the lowest
+        // sort value. That way the opponent's tiles will be dealt in order
+        // and the animation will look right.
+        tileElement.dataset.sort = 100 - i;
+        const tileArea = document.getElementById('tiledisplay');
+        tileArea.appendChild(tileElement);
+        deckTray.addTile(tileElement);
+    }
+    deckTray.moveTilesNow();
 }
 
 /* ********** Dealing/creating tiles ********** */
 function dealTiles(eventTiles) {
-	// Tiles come from the server an array of objects with fields
-	// id, player, and state.
-	if (eventTiles.length !== 6) {
-		throw new Error('Need 6 tiles to deal');
-	}
+    // Tiles come from the server an array of objects with fields
+    // id, player, and state.
+    if (eventTiles.length !== 6) {
+        throw new Error('Need 6 tiles to deal');
+    }
 
-	const deckTiles = getTray('deck').getTileElements();
-	// Deal this player's tiles.
-	eventTiles.forEach((t, i) => dealTile(thisPlayer, t, deckTiles.shift()));
-	
-	// Then deal 6 blank tiles to the opponent.
-	for (let i = 0; i < 6; i++) {
-		dealTile(1-thisPlayer, '', deckTiles.shift());
-	}
-	
-	getTray('unplayed_self').moveTilesSequentially(150).then(() => {
-		getTray('unplayed_opponent').moveTilesSequentially(150);
-	});
+    const deckTiles = getTray('deck').getTileElements();
+    // Deal this player's tiles.
+    eventTiles.forEach((t, i) => dealTile(thisPlayer, t, deckTiles.shift()));
+    
+    // Then deal 6 blank tiles to the opponent.
+    for (let i = 0; i < 6; i++) {
+        dealTile(1-thisPlayer, '', deckTiles.shift());
+    }
+    
+    getTray('unplayed_self').moveTilesSequentially(150).then(() => {
+        getTray('unplayed_opponent').moveTilesSequentially(150);
+    });
 }
 
 function dealTile(player, id, tileElement) {
-	populateTileElement(player, id, tileElement);
+    populateTileElement(player, id, tileElement);
     if (player === thisPlayer) {
-		tileElement.addEventListener('click', handleTileClick);
-	}
-	
-	const tray = findTray('unplayed', player);
-	tray.addTile(tileElement);
+        tileElement.addEventListener('click', handleTileClick);
+    }
+    
+    const tray = findTray('unplayed', player);
+    tray.addTile(tileElement);
 }
 
 function createBlankTileElement() {
@@ -368,16 +368,16 @@ function createBlankTileElement() {
 // TODO: Maybe this doesn't need to be a separate
 // function since setTileValues is.
 function populateTileElement(player, id, tileElement) {
-	const playerName = getPlayerName(player);
-	tileElement.dataset.player = playerName;
+    const playerName = getPlayerName(player);
+    tileElement.dataset.player = playerName;
 
-	const tileSides = tileElement.querySelector('.tilesides');
-	tileSides.classList.add('player_' + playerName);
-	if (id === '') {
-		tileElement.dataset.tile = 'unset';
-	} else {
-		setTileValues(tileElement, id);
-	}
+    const tileSides = tileElement.querySelector('.tilesides');
+    tileSides.classList.add('player_' + playerName);
+    if (id === '') {
+        tileElement.dataset.tile = 'unset';
+    } else {
+        setTileValues(tileElement, id);
+    }
 }
 
 function createTileElement(player, id) {
@@ -403,47 +403,47 @@ function turn(id) {
 
 /* ********* Tile manipulation ********** */
 function getTileElt(id, player) {
-	elt = document.getElementById(id);
-	if (elt) {
-		return elt;
-	}
+    elt = document.getElementById(id);
+    if (elt) {
+        return elt;
+    }
 }
 
 function getUnsetOpponentTiles(num,fromCrib = false) {
-	const tray = fromCrib ? 'crib' : 'unplayed_opponent';
-	const selector = `[data-tile='unset'][data-tray='${tray}']`;
-	const allTiles = Array.from(document.querySelectorAll(selector));
-	return allTiles.slice(-1*num);
+    const tray = fromCrib ? 'crib' : 'unplayed_opponent';
+    const selector = `[data-tile='unset'][data-tray='${tray}']`;
+    const allTiles = Array.from(document.querySelectorAll(selector));
+    return allTiles.slice(-1*num);
 }
 
 function setTileValues(tileElement, tile) {
-	if (typeof tile === 'string') {
-		tile = Tile.fromID(tile);
-	}
-	
-	tileElement.id = tile.getId();
-	tileElement.dataset.tile = tile.getId();
-	tileElement.dataset.sort = tile.sortValue;
+    if (typeof tile === 'string') {
+        tile = Tile.fromID(tile);
+    }
+    
+    tileElement.id = tile.getId();
+    tileElement.dataset.tile = tile.getId();
+    tileElement.dataset.sort = tile.sortValue;
     tileElement.dataset.countValue = tile.getCountValue();
-	const tileSides = tileElement.querySelector('.tilesides');
-	tileSides.querySelector('.value').innerHTML = tile.getDisplayValue();
-	tileSides.classList.add('suit_' + tile.getSuitName());
+    const tileSides = tileElement.querySelector('.tilesides');
+    tileSides.querySelector('.value').innerHTML = tile.getDisplayValue();
+    tileSides.classList.add('suit_' + tile.getSuitName());
 }
 
 function throwToCrib() {
     // Reverse the order to make the animation better. In the crib selection
     // tray, the tile with the lower index is on the right.
     const selectedTiles = getTray('cribselect').getTileElements().reverse();
-	if (selectedTiles.length !== 2) {
-		return false;
-	}
+    if (selectedTiles.length !== 2) {
+        return false;
+    }
 
     document.getElementById('cribarrow').classList.add('hidden');
 
-	const cribTray = getTray('crib');
-	selectedTiles.forEach(t => cribTray.addTile(t));
+    const cribTray = getTray('crib');
+    selectedTiles.forEach(t => cribTray.addTile(t));
     updateCribArrow();
-	cribTray.moveTilesSequentially(100);
+    cribTray.moveTilesSequentially(100);
     socket.emit('cribselect', selectedTiles.map(t => t.id));
     clickingEnabled = false;
     return true;
@@ -466,27 +466,27 @@ function opponentPegged(id) {
 
 function clearPeggingTray() {
     hidePegCount();
-	const elts = getTray('pegged').getTileElements();
-	const trays = new Set();
-	elts.forEach(function(elt) {
-		const newTray = findTray('played', elt.dataset.player);
-		trays.add(newTray);
-		newTray.addTile(elt);
-	});
-	
-	trays.forEach(t => t.moveTilesNow());
+    const elts = getTray('pegged').getTileElements();
+    const trays = new Set();
+    elts.forEach(function(elt) {
+        const newTray = findTray('played', elt.dataset.player);
+        trays.add(newTray);
+        newTray.addTile(elt);
+    });
+    
+    trays.forEach(t => t.moveTilesNow());
 }
 
 function revealCrib(opponentTiles) {
-	// Populate the opponent's tiles
-	const tiles = getUnsetOpponentTiles(2, true);
-	tiles.forEach((t,i) => setTileValues(t, opponentTiles[i]));
-	
-	// Move all of the tiles in the crib to the reveal tray.
-	const crib = getTray('crib').getTileElements();
-	const revealTray = getTray('cribreveal');
-	crib.forEach(t => revealTray.addTile(t));
-	revealTray.moveTilesSequentially(50);
+    // Populate the opponent's tiles
+    const tiles = getUnsetOpponentTiles(2, true);
+    tiles.forEach((t,i) => setTileValues(t, opponentTiles[i]));
+    
+    // Move all of the tiles in the crib to the reveal tray.
+    const crib = getTray('crib').getTileElements();
+    const revealTray = getTray('cribreveal');
+    crib.forEach(t => revealTray.addTile(t));
+    revealTray.moveTilesSequentially(50);
 }
 
 function clearTiles() {
@@ -607,7 +607,7 @@ function handleTileClick(evt) {
     }
     
     const handler = handlers[gamePhase.name];
-	const tileElt = evt.currentTarget;
+    const tileElt = evt.currentTarget;
 
     if (handler) {
         handler.handleTileClick(tileElt);
@@ -617,8 +617,8 @@ function handleTileClick(evt) {
 }
 
 function nope(tileElt) {
-	tileElt.classList.add('nope');
-	setTimeout(() => tileElt.classList.remove('nope'), 800);
+    tileElt.classList.add('nope');
+    setTimeout(() => tileElt.classList.remove('nope'), 800);
 }
 
 

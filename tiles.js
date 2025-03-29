@@ -2,10 +2,10 @@
 // This block will add newTile to the exports on the server
 // side but do nothing in the browser.
 if (typeof module !== 'undefined') {
-	module.exports = {
-		newTile: function(suit, runValue) {
-			return new Tile(suit, runValue);
-		},
+    module.exports = {
+        newTile: function(suit, runValue) {
+            return new Tile(suit, runValue);
+        },
         
         resolveTile: function(tileID) {
             return Tile.fromID(tileID);
@@ -13,21 +13,21 @@ if (typeof module !== 'undefined') {
         
         idsToTiles: idsToTiles,
         tilesToIds: tilesToIds
-	};
+    };
 }
 
 class Tile {
-	static suits = ['c', 'm', 's', 't'];
-	
+    static suits = ['c', 'm', 's', 't'];
+    
     constructor(suit, runValue) {
         this.suit = suit;
         this.runValue = runValue;
-		if (suit !== '') {
-			const suitIdx = Tile.suits.indexOf(suit);
-			this.sortValue = runValue*4 + suitIdx;
-		} else {
-			this.sortValue = 100;
-		}
+        if (suit !== '') {
+            const suitIdx = Tile.suits.indexOf(suit);
+            this.sortValue = runValue*4 + suitIdx;
+        } else {
+            this.sortValue = 100;
+        }
     }
   
     getRunValue() {
@@ -50,17 +50,17 @@ class Tile {
     getSuitID() {
         return this.suit;
     }
-	
-	getSuitName() {
-		switch (this.suit) {
-			case 'c' : return 'campfire';
-			case 'm' : return 'mug';
-			case 's' : return 'sleepingbag';
-			case 't' : return 'tent';
-		}
-		return '';
-	}
-	
+    
+    getSuitName() {
+        switch (this.suit) {
+            case 'c' : return 'campfire';
+            case 'm' : return 'mug';
+            case 's' : return 'sleepingbag';
+            case 't' : return 'tent';
+        }
+        return '';
+    }
+    
     getId() {
         return this.suit + this.getRunValue();
     }
@@ -68,7 +68,7 @@ class Tile {
     isEqual(tile) {
         return this.sortValue === tile.sortValue;
     }
-	
+    
     compareTo(tile) {
         return this.sortValue - tile.sortValue;
     }
@@ -78,11 +78,11 @@ class Tile {
             return id.map(singleId => Tile.fromId(singleId));
         }
         
-		if (id === '') {
-			// Create a placeholder tile with no suit or value.
-			return new Tile('', 0);
-		}
-		
+        if (id === '') {
+            // Create a placeholder tile with no suit or value.
+            return new Tile('', 0);
+        }
+        
         const suit = id.charAt(0);
         const runValue = parseInt(id.substring(1));
         return new Tile(suit, runValue);
