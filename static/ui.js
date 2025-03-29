@@ -711,6 +711,7 @@ function showPendingScore(evt) {
 function showScore(hoverElt, id) {
     getScoreById(id, function(score) {
         const summaryDiv = createScoreSummary(score);
+        document.getElementById('scoreSummary').innerHTML = '';
         document.getElementById('scoreSummary').appendChild(summaryDiv);
         document.getElementById('overlay').classList.add('showsummary');
     });
@@ -829,9 +830,7 @@ function getScoreById(id, callback) {
 }
 
 function getScoringStats() {
-    socket.emit('scoringStats', null, function(stats) {
-        console.log(JSON.stringify(stats, null, 2));
-    });
+    socket.emit('scoringStats', null, showStats);
 }
 
 function toggleHistory() {
@@ -839,3 +838,21 @@ function toggleHistory() {
 }
 
 /* ********** Other UI Features ********** */
+
+function showStats(stats) {
+    const stats0 = stats[0];
+    const stats1 = stats[1];
+    const table = htmlToNode('<table></table>');
+    table.appendChild(makeStatsRow('From Mean', stats0.fromMean.toFixed(2), stats1.fromMean.toFixed(2)));
+    table.appendChild(makeStatsRow('Above Min', stats0.aboveMin, stats1.aboveMin));
+    table.appendChild(makeStatsRow('Below Max', stats0.belowMax, stats1.belowMax));
+    table.appendChild(makeStatsRow('Total Outs', stats0.total, stats1.total));
+    
+    document.getElementById('scoreSummary').innerHTML = '';
+    document.getElementById('scoreSummary').appendChild(table);
+    document.getElementById('overlay').classList.add('showsummary');
+}
+
+function makeStatsRow(label, stat0, stat1) {
+    return htmlToNode(`<tr><td>${label}</td><td>${stat0}</td><td>${stat1}</td></tr>`);
+}

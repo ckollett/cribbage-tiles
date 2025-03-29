@@ -63,7 +63,7 @@
         <div id="layout">
 
             <div id="leftcolumn" class="sidearea">
-              <div id="left_scoreboard_self" class="scoreboard rounded self">
+              <div id="left_scoreboard_self" class="scoreboard rounded self"  onmouseenter="getScoringStats()" onmouseleave="hideScore()">
                 <div id="score_self_total" class="total_score">0</div>
                 <div class="scoreparts">
                   <div class="scorelabel">Nobs</div><div id="score_self_nobs" class="scorevalue">0</div>
@@ -73,7 +73,7 @@
                   <div class="scorelabel">Crib</div><div id="score_self_crib" class="scorevalue">0</div>
                 </div>
               </div>
-              <div id="left_scoreboard_opponent" class="scoreboard rounded opponent">
+              <div id="left_scoreboard_opponent" class="scoreboard rounded opponent" onmouseenter="getScoringStats()" onmouseleave="hideScore()">
                 <div id="score_opponent_total" class="total_score">0</div>
                 <div class="scoreparts">
                   <div class="scorelabel">Nobs</div><div id="score_opponent_nobs" class="scorevalue">0</div>
