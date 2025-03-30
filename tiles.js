@@ -75,7 +75,7 @@ class Tile {
     
     static fromID(id) {
         if (Array.isArray(id)) {
-            return id.map(singleId => Tile.fromId(singleId));
+            return id.map(singleId => Tile.fromID(singleId));
         }
         
         if (id === '') {
@@ -97,10 +97,65 @@ class Tile {
     }
 }
 
-function tilesToIds(tiles) {
-    return tiles.map(tile => tile.getId());
+function toTileArray(input) {
+    if (Array.isArray(input)) {
+        return input.map(toSingleTile);
+    }
+    
+    if (typeof input === 'Tile') {
+        return [input];
+    }
+
+    if (typeof input === 'string') {
+        input = displayToRunValue(input);
+        if (typeof input === 'string') {
+            input = input.match(/[cmst]\d+/);
+        }
+        return input.map(toSingleTile);
+    }
+    
+    return [toSingleTile(input)];
+    
 }
 
-function idsToTiles(ids) {
-    return ids.map(id => Tile.fromID(id));
+function toSingleTile(input) {
+    if (Array.isArray(input) && input.length === 1) {
+        return toSingleTile(input[0]);
+    }
+    
+    if (typeof input === 'Tile') {
+        return input;
+    }
+    
+    if (typeof input === 'string') {
+        return Tile.fromID(displayToRunValue(input));
+    }
+    
+    if (input.suit && input.runValue) {
+        return new Tile(input.suit, input.runValue);
+    }
+    
+    throw new Error(`Cannot convert ${input} into a Tile`);
+}
+
+function displayToRunValue(tileString) {
+    if (Array.isArray(tileString)) {
+        return tileString.map(displayToRunValue);
+    }
+    
+    let result = tileString.toLowerCase().replace('j', '11');
+    result = result.replace('q', 12);
+    result = result.replace('k', 13);
+    return result;
+}
+
+// The counter string is the ID used by
+// https://ckollett.github.io/counter.html
+function getCounterString(tiles) {
+    tiles = toTileArray(tiles);
+    let result = '';
+    tiles.forEach(function(t) {
+        result += t.suit + t.getDisplayValue();
+    });
+    return result;
 }

@@ -761,12 +761,7 @@ function updateHistory(scoreitem, gameScore) {
     const scoreType = scoreitem.type.toLowerCase();
     // TODO: This array is ugly.
     if (['hand', 'foot', 'crib'].indexOf(scoreType) >= 0) {
-        let tilesString = '';
-        scoreitem.tiles.forEach(function(tile) {
-            const tileObj = new Tile(tile.suit, tile.runValue);
-            tilesString += tileObj.getId();
-        });
-        addLinkToCounter(scoreElt, tilesString);
+        addLinkToCounter(scoreElt, getCounterString(scoreitem.tiles));
     }
     
 
@@ -871,8 +866,8 @@ function showStats(stats) {
     table.appendChild(makeStatsRow('Total Outs', stats0.total, stats1.total));
     
     // TODO: Pass both stats as an array and the property name?
-    table.appendChild(makeOutsRow('Best', stats0.best, stats1.best));
-    table.appendChild(makeOutsRow('Worst', stats0.worst, stats1.worst));
+    table.appendChild(makeOutsRow('Best', stats0.best, stats1.best, true));
+    table.appendChild(makeOutsRow('Worst', stats0.worst, stats1.worst, true));
     table.appendChild(makeOutsRow('Biggest', stats0.biggest, stats1.biggest));
     table.appendChild(makeOutsRow('Smallest', stats0.smallest, stats1.smallest));
    
@@ -888,15 +883,17 @@ function makeStatsRow(label, stat0, stat1) {
     return htmlToNode(`<tr><td class="stats_label">${label}</td><td>${stat0}</td><td>${stat1}</td></tr>`);
 }
 
-function makeOutsRow(label, out0, out1) {
+function makeOutsRow(label, out0, out1, round) {
     const row = htmlToNode('<tr></tr>');
     row.appendChild(htmlToNode(`<td class="stats_label">${label}</td>`));
     const tileElts0 = createStatTiles(out0.tiles);
     const tileElts1 = createStatTiles(out1.tiles);
-    const cell0 = htmlToNode(`<td><div>${out0.value.toFixed(2)}</div><div class="outstiles">${tileElts0}</div></td>`);
-    const cell1 = htmlToNode(`<td><div>${out1.value.toFixed(2)}</div><div class="outstiles">${tileElts1}</div></td>`);
-    addLinkToCounter(cell0, out0.tiles.join(''));
-    addLinkToCounter(cell1, out1.tiles.join(''));
+    const value0 = round ? out0.value.toFixed(2) : out0.value;
+    const value1 = round ? out1.value.toFixed(2) : out1.value;
+    const cell0 = htmlToNode(`<td><div>${value0}</div><div class="outstiles">${tileElts0}</div></td>`);
+    const cell1 = htmlToNode(`<td><div>${value1}</div><div class="outstiles">${tileElts1}</div></td>`);
+    addLinkToCounter(cell0, getCounterString(out0.tiles));
+    addLinkToCounter(cell1, getCounterString(out1.tiles));
     row.appendChild(cell0);
     row.appendChild(cell1);
     return row;
