@@ -711,14 +711,19 @@ function showPendingScore(evt) {
 function showScore(hoverElt, id) {
     getScoreById(id, function(score) {
         const summaryDiv = createScoreSummary(score);
-        document.getElementById('scoreSummary').innerHTML = '';
-        document.getElementById('scoreSummary').appendChild(summaryDiv);
+        const scoreSummary = document.getElementById('scoreSummary');
+        scoreSummary.innerHTML = '';
+        scoreSummary.className = 'rounded';
+        scoreSummary.classList.add('summary_right');
+        scoreSummary.appendChild(summaryDiv);
         document.getElementById('overlay').classList.add('showsummary');
     });
 }
 
 function hideScore() {
-    document.getElementById('scoreSummary').innerHTML = '';
+    const scoreSummary = document.getElementById('scoreSummary');    
+    scoreSummary.innerHTML = '';
+    scoreSummary.className = 'rounded';
     document.getElementById('overlay').classList.remove('showsummary');
 }
 
@@ -842,17 +847,47 @@ function toggleHistory() {
 function showStats(stats) {
     const stats0 = stats[0];
     const stats1 = stats[1];
-    const table = htmlToNode('<table></table>');
+    const table = htmlToNode('<table id="stats_table"></table>');
     table.appendChild(makeStatsRow('From Mean', stats0.fromMean.toFixed(2), stats1.fromMean.toFixed(2)));
     table.appendChild(makeStatsRow('Above Min', stats0.aboveMin, stats1.aboveMin));
     table.appendChild(makeStatsRow('Below Max', stats0.belowMax, stats1.belowMax));
     table.appendChild(makeStatsRow('Total Outs', stats0.total, stats1.total));
     
-    document.getElementById('scoreSummary').innerHTML = '';
-    document.getElementById('scoreSummary').appendChild(table);
+    // TODO: Pass both stats as an array and the property name?
+    table.appendChild(makeOutsRow('Best', stats0.best, stats1.best));
+    table.appendChild(makeOutsRow('Worst', stats0.worst, stats1.worst));
+    table.appendChild(makeOutsRow('Biggest', stats0.biggest, stats1.biggest));
+    table.appendChild(makeOutsRow('Smallest', stats0.smallest, stats1.smallest));
+   
+    const scoreSummary = document.getElementById('scoreSummary');
+    scoreSummary.innerHTML = '';
+    scoreSummary.appendChild(table);
+    scoreSummary.className = 'rounded';
+    scoreSummary.classList.add('summary_left');
     document.getElementById('overlay').classList.add('showsummary');
 }
 
 function makeStatsRow(label, stat0, stat1) {
-    return htmlToNode(`<tr><td>${label}</td><td>${stat0}</td><td>${stat1}</td></tr>`);
+    return htmlToNode(`<tr><td class="stats_label">${label}</td><td>${stat0}</td><td>${stat1}</td></tr>`);
+}
+
+function makeOutsRow(label, out0, out1) {
+    const row = htmlToNode('<tr></tr>');
+    row.appendChild(htmlToNode(`<td class="stats_label">${label}</td>`));
+    const tileElts0 = createStatTiles(out0.tiles);
+    const tileElts1 = createStatTiles(out1.tiles);
+    row.appendChild(htmlToNode(`<td><div>${out0.value.toFixed(2)}</div><div class="outstiles">${tileElts0}</div></td>`));
+    row.appendChild(htmlToNode(`<td><div>${out1.value.toFixed(2)}</div><div class="outstiles">${tileElts1}</div></td>`));
+    return row;
+}
+
+function createStatTiles(tiles) {
+    let html = '';
+    for (let tile of tiles) {
+        const tileObj = Tile.fromID(tile);
+        const suit = tileObj.getSuitName();
+        const value = tileObj.getDisplayValue();
+        html += `<div class="tiny_tile suit_${suit}"><div>${value}</div></div>`;
+    }
+    return html;
 }

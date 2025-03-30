@@ -147,19 +147,35 @@ class ScoringStats {
         this.belowMax += outs.belowMax();
         this.fromMean += outs.fromMean();
         this.total += outs.out.out;
-        this.updateStat('biggest', outs, (curValue) => outs.out.out > curValue.out.out);
-        this.updateStat('smallest', outs, (curValue) => outs.out.out < curValue.out.out);
-        this.updateStat('best', outs, (curValue) => outs.fromMean() > curValue.fromMean());
-        this.updateStat('worst', outs, (curValue) => outs.fromMean() < curValue.fromMean());
+        
+        
+        const outFunc = outs => outs.out.out;
+        const fromMeanFunc = outs => outs.fromMean();
+        
+        this.updateStat('biggest', outs, outFunc);
+        this.updateStat('smallest', outs, outFunc, true);
+        this.updateStat('best', outs, fromMeanFunc);
+        this.updateStat('worst', outs, fromMeanFunc, true);
         this.#num++;
         this.mean = this.total / this.#num;
     }
     
-    updateStat(statName, outs, compareFunc) {
+    updateStat(statName, outs, valueFunc, smallest) {
         const current = this[statName];
-        if (!current || compareFunc(current)) {
-            this[statName] = outs;
-        } 
+        const newValue = valueFunc(outs);
+        let update = !current;
+        if (current) {
+            update = smallest ? newValue < current.value : newValue > current.value; 
+        }
+        if (update) {
+            const allTiles = outs.tiles.slice();
+            allTiles.push(outs.out.tile);
+            this[statName] = {
+                tiles: allTiles,
+                value: newValue
+            };
+        }
+            
     }
 }
 
@@ -251,7 +267,7 @@ function getShuffledDeck() {
     // Create all of the tiles.
     const tiles = [];
 
-    if (false) {
+    if (true) {
         createTestDeal(tiles);
         return tiles;
     }

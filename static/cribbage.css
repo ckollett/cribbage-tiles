@@ -66,7 +66,6 @@ div#rightcolumn {
     position:relative;
     max-height: 100%;
     overflow-y: scroll;
-    right: -2.5vh;
     padding-right: 1.5vh;
 }
 
@@ -138,6 +137,47 @@ div.inline_tile.suit_campfire {
 
 div.inline_tile.suit_sleepingbag {
     background-image: url('images/sleepingbag.svg');
+}
+
+
+div.tiny_tile {
+    width: 4vh;
+    height: 2.5vh;
+    background-position: right 5% center;
+    background-size: 40%;
+    background-repeat: no-repeat;
+    display: inline-block;
+    margin-right: 0.5vh;
+    border: 0.2vh solid black;
+    border-radius: 0.75vh;
+    font-size: 1.7vh;
+}
+
+div.tiny_tile div {
+    width: 55%;
+    height: 100%;
+    line-height: 2.5vh;
+    text-align: center;
+}
+
+div.tiny_tile.suit_tent {
+    background-image: url('images/tent.svg');
+}
+
+div.tiny_tile.suit_mug {
+    background-image: url('images/mug.svg');
+}
+
+div.tiny_tile.suit_campfire {
+    background-image: url('images/campfire.svg');
+}
+
+div.tiny_tile.suit_sleepingbag {
+    background-image: url('images/sleepingbag.svg');
+}
+
+div.outstiles div.tiny_tile:last-child {
+    margin-left:0.7vh;
 }
 
 /* *** TODO *** */
@@ -767,7 +807,7 @@ div#scoreboardarea {
 }
 
 #scoreboard {
-    width: 88%;
+    width: 127vh;
 }
 
 #track {
@@ -933,6 +973,7 @@ button#scorebutton {
     font-size:2.5vh;
     height: 5vh;
     width: 15vh;
+    margin-right: 2.5vh;
 }
 
 /* ***** Scoring summary ***** */
@@ -941,12 +982,21 @@ button#scorebutton {
          was hovered over */
 div#scoreSummary {
     position: absolute;
-    top: 2vh;
-    right: 2vh;
+    top: 0;
     background-color: white;
     border: 0.5vh solid black;
     padding: 3vh;
     z-index: 100;
+}
+
+div#scoreSummary.summary_right {
+    right: -4vh;
+    width: auto;
+}
+
+div#scoreSummary.summary_left {
+    left: -9vh;
+    width: auto;
 }
 
 div#overlay {
@@ -961,6 +1011,7 @@ div#overlay {
 div#overlay.showsummary {
     display:block;
 }
+
 
 div#blur {
     position:absolute;
@@ -1016,7 +1067,6 @@ div.summarytiles div.value {
 table.scoresummary {
     border-collapse: collapse;
     border: 1px solid black;
-    width: 80%;
     min-width: 50vh;
 }
 
@@ -1051,4 +1101,24 @@ table.scoresummary td {
 
 table#outs {
     margin-top:2vh;
+}
+
+table#stats_table {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table#stats_table tr {
+    border-bottom: 0.2vh solid black;
+}
+
+table#stats_table td {
+    text-align: right;
+    padding-left: 3vh;
+    white-space: nowrap;
+}
+
+table#stats_table td.stats_label {
+    text-align: left;
+    padding-left: 0;
 }
