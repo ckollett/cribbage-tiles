@@ -267,7 +267,7 @@ function getShuffledDeck() {
     // Create all of the tiles.
     const tiles = [];
 
-    if (true) {
+    if (false) {
         createTestDeal(tiles);
         return tiles;
     }

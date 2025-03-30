@@ -751,16 +751,29 @@ function updateHistory(scoreitem, gameScore) {
                           `  <div class="scoretype">${scoreitem.type}</div>` +
                           `</div>`;
     
+
     const scoreElt = htmlToNode(scoreItemText);
     scoreElt.addEventListener('mouseleave', hideScore);
     scoreElt.addEventListener('mouseenter', function() {
        showScore(scoreElt, scoreitem.id);
     });
 
+    const scoreType = scoreitem.type.toLowerCase();
+    // TODO: This array is ugly.
+    if (['hand', 'foot', 'crib'].indexOf(scoreType) >= 0) {
+        let tilesString = '';
+        scoreitem.tiles.forEach(function(tile) {
+            const tileObj = new Tile(tile.suit, tile.runValue);
+            tilesString += tileObj.getId();
+        });
+        addLinkToCounter(scoreElt, tilesString);
+    }
+    
+
     const curScoresElt = document.getElementById('currentscores');
     curScoresElt.prepend(scoreElt);
     
-    if (scoreitem.type.toLowerCase() === 'crib') {
+    if (scoreType === 'crib') {
         const pastScoresElt = document.createElement('div');
         pastScoresElt.classList.add('pastscores');
         pastScoresElt.append(...curScoresElt.childNodes);
@@ -847,6 +860,10 @@ function toggleHistory() {
 function showStats(stats) {
     const stats0 = stats[0];
     const stats1 = stats[1];
+    if (!stats0.biggest || !stats1.biggest) {
+        // We don't have any stats yet. 
+        return;
+    }
     const table = htmlToNode('<table id="stats_table"></table>');
     table.appendChild(makeStatsRow('From Mean', stats0.fromMean.toFixed(2), stats1.fromMean.toFixed(2)));
     table.appendChild(makeStatsRow('Above Min', stats0.aboveMin, stats1.aboveMin));
@@ -876,8 +893,12 @@ function makeOutsRow(label, out0, out1) {
     row.appendChild(htmlToNode(`<td class="stats_label">${label}</td>`));
     const tileElts0 = createStatTiles(out0.tiles);
     const tileElts1 = createStatTiles(out1.tiles);
-    row.appendChild(htmlToNode(`<td><div>${out0.value.toFixed(2)}</div><div class="outstiles">${tileElts0}</div></td>`));
-    row.appendChild(htmlToNode(`<td><div>${out1.value.toFixed(2)}</div><div class="outstiles">${tileElts1}</div></td>`));
+    const cell0 = htmlToNode(`<td><div>${out0.value.toFixed(2)}</div><div class="outstiles">${tileElts0}</div></td>`);
+    const cell1 = htmlToNode(`<td><div>${out1.value.toFixed(2)}</div><div class="outstiles">${tileElts1}</div></td>`);
+    addLinkToCounter(cell0, out0.tiles.join(''));
+    addLinkToCounter(cell1, out1.tiles.join(''));
+    row.appendChild(cell0);
+    row.appendChild(cell1);
     return row;
 }
 
@@ -890,4 +911,14 @@ function createStatTiles(tiles) {
         html += `<div class="tiny_tile suit_${suit}"><div>${value}</div></div>`;
     }
     return html;
+}
+
+// TODO: Can the link specify whether to count as the crib?
+// I'm not sure that counter.html supports this.
+function addLinkToCounter(elt, tileString) {
+    elt.dataset.tiles = tileString;
+    elt.addEventListener('click', function(evt) {
+        const url = 'https://ckollett.github.io/counter.html#' + evt.currentTarget.dataset.tiles;
+        window.open(url);
+    });
 }
