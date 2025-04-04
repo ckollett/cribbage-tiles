@@ -10,9 +10,6 @@ if (typeof module !== 'undefined') {
         resolveTile: function(tileID) {
             return Tile.fromID(tileID);
         },
-        
-        idsToTiles: idsToTiles,
-        tilesToIds: tilesToIds
     };
 }
 
