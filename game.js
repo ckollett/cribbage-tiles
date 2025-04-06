@@ -1,5 +1,3 @@
-// TODO: Add tiles to scores.
-
 const t = require("./tiles");
 const s = require("./scoring");
 const winScore = 121;
@@ -119,8 +117,7 @@ class Game {
         const stats = [new ScoringStats(), new ScoringStats()];
         const scoresWithOuts = this.#scores.filter(s => s.outs);
         scoresWithOuts.forEach(function(s) {
-            console.log(JSON.stringify(s.outs, null, 2));
-            stats[s.player].addOuts(s.outs);
+            stats[s.player].addOuts(s);
         });
         return stats;
     }
@@ -142,35 +139,41 @@ class ScoringStats {
     fromMean = 0;
     total = 0;
     
-    addOuts(outs) {
+    addOuts(score) {
+        const outs = score.outs;
         this.aboveMin += outs.aboveMin();
         this.belowMax += outs.belowMax();
         this.fromMean += outs.fromMean();
         this.total += outs.out.out;
         
+        const outFunc = outs => score.outs.out.out;
+        const fromMeanFunc = outs => score.outs.fromMean();
         
-        const outFunc = outs => outs.out.out;
-        const fromMeanFunc = outs => outs.fromMean();
+        this.updateStat('biggest_out', score, outFunc);
+        this.updateStat('smallest_out', score, outFunc, true);
+        this.updateStat('best_out', score, fromMeanFunc);
+        this.updateStat('worst_out', score, fromMeanFunc, true);
         
-        this.updateStat('biggest', outs, outFunc);
-        this.updateStat('smallest', outs, outFunc, true);
-        this.updateStat('best', outs, fromMeanFunc);
-        this.updateStat('worst', outs, fromMeanFunc, true);
+        const handScoreFunc = score => score.points;
+        this.updateStat('biggest_hand', score, handScoreFunc);
+        this.updateStat('smallest_hand', score, handScoreFunc, true);
+        
         this.#num++;
         this.mean = this.total / this.#num;
+        console.log('New mean: ' + this.mean);
     }
     
-    updateStat(statName, outs, valueFunc, smallest) {
+    updateStat(statName, score, valueFunc, smallest) {
         const current = this[statName];
-        const newValue = valueFunc(outs);
+        const newValue = valueFunc(score);
         let update = !current;
         if (current) {
             update = smallest ? newValue < current.value : newValue > current.value; 
         }
         if (update) {
-            const allTiles = outs.tiles.slice();
-            allTiles.push(outs.out.tile);
+            const allTiles = score.tiles.slice();
             this[statName] = {
+                id: score.id,
                 tiles: allTiles,
                 value: newValue
             };
@@ -563,7 +566,6 @@ class CountHandPhase extends GamePhase {
         const outs = s.outs(tiles);
         const score = s.scoreHand(tiles, isCrib);
         
-        console.log('Setting pending score with outs. Tiles for outs: ' + outs.tiles.join());
         this.setPendingScore(player, type, tiles, score, outs);
     }
     

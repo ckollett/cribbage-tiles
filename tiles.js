@@ -10,6 +10,9 @@ if (typeof module !== 'undefined') {
         resolveTile: function(tileID) {
             return Tile.fromID(tileID);
         },
+        
+        idsToTiles: idsToTiles,
+        tilesToIds: tilesToIds
     };
 }
 
@@ -155,4 +158,12 @@ function getCounterString(tiles) {
         result += t.suit + t.getDisplayValue();
     });
     return result;
+}
+
+function tilesToIds(tiles) {
+    return tiles.map(tile => tile.getId());
+}
+
+function idsToTiles(ids) {
+    return ids.map(id => Tile.fromID(id));
 }

@@ -47,11 +47,11 @@
               </div>
             </div>
           </div> <!-- End scoreboard -->
-          <button id="scorebutton" disabled="true" onclick="countScore()" onmouseleave="hideScore()" class="rounded">Score</button>
+          <button id="scorebutton" disabled="true" onclick="countScore()" onmouseleave="hideOverlay()" class="rounded">Score</button>
         </div>   
 
         <div id="join">
-          <div id="joinHeader">Start a New Game</div>
+          <div id="join_header">Start a New Game</div>
           <div id="chooseDealer">Dealer: 
             <button id="deal1" class="rounded dealbutton" onclick="joinGame(true);">Me</button>
             <button id="deal2" class="rounded dealbutton" onclick="joinGame(false);">Them</button>
@@ -63,7 +63,7 @@
         <div id="layout">
 
             <div id="leftcolumn" class="sidearea">
-              <div id="left_scoreboard_self" class="scoreboard rounded self"  onmouseenter="getScoringStats()">
+              <div id="left_scoreboard_self" class="scoreboard rounded self"  onmouseenter="showScoringStats()">
                 <div id="score_self_total" class="total_score">0</div>
                 <div class="scoreparts">
                   <div class="scorelabel">Nobs</div><div id="score_self_nobs" class="scorevalue">0</div>
@@ -73,7 +73,7 @@
                   <div class="scorelabel">Crib</div><div id="score_self_crib" class="scorevalue">0</div>
                 </div>
               </div>
-              <div id="left_scoreboard_opponent" class="scoreboard rounded opponent" onmouseenter="getScoringStats()">
+              <div id="left_scoreboard_opponent" class="scoreboard rounded opponent" onmouseenter="showScoringStats()">
                 <div id="score_opponent_total" class="total_score">0</div>
                 <div class="scoreparts">
                   <div class="scorelabel">Nobs</div><div id="score_opponent_nobs" class="scorevalue">0</div>
@@ -104,11 +104,12 @@
               </div>
               <div id="overlay">
                 <div id="blur"></div>
-                <div id="scoreSummary" class="rounded" onmouseleave="hideScore()"></div>
+                <div id="scoring_stats" onmouseleave="hideOverlay()"></div>
+                <div id="score_summary"></div>
               </div>
             </div>
 
-            <div id="rightcolumn" class="sidearea">
+            <div id="rightcolumn" class="sidearea" onmouseleave="hideOverlay()">
                <div id="currentscores"></div>
                <div id="history"></div>
             </div>

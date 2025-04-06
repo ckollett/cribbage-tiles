@@ -623,11 +623,6 @@ button:hover:enabled {
     background-color: black;
 }
 
-button#joinButton {
-    margin-top: 4vh;
-    font-size: 4vh;
-}
-
 button.dealbutton {
     font-size: 4vh;
 }
@@ -764,7 +759,7 @@ div#join {
     margin-top: 10vh;
 }
 
-div#joinHeader {
+div#join_header {
     margin-bottom:4vh;
 }
 
@@ -773,7 +768,7 @@ div#join input {
     font-size: 5vh;
 }
 
-#playerName {
+#player_name {
     width: 35vh;
     text-align: center;
 }
@@ -980,23 +975,27 @@ button#scorebutton {
 
 /* TODO: Position this near the element that
          was hovered over */
-div#scoreSummary {
+div#score_summary {
     position: absolute;
     top: 0;
+    right: -4vh;
+    width: auto;
     background-color: white;
     border: 0.5vh solid black;
     padding: 3vh;
     z-index: 100;
+    display:none;
 }
 
-div#scoreSummary.summary_right {
-    right: -4vh;
-    width: auto;
-}
-
-div#scoreSummary.summary_left {
+div#scoring_stats {
+    position: absolute;
+    top: 0;
     left: -9vh;
-    width: auto;
+    background-color: white;
+    border: 0.5vh solid black;
+    padding: 3vh;
+    z-index: 100;
+    display:none;    
 }
 
 div#overlay {
@@ -1008,10 +1007,13 @@ div#overlay {
     display:none;
 }
 
-div#overlay.showsummary {
+div#overlay.showoverlay {
     display:block;
 }
 
+div#overlay div.showing {
+    display:block;
+}
 
 div#blur {
     position:absolute;
@@ -1068,6 +1070,8 @@ table.scoresummary {
     border-collapse: collapse;
     border: 1px solid black;
     min-width: 50vh;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 table.scoresummary th {
@@ -1082,7 +1086,7 @@ table.scoresummary tr {
 
 table.scoresummary .summary_name {
     width: 80%;
-    text-align:left;
+    text-align: left;
 }
 
 table.scoresummary .summary_points {
@@ -1103,22 +1107,41 @@ table#outs {
     margin-top:2vh;
 }
 
-table#stats_table {
+table.stats_table {
     border-collapse: collapse;
     border: 1px solid black;
+    width: 38vh;
+    margin-top:2vh;
 }
 
-table#stats_table tr {
+table.stats_table:first-child {
+    margin-top:0;
+}
+
+table.stats_table tr {
     border-bottom: 0.2vh solid black;
 }
 
-table#stats_table td {
+table.stats_table th {
+    background-color: black;
+    color: white;
+    font-size: 3vh;
+    text-align: left;
+}
+
+table.stats_table td {
+    font-size: 2.3vh;
     text-align: right;
     padding-left: 3vh;
     white-space: nowrap;
 }
 
-table#stats_table td.stats_label {
+table.stats_table td.stats_label {
     text-align: left;
     padding-left: 0;
+}
+
+td.stat_cell:hover {
+    background-color: black;
+    color: white;
 }
