@@ -982,9 +982,13 @@ div#score_summary {
     width: auto;
     background-color: white;
     border: 0.5vh solid black;
-    padding: 3vh;
+    padding: 2vh;
     z-index: 100;
     display:none;
+}
+
+div#score_summary.showing {
+    display:block;
 }
 
 div#scoring_stats {
@@ -995,7 +999,59 @@ div#scoring_stats {
     border: 0.5vh solid black;
     padding: 3vh;
     z-index: 100;
-    display:none;    
+    display:none;
+}
+
+div#scoring_stats.showing {
+    display:block;
+}
+
+div.stat_header {
+    font-size:3.2vh;
+    margin-top:1.5vh;
+    border-bottom: 0.5vh solid black;
+    margin-bottom: 0.5vh;
+}
+
+div.stat_header:first-child {
+    margin-top: 0;
+}
+
+div.stat_label {
+    display: inline-block;
+    width: 17vh;
+    font-size: 2.3vh;
+    padding-left: 1.5vh;
+}
+
+div.stat_row {
+    display: inline-flex;
+    width: 22vh;
+    margin-bottom: 0.3vh;
+    margin-right: 0;
+    margin-left: auto;
+    font-size: 2.3vh;
+}
+
+div.stat_item {
+    border: 0;
+    box-sizing: border-box;
+    flex-grow: 1;
+    flex-basis: 0;
+    display: inline-block;
+    height: 100%;
+    width: 12vh;
+    text-align: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+div.stat_item.self {
+    border-radius: 0.6vh 0 0 0.6vh;
+}
+
+div.stat_item.opponent {
+    border-radius: 0 0.6vh 0.6vh 0;
 }
 
 div#overlay {
@@ -1008,10 +1064,6 @@ div#overlay {
 }
 
 div#overlay.showoverlay {
-    display:block;
-}
-
-div#overlay div.showing {
     display:block;
 }
 

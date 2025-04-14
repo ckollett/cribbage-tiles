@@ -637,9 +637,7 @@ function updateCribArrow() {
 
 function createScoreSummary(scoreObj) {
     const summary = document.createElement('div');
-    
     const outs = scoreObj.outs;
-    
     const summaryTray = document.createElement('div');
     
     summaryTray.classList.add('summarytiles');
@@ -703,6 +701,17 @@ function setScoreButtonState(disabled) {
     }
 }
 
+function addScoreHoverListener(elt) {
+    elt.addEventListener('mouseenter', showScoreOnHover);
+}
+
+function showScoreOnHover(evt) {
+    const target = evt.currentTarget;
+    if (target.dataset.handId) {
+        showScore(target.dataset.handId);
+    }
+}
+
 function showPendingScore(evt) {
     showScore('pending');
 }
@@ -723,8 +732,7 @@ function hideOverlay() {
     const panels = ['score_summary', 'scoring_stats'];
     panels.forEach(function(panel) {
         const panelElt = document.getElementById(panel);
-        panelElt.innerHTML = '';
-        panelElt.className = 'overlayPanel';
+        panelElt.className = '';
     });
     document.getElementById('overlay').classList.remove('showoverlay');
 }
@@ -748,16 +756,14 @@ function updateScoreBoard(scoreEventData) {
 
 function updateHistory(scoreitem, gameScore) {
     const player = getPlayerName(scoreitem.player);
-    const scoreItemText = `<div class="rounded scoreitem ${player}" data-id="${scoreitem.id}">` +
+    const scoreItemText = `<div class="rounded scoreitem ${player}" data-hand-id="${scoreitem.id}">` +
                           `  <div class="itempoints">${scoreitem.points}</div>` +
                           `  <div class="scoretype">${scoreitem.type}</div>` +
                           `</div>`;
     
 
     const scoreElt = htmlToNode(scoreItemText);
-    scoreElt.addEventListener('mouseenter', function() {
-       showScore(scoreitem.id);
-    });
+    addScoreHoverListener(scoreElt);
 
     const scoreType = scoreitem.type.toLowerCase();
     // TODO: This array is ugly.
@@ -854,82 +860,47 @@ function toggleHistory() {
 /* ********** Other UI Features ********** */
 
 function displayStats(stats) {
-    const stats0 = stats[0];
-    const stats1 = stats[1];
-    if (!stats0.biggest_hand || !stats1.biggest_hand) {
+    if (!stats[0].biggest_hand || !stats[1].biggest_hand) {
         // We don't have any stats yet. 
         return;
     }
-    const statsTable = htmlToNode('<table class="stats_table"></table>');
-    statsTable.appendChild(htmlToNode('<tr><th colspan="3">Stats</th></tr>'));
-    statsTable.appendChild(makeStatsRow('From Mean', stats0.fromMean.toFixed(2), stats1.fromMean.toFixed(2)));
-    statsTable.appendChild(makeStatsRow('Above Min', stats0.aboveMin, stats1.aboveMin));
-    statsTable.appendChild(makeStatsRow('Below Max', stats0.belowMax, stats1.belowMax));
-    statsTable.appendChild(makeStatsRow('Total Outs', stats0.total, stats1.total));
     
-    const handsTable = htmlToNode('<table class="stats_table"></table>');
-    handsTable.appendChild(htmlToNode('<tr><th colspan="3">Hands</th></tr>'));
-    handsTable.appendChild(makeOutsRow('Biggest', stats0.biggest_hand, stats1.biggest_hand));
-    handsTable.appendChild(makeOutsRow('Smallest', stats0.smallest_hand, stats1.smallest_hand));
+    const needsRounding = ['fromMean', 'best_out', 'worst_out'];
     
-    // TODO: Pass both stats as an array and the property name?
-    const outsTable = htmlToNode('<table class="stats_table"></table>');
-    outsTable.appendChild(htmlToNode('<tr><th colspan="3">Outs</th></tr>'));
-    outsTable.appendChild(makeOutsRow('Best', stats0.best_out, stats1.best_out, true));
-    outsTable.appendChild(makeOutsRow('Worst', stats0.worst_out, stats1.worst_out, true));
-    outsTable.appendChild(makeOutsRow('Biggest', stats0.biggest_out, stats1.biggest_out));
-    outsTable.appendChild(makeOutsRow('Smallest', stats0.smallest_out, stats1.smallest_out));
-   
+    stats.forEach(function(playerStats, idx) {
+        const player = getPlayerName(idx);
+        
+        // First do the overall stats.
+        const statNames = ['fromMean', 'aboveMin', 'belowMax', 'total'];
+        statNames.forEach(function(statName) {
+            let value = playerStats[statName];
+            if (needsRounding.indexOf(statName) > -1) {
+                value = value.toFixed(2);
+            }
+            const valueElt = document.getElementById(`${statName}_${player}`);
+            valueElt.innerHTML = value;
+        });
+        
+        // Now the best and worst hands.
+        const handNames = ['biggest_hand', 'smallest_hand', 'best_out', 'worst_out', 'biggest_out', 'smallest_out'];
+        handNames.forEach(function(handName) {
+            const hand = playerStats[handName];
+            const handElt = document.getElementById(`${handName}_${player}`);
+            let value = hand.value;
+            if (needsRounding.indexOf(handName) > -1) {
+                value = value.toFixed(2);
+            }
+            handElt.innerHTML = value;
+            handElt.dataset.handId = hand.id;
+        });
+        
+    });
+
     const statsElt = document.getElementById('scoring_stats');
-    statsElt.innerHTML = '';
-    statsElt.appendChild(statsTable);
-    statsElt.appendChild(handsTable);
-    statsElt.appendChild(outsTable);
-    statsElt.className = 'rounded';
-    statsElt.classList.add('showing');
+    statsElt.classList.add('showing', 'rounded');
     document.getElementById('overlay').classList.add('showoverlay');
 }
 
-function makeStatsRow(label, stat0, stat1) {
-    return htmlToNode(`<tr><td class="stats_label">${label}</td><td>${stat0}</td><td>${stat1}</td></tr>`);
-}
-
-function makeOutsRow(label, out0, out1, round) {
-    const row = htmlToNode('<tr></tr>');
-    row.appendChild(htmlToNode(`<td class="stats_label">${label}</td>`));
-    const value0 = round ? out0.value.toFixed(2) : out0.value;
-    const value1 = round ? out1.value.toFixed(2) : out1.value;
-//    const tileElts0 = createStatTiles(out0.tiles);
-//    const tileElts1 = createStatTiles(out1.tiles);
-//    const cell0 = htmlToNode(`<td><div>${value0}</div><div class="outstiles">${tileElts0}</div></td>`);
-//    const cell1 = htmlToNode(`<td><div>${value1}</div><div class="outstiles">${tileElts1}</div></td>`);
-
-    const cell0 = htmlToNode(`<td class="stat_cell">${value0}</td>`);
-    const cell1 = htmlToNode(`<td class="stat_cell">${value1}</td>`);
-    
-    cell0.addEventListener('mouseenter', function(evt) {
-        showScore(out0.id);
-    });
-    cell1.addEventListener('mouseenter', function(evt) {
-        showScore(out1.id);
-    });
-    addLinkToCounter(cell0, getCounterString(out0.tiles));
-    addLinkToCounter(cell1, getCounterString(out1.tiles));
-    row.appendChild(cell0);
-    row.appendChild(cell1);
-    return row;
-}
-
-function createStatTiles(tiles) {
-    let html = '';
-    for (let tile of tiles) {
-        const tileObj = Tile.fromID(tile);
-        const suit = tileObj.getSuitName();
-        const value = tileObj.getDisplayValue();
-        html += `<div class="tiny_tile suit_${suit}"><div>${value}</div></div>`;
-    }
-    return html;
-}
 
 // TODO: Can the link specify whether to count as the crib?
 // I'm not sure that counter.html supports this.

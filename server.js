@@ -14,6 +14,11 @@ const server = http.Server(app);
 const io = socketIO(server);
 app.set('port', port);
 
+// We could improve the recovery by keeping every event in an array,
+// and including the array index as part of the data sent to the browser.
+// Then if the browser disconnects and reconnects, on reconnect it could
+// tell the server the ID of the last event it received and the server
+// could send the subsequent events.
 game.registerListener(function(player, evt) {
     io.to(players[player].socket).emit('gameEvent', evt);
 });
@@ -50,6 +55,7 @@ server.listen(port, function() {
 /* *** Set up messaging with the browser *** */
 io.on('connection', function(socket) {
     const playerId = players.length;
+    console.log(`Player ${playerId} joined with socket ID ${socket.id}`);
     players.push({socket: socket.id});
     
     // As soon as a player joins, they should be registered
@@ -125,6 +131,11 @@ io.on('connection', function(socket) {
     
     socket.on('scoringStats', function(arg, callback) {
         callback(game.getScoringStats());
+    });
+    
+    socket.on('disconnect', function() {
+        const player = getPlayerIdForSocket(socket);
+        console.log(`Player ${player} disconnected.`);
     });
 });
 

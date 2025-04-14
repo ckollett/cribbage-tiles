@@ -104,11 +104,96 @@
               </div>
               <div id="overlay">
                 <div id="blur"></div>
-                <div id="scoring_stats" onmouseleave="hideOverlay()"></div>
+                <div id="scoring_stats" onmouseleave="hideOverlay()">
+                  <div class="stat_header">Stats</div>
+                  <div>
+                    <div class="stat_label">From mean</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="fromMean_self"></div>
+                      <div class="stat_item opponent" id="fromMean_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Above min</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="aboveMin_self"></div>
+                      <div class="stat_item opponent" id="aboveMin_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Below max</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="belowMax_self"></div>
+                      <div class="stat_item opponent" id="belowMax_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Total outs</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="total_self"></div>
+                      <div class="stat_item opponent" id="total_opponent"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="stat_header">Hands</div>
+                  <div>
+                    <div class="stat_label">Biggest</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="biggest_hand_self"></div>
+                      <div class="stat_item opponent" id="biggest_hand_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Smallest</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="smallest_hand_self"></div>
+                      <div class="stat_item opponent" id="smallest_hand_opponent"></div>
+                    </div>
+                  </div>                  
+
+                  <div class="stat_header">Outs</div>
+                  <div>
+                    <div class="stat_label">Best</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="best_out_self"></div>
+                      <div class="stat_item opponent" id="best_out_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Worst</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="worst_out_self"></div>
+                      <div class="stat_item opponent" id="worst_out_opponent"></div>
+                    </div>
+                  </div>                            
+                  <div>
+                    <div class="stat_label">Biggest</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="biggest_out_self"></div>
+                      <div class="stat_item opponent" id="biggest_out_opponent"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="stat_label">Smallest</div>
+                    <div class="rounded stat_row">
+                      <div class="stat_item self" id="smallest_out_self"></div>
+                      <div class="stat_item opponent" id="smallest_out_opponent"></div>
+                    </div>
+                  </div>                  
+
+                  </div>
                 <div id="score_summary"></div>
               </div>
             </div>
-
+            <script type="text/javascript">
+                // This is easier to do using JavaScript than
+                // by adding an onmouseenter attribute to every element.
+                const statItems = document.getElementsByClassName('stat_item');
+                for (let statItem of statItems) {
+                    addScoreHoverListener(statItem);
+                }
+            </script>
+            
             <div id="rightcolumn" class="sidearea" onmouseleave="hideOverlay()">
                <div id="currentscores"></div>
                <div id="history"></div>
