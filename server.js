@@ -1,3 +1,11 @@
+// TODO:
+// - Use cookies and rooms for emitting events rather than using socket IDs?
+//   - https://socket.io/docs/v4/rooms/
+//   - That *should* make dropping/joining more robust, right?
+// - Only emit game events when both players are in the game.
+//   - If there's only one player joined, just hold on to the event until the second player rejoins
+//   - Also we could emit a "game paused" event to the remaining player when this happens, to freeze the UI
+
 const port = 4556;
 
 const game = require("./game");
@@ -6,13 +14,23 @@ const scoring = require("./scoring");
 
 // Dependencies
 const express = require('express');
+const session = require("express-session");
 const http = require('http');
 const path = require('path');
 const socketIO = require('socket.io');
+
 const app = express();
+const sess = session({
+    secret : "atomic cribbage",
+    resave : false,
+    saveUninitialized : true
+});
+app.use(sess);
+app.set('port', port);
+
 const server = http.Server(app);
 const io = socketIO(server);
-app.set('port', port);
+io.engine.use(sess);
 
 // We could improve the recovery by keeping every event in an array,
 // and including the array index as part of the data sent to the browser.
@@ -20,7 +38,7 @@ app.set('port', port);
 // tell the server the ID of the last event it received and the server
 // could send the subsequent events.
 game.registerListener(function(player, evt) {
-    io.to(players[player].socket).emit('gameEvent', evt);
+    io.to(players[player].id).emit('gameEvent', evt);
 });
 game.newGame();
 const players = [];
@@ -54,9 +72,12 @@ server.listen(port, function() {
 
 /* *** Set up messaging with the browser *** */
 io.on('connection', function(socket) {
+    console.log('Session: ' + JSON.stringify(socket.request.session, null, 2));
+    console.log(socket.request.session.id);
     const playerId = players.length;
-    console.log(`Player ${playerId} joined with socket ID ${socket.id}`);
-    players.push({socket: socket.id});
+    console.log(`Player ${playerId} joined with session ID ${socket.request.session.id}`);
+    players.push({id : socket.request.session.id});
+    socket.join(socket.request.session.id);
     
     // As soon as a player joins, they should be registered
     socket.on('checkForGame', function(arg, callback) {
@@ -72,7 +93,7 @@ io.on('connection', function(socket) {
     socket.on('join', function(arg, callback) {
         let playerId = getPlayerIdForSocket(socket);
         if (playerId < 0 || playerId > 1) {
-            console.log('Could not find player for socket ID: ' + socket.id);
+            console.log('Could not find player for session ID: ' + socket.request.session.id);
         }
         let player = players[playerId];
         // TODO: when the second player joins we need to check if the first
@@ -83,9 +104,9 @@ io.on('connection', function(socket) {
         if (joinedPlayers.length === 1 && players.length === 2) {
             console.log('Tell the other player this player has joined');
             const opponent = players[1-playerId];
-            console.log('Opponent socket: ' + opponent.socket);
+            console.log('Opponent ID: ' + opponent.id);
             // Tell the other player that a game is now pending.
-            io.to(opponent.socket).emit('opponentJoined', player);
+            io.to(opponent.id).emit('opponentJoined', player);
         }
         
         if (joinedPlayers.length === 2) {
@@ -140,9 +161,5 @@ io.on('connection', function(socket) {
 });
 
 function getPlayerIdForSocket(socket) {
-    return players.findIndex(p => p.socket === socket.id);
-}
-
-function getPlayerInfo(socket) {
-    return players.find(p => p.socket === socket.id);
+    return players.findIndex(p => p.id === socket.request.session.id);
 }
