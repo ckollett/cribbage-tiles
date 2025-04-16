@@ -2,6 +2,7 @@
 <html lang="en">
   <title>Cribbage</title>
   <head>
+    <link rel="icon" type="image/svg+xml" href="/static/images/mug.svg" />
     <link rel="stylesheet" type="text/css" href="static/cribbage.css" />
     <script src="/socket.io/socket.io.js"></script>	
 	<script type="text/javascript" src="shared/tiles.js"></script>
@@ -196,7 +197,7 @@
             
             <div id="rightcolumn" class="sidearea" onmouseleave="hideOverlay()">
                <div id="currentscores"></div>
-               <div id="history"></div>
+               <div id="history" class="collapsed"></div>
             </div>
         </div>
         <div id="pegcount"></div>    

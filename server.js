@@ -61,6 +61,7 @@ app.get('/game', function(request, response) {
     const fullGame = game.getFullGame();
     response.send(JSON.stringify(fullGame));
 });
+
 // app.get('/pendingScore', function(request, response) {
 //     response.send(JSON.stringify(game.getPendingScore()));
 
@@ -72,62 +73,82 @@ server.listen(port, function() {
 
 /* *** Set up messaging with the browser *** */
 io.on('connection', function(socket) {
-    const playerId = players.length;
-    players.push({joined : false});
-    socket.request.session.playerId = playerId;
-    socket.join('player_' + playerId);
+    let player = getPlayerForSocket(socket);
+    if (!player) {
+        player = {
+            sessionId: socket.request.session.id,
+            id : players.length,
+            joined : false
+        }
+        console.log('Adding player ' + player.id);
+        players.push(player);
+    }
+    socket.join('player_' + player.id);
     
     // As soon as a player joins, they should be registered
     socket.on('checkForGame', function(arg, callback) {
+        // The checkForGame event is sent on page load. We
+        // can add logic here to cover:
+        // * No one has joined
+        // * Your opponent has joined but you haven'tags
+        // * There are already 2 players who have joined
+        // In the last case I guess we can provide the option
+        // to either start a new game or (eventually) attempt
+        // to rejoin the in-progress game.
         const joinedPlayers = players.filter(p => p.joined);
-        const response = {id: playerId};
+        const response = {id: player.id};
         if (joinedPlayers.length === 1) {
             // The other player is waiting for you to join.
             response.opponent = joinedPlayers[0];
+        } else if (joinedPlayers.length === 2) {
+            // Reset.
+            console.log('Reload?');
+            players.forEach(p => p.joined = false);
+            game.newGame();
         }
         callback(response);
     });
     
     socket.on('join', function(arg, callback) {
-        let playerId = getPlayerIdForSocket(socket);
-        if (playerId < 0 || playerId > 1) {
+        let player = getPlayerForSocket(socket);
+        if (!player) {
             console.log('Could not find player for session ID: ' + socket.request.session.id);
+            return;
         }
-        let player = players[playerId];
         player.joined = true;
         player.firstDeal = arg.firstDeal;
         const joinedPlayers = players.filter(p => p.joined);
         if (joinedPlayers.length === 1 && players.length === 2) {
             // Tell the other player that a game is now pending.
-            notifyPlayer(1-playerId, 'opponentJoined', player);
+            notifyPlayer(1-player.id, 'opponentJoined', player);
         }
         
         if (joinedPlayers.length === 2) {
-            const dealer = arg.firstDeal ? playerId : 1-playerId;
+            const dealer = arg.firstDeal ? player.id : 1-player.id;
             console.log('First dealer is ' + dealer);
             game.deal(dealer);
         }
     });
     
     socket.on('cribselect', function(arg) {
-        const player = getPlayerIdForSocket(socket);
-        game.handleTileEvent(player, arg);
+        const player = getPlayerForSocket(socket);
+        game.handleTileEvent(player.id, arg);
     });
     
     socket.on('peg', function(arg) {
-        const player = getPlayerIdForSocket(socket);
-        game.handleTileEvent(player, arg);
+        const player = getPlayerForSocket(socket);
+        game.handleTileEvent(player.id, arg);
     });
     
     socket.on('countScore', function() {
-        const player = getPlayerIdForSocket(socket);
+        const player = getPlayerForSocket(socket);
         const pendingScore = game.getPendingScore();
         if (pendingScore.length === 0) {
             console.log('No pending score');
             return;
         }
         
-        if (pendingScore.player !== player) {
+        if (pendingScore.player !== player.id) {
             console.log(`Player ${player} does not have a pending score`);
             return;
         }
@@ -148,13 +169,15 @@ io.on('connection', function(socket) {
     });
     
     socket.on('disconnect', function() {
-        const player = getPlayerIdForSocket(socket);
-        console.log(`Player ${player} disconnected.`);
+        const player = getPlayerForSocket(socket);
+        if (player) {
+            console.log(`Player ${player.id} disconnected.`);
+        }
     });
 });
 
-function getPlayerIdForSocket(socket) {
-    return socket.request.session.playerId;
+function getPlayerForSocket(socket) {
+    return players.find(p => p.sessionId === socket.request.session.id);
 }
 
 function notifyPlayer(playerId, eventName, eventData) {

@@ -703,6 +703,7 @@ function setScoreButtonState(disabled) {
 
 function addScoreHoverListener(elt) {
     elt.addEventListener('mouseenter', showScoreOnHover);
+    elt.addEventListener('mouseleave', hideScore);
 }
 
 function showScoreOnHover(evt) {
@@ -719,14 +720,20 @@ function showPendingScore(evt) {
 function showScore(id) {
     getScoreById(id, function(score) {
         const summaryDiv = createScoreSummary(score);
-        const scoreSummary = document.getElementById('score_summary');
-        scoreSummary.innerHTML = '';
-        scoreSummary.className = 'rounded';
+        const scoreSummary = hideScore();
         scoreSummary.classList.add('showing');
         scoreSummary.appendChild(summaryDiv);
         document.getElementById('overlay').classList.add('showoverlay');
     });
 }
+
+function hideScore() {
+    const scoreSummary = document.getElementById('score_summary');
+    scoreSummary.innerHTML = '';
+    scoreSummary.className = 'rounded';
+    return scoreSummary;
+}
+
 
 function hideOverlay() {
     const panels = ['score_summary', 'scoring_stats'];
@@ -770,7 +777,6 @@ function updateHistory(scoreitem, gameScore) {
     if (['hand', 'foot', 'crib'].indexOf(scoreType) >= 0) {
         addLinkToCounter(scoreElt, getCounterString(scoreitem.tiles));
     }
-    
 
     const curScoresElt = document.getElementById('currentscores');
     curScoresElt.prepend(scoreElt);

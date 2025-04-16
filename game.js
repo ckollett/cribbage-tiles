@@ -160,7 +160,6 @@ class ScoringStats {
         
         this.#num++;
         this.mean = this.total / this.#num;
-        console.log('New mean: ' + this.mean);
     }
     
     updateStat(statName, score, valueFunc, smallest) {

@@ -749,7 +749,7 @@ div#dealer_opponent {
 
 /* ********** Join form ********** */
 div#join {
-    width: 100%;
+    width: 60%;
     border: 0.4vh solid black;
     border-radius: 1.4vh;
     text-align: center;
@@ -757,6 +757,8 @@ div#join {
     padding-top: 5vh;
     padding-bottom: 5vh;
     margin-top: 10vh;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div#join_header {
