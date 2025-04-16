@@ -38,7 +38,7 @@ io.engine.use(sess);
 // tell the server the ID of the last event it received and the server
 // could send the subsequent events.
 game.registerListener(function(player, evt) {
-    io.to(players[player].id).emit('gameEvent', evt);
+    notifyPlayer(player, 'gameEvent', evt);
 });
 game.newGame();
 const players = [];
@@ -72,12 +72,10 @@ server.listen(port, function() {
 
 /* *** Set up messaging with the browser *** */
 io.on('connection', function(socket) {
-    console.log('Session: ' + JSON.stringify(socket.request.session, null, 2));
-    console.log(socket.request.session.id);
     const playerId = players.length;
-    console.log(`Player ${playerId} joined with session ID ${socket.request.session.id}`);
-    players.push({id : socket.request.session.id});
-    socket.join(socket.request.session.id);
+    players.push({joined : false});
+    socket.request.session.playerId = playerId;
+    socket.join('player_' + playerId);
     
     // As soon as a player joins, they should be registered
     socket.on('checkForGame', function(arg, callback) {
@@ -96,17 +94,12 @@ io.on('connection', function(socket) {
             console.log('Could not find player for session ID: ' + socket.request.session.id);
         }
         let player = players[playerId];
-        // TODO: when the second player joins we need to check if the first
-        // player is dealer or not.
         player.joined = true;
         player.firstDeal = arg.firstDeal;
         const joinedPlayers = players.filter(p => p.joined);
         if (joinedPlayers.length === 1 && players.length === 2) {
-            console.log('Tell the other player this player has joined');
-            const opponent = players[1-playerId];
-            console.log('Opponent ID: ' + opponent.id);
             // Tell the other player that a game is now pending.
-            io.to(opponent.id).emit('opponentJoined', player);
+            notifyPlayer(1-playerId, 'opponentJoined', player);
         }
         
         if (joinedPlayers.length === 2) {
@@ -161,5 +154,9 @@ io.on('connection', function(socket) {
 });
 
 function getPlayerIdForSocket(socket) {
-    return players.findIndex(p => p.id === socket.request.session.id);
+    return socket.request.session.playerId;
+}
+
+function notifyPlayer(playerId, eventName, eventData) {
+    io.to('player_' + playerId).emit(eventName, eventData);
 }
