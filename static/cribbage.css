@@ -26,7 +26,7 @@ div {
 
 /* Global styles */
 .hidden {
-    display:none;
+    display:none; !important
 }
 
 .self {
@@ -535,6 +535,11 @@ img#arrow {
     width:75%
 }
 
+/* Annoying */
+div.tileposition.hidden {
+    display:none;
+}
+
 /* ***** Other page elements ***** */
 
 /* *** Scoring on the left side *** */
@@ -589,7 +594,9 @@ button:hover:enabled {
 }
 
 button.dealbutton {
-    font-size: 4vh;
+    font-size: 5vh;
+    padding-left: 2vh;
+    padding-right: 2vh;
 }
 
 div.scoreitem {
