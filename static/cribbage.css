@@ -3,6 +3,7 @@
 /*   Can we assume that the screen is ~1.6 times wider than high? */
 /*   If so, does that mean that we can take vh values and divide by 1.6? */
 
+/* Basic display */
 :root {
   --tile-width: 13.6vh;
   --tile-space: 14.4vh;
@@ -23,9 +24,22 @@ div {
 	user-select: none;
 }
 
+/* Global styles */
 .hidden {
     display:none;
 }
+
+.self {
+    background-color: black;
+    color: white;
+}
+
+.opponent {
+    background-color: white;
+    color: black;
+}
+
+/* Layout */
 
 #widthcontainer {
     width: 155vh;
@@ -61,6 +75,14 @@ div.sidearea {
     height: 100%;
 }
 
+/* There is a buffer between the left column and the game
+   area, where the Dealer indicator fits */
+.leftbuffer {
+    min-width:5vh;
+    max-width:5vh;
+    height:100%;
+}
+
 /* Some adjustments to account for scrolling */
 div#rightcolumn {
     position:relative;
@@ -82,12 +104,6 @@ div#rightcolumn::-webkit-scrollbar-thumb {
     border-radius:.5vh;
 }
 
-.leftbuffer {
-    min-width:5vh;
-    max-width:5vh;
-    height:100%;
-}
-
 .gamearea {
     position:relative;
     width:100vh;
@@ -95,6 +111,7 @@ div#rightcolumn::-webkit-scrollbar-thumb {
     min-width:100vh;
 }
 
+/* Tiles */
 
 div.suit_tent div.tilefront {
     background-image: url('images/tent.svg');
@@ -109,6 +126,7 @@ div.suit_sleepingbag div.tilefront {
     background-image: url('images/sleepingbag.svg');
 }
 
+/* The inline_tile class is used for displaying the bingo in the score display */
 div.inline_tile {
     width: 5.2vh;
     height: 100%;
@@ -139,53 +157,12 @@ div.inline_tile.suit_sleepingbag {
     background-image: url('images/sleepingbag.svg');
 }
 
-
-div.tiny_tile {
-    width: 4vh;
-    height: 2.5vh;
-    background-position: right 5% center;
-    background-size: 40%;
-    background-repeat: no-repeat;
-    display: inline-block;
-    margin-right: 0.5vh;
-    border: 0.2vh solid black;
-    border-radius: 0.75vh;
-    font-size: 1.7vh;
-}
-
-div.tiny_tile div {
-    width: 55%;
-    height: 100%;
-    line-height: 2.5vh;
-    text-align: center;
-}
-
-div.tiny_tile.suit_tent {
-    background-image: url('images/tent.svg');
-}
-
-div.tiny_tile.suit_mug {
-    background-image: url('images/mug.svg');
-}
-
-div.tiny_tile.suit_campfire {
-    background-image: url('images/campfire.svg');
-}
-
-div.tiny_tile.suit_sleepingbag {
-    background-image: url('images/sleepingbag.svg');
-}
-
-div.outstiles div.tiny_tile:last-child {
-    margin-left:0.7vh;
-}
-
 /* *** TODO *** */
 /*
   There are three tile sizes:
   * Full size for the game play
   * Small for the scoring summary
-  * Mini for inline display, etc.
+  * Tiny for inline display, etc.
   How best to represent these in CSS?
   It's convenient for the full and small sizes to share a bunch of
   structure in the HTML and CSS. The mini tiles are pretty different
@@ -263,6 +240,8 @@ div.value {
     top:2%;
 }
 
+/* Tiles drawn outside of the game area aren't big enough to use the
+   outline display for the tile value */
 div.gamearea div.value {
     color: transparent;
 	font-size: 3.7vh;
@@ -556,20 +535,6 @@ img#arrow {
     width:75%
 }
 
-div.tileposition.hidden {
-    display:none;
-}
-
-.self {
-    background-color: black;
-    color: white;
-}
-
-.opponent {
-    background-color: white;
-    color: black;
-}
-
 /* ***** Other page elements ***** */
 
 /* *** Scoring on the left side *** */
@@ -857,12 +822,12 @@ div#scoreboardarea {
 }
 
 #scoreboard_self .total {
-  bottom:1vh;
+  bottom:0.9vh;
   background-color: black;
 }
 
 #scoreboard_opponent .total {
-    top:1vh;
+    top:0.9vh;
     color: black;
     background-color:white;
 }
