@@ -356,12 +356,21 @@ class Tuple extends Scorable {
             case 3 : name = "Pair Royal of "; break;
             case 4 : name = "Double Pair Royal of "; break;
         }
-        return name + this.value + 's';
+        return name + this.getDisplayValue() + 's';
     }
         
     getScore() {
         // (count choose 2) * 2 = count * (count-1)
         return this.count * (this.count-1);
+    }
+    
+    getDisplayValue() {
+        switch (this.value) {
+            case 11 : return 'Jack';
+            case 12 : return 'Queen';
+            case 13 : return 'King';
+            default : return this.value;
+        }
     }
 }
 
